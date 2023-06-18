@@ -58,7 +58,7 @@ interface DefaultSuggestionsType {
 
 const defaultSuggestionsData: DefaultSuggestionsType[] = [
   {
-    category: 'Popular Searches',
+    category: 'Popular Searchesssss',
     suggestions: [
       {
         icon: 'mdi:chart-donut',
