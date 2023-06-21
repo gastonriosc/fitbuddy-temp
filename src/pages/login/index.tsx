@@ -1,9 +1,10 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
-import { useState, ReactNode } from 'react'
+import React, { useState, ReactNode } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
+import { List, ListItem } from '@mui/material';
 
 // ** MUI Components
 import Alert from '@mui/material/Alert'
@@ -87,6 +88,10 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
+
+
+// const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
+
 const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
   fontWeight: 600,
   letterSpacing: '0.18px',
@@ -119,6 +124,8 @@ interface FormData {
 const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(true)
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showAlumnosFeatures, setShowAlumnosFeatures] = useState(false);
+  const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
 
   // ** Hooks
   const auth = useAuth()
@@ -150,17 +157,25 @@ const LoginPage = () => {
       })
     })
   }
+  const handleShowAlumnosFeatures = () => {
+    setShowAlumnosFeatures(true);
+    setShowEntrenadoresFeatures(false); // Ocultar el texto de características de entrenadores al mostrar el de alumnos
+  };
+
+  const handleShowEntrenadoresFeatures = () => {
+    setShowEntrenadoresFeatures(true);
+    setShowAlumnosFeatures(false); // Ocultar el texto de características de alumnos al mostrar el de entrenadores
+  };
 
   const imageSource = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80';
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {!hidden && (
+    <Box className='content-right'>
+      {!hidden ? (
         <Box
-
           sx={{
             flex: 1,
-            display: 'flex',
+            display: 'flex flex-col',
             position: 'relative',
             alignItems: 'center',
             justifyContent: 'center',
@@ -173,62 +188,85 @@ const LoginPage = () => {
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',
             height: '100vh',
-          }}
-        >
+          }}>
 
-          <LoginIllustration
-            src={imageSource}
-            sx={{
-              display: 'none',
 
-            }}
-          />
-          <Typography
-            variant='h3'
-            sx={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
-          >
-            Fit Buddy
-          </Typography>
-          <Typography
-            variant='h6'
-            sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
-          >
-            Entrena en cualquier momento, en cualquier lugar.
-          </Typography>
-          <Typography
-            variant='h6'
-            sx={{ position: 'absolute', top: '190%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
-          >
-            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
-              Entrená con expertos en cualquier lugar.
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant='h1' sx={{ fontFamily: 'Bebas Neue', font: 'Bold' }}>
+              FitBuddy
             </Typography>
-            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
-              Planes personalizados a tu medida.
-            </Typography>
-            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
-              Descubrí y elegí entre una amplia variedad de entrenadores.
-            </Typography>
-            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
-              Realizá pagos seguros y confiables a través de la plataforma
-            </Typography>
-            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
-              Comentarios y valoraciones de otros alumnos para ayudarte en tu elección
-            </Typography>
+            <Box sx={{ width: '950px', mx: 'auto', mb: '45px' }}>
+              <Typography variant='h4' >
+                El lugar perfecto para crecer en el mundo del fitness, tanto para alumnos como entrenadores, empieza a crecer ya!
+              </Typography>
+            </Box>
+          </Box>
 
-          </Typography>
-          <Typography
-            variant='h6'
-            sx={{ position: 'absolute', top: '250%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
-          >
-            <Typography component="li" sx={{ listStyle: 'disc', listStylePosition: 'inside', fontSize: '3xl', top: '100%', left: '50%' }}>
-              Entrená con expertos en cualquier lugar.
-            </Typography>
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+            <Button onClick={handleShowAlumnosFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
+              Características de Alumnos
+            </Button>
+            <Button onClick={handleShowEntrenadoresFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
+              Características de Entrenadores
+            </Button>
+          </Box>
 
+          {showAlumnosFeatures && (
+            <List
+              sx={{
+                listStyleType: 'disc',
+                listStylePosition: 'inside',
+                fontSize: '1.6rem',
+                justifyContent: 'center'
+              }}
+            >
+              <ListItem sx={{ display: 'list-item' }}>
+                Entrená con expertos en cualquier lugar.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Planes personalizados a tu medida.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Descubrí y elegí entre una amplia variedad de entrenadores.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Realizá pagos seguros y confiables a través de la plataforma.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Comentarios y valoraciones de otros alumnos para ayudarte en tu elección.
+              </ListItem>
+            </List>
+          )}
+
+          {showEntrenadoresFeatures && (
+            <List
+              sx={{
+                listStyleType: 'disc',
+                listStylePosition: 'inside',
+                fontSize: '1.6rem',
+                justifyContent: 'center'
+              }}
+            >
+              <ListItem sx={{ display: 'list-item' }}>
+                Entrená personas de y desde cualquier parte del mundo.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Creá tus planes personalizados para cada alumno.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Realizá el seguimiento de cada alumno.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Publicá y cobrá tus distintos tipos de planes.
+              </ListItem>
+              <ListItem sx={{ display: 'list-item' }}>
+                Crea tu perfil profesional y dale visibilidad a tus servicios.
+              </ListItem>
+            </List>
+          )}
         </Box>
+      ) : null}
 
-      )
-      }
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
         <Box
           sx={{
@@ -347,7 +385,7 @@ const LoginPage = () => {
   );
 };
 
-LoginPage.getLayout = (page) => <BlankLayout>{page}</BlankLayout>;
+LoginPage.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>;
 
 LoginPage.guestGuard = true;
 
