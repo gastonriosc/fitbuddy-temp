@@ -21,6 +21,8 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import 'react-perfect-scrollbar/dist/css/styles.css';
+
 
 // import Divider from '@mui/material/Divider'
 
@@ -44,27 +46,29 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-// import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import { positions } from '@mui/system'
 
-// ** Styled Components
-// const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
-//   padding: theme.spacing(20),
-//   paddingRight: '0 !important',
-//   [theme.breakpoints.down('lg')]: {
-//     padding: theme.spacing(10)
-//   }
-// }))
+//** Styled Components
+const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
+  [theme.breakpoints.down('lg')]: {
+    padding: theme.spacing(10)
+  }
 
-// ** img in login function
-// const LoginIllustration = styled('img')(({ theme }) => ({
-//   maxWidth: '48rem',
-//   [theme.breakpoints.down('xl')]: {
-//     maxWidth: '38rem'
-//   },
-//   [theme.breakpoints.down('lg')]: {
-//     maxWidth: '30rem'
-//   }
-// }))
+}))
+
+
+//* imgg in login function
+const LoginIllustration = styled('img')(({ theme }) => ({
+  width: '100%',
+  [theme.breakpoints.down('xl')]: {
+    maxWidth: '38rem'
+  },
+  [theme.breakpoints.down('lg')]: {
+    maxWidth: '30rem'
+  }
+}))
+
 
 const RightWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
@@ -147,22 +151,84 @@ const LoginPage = () => {
     })
   }
 
-  // const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
+  const imageSource = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80';
 
   return (
-    <Box className='content-right'>
-      {!hidden ? (
-        <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-          {/* <LoginIllustrationWrapper>
-            <LoginIllustration
-              alt='login-illustration'
-              src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
-            />
-          </LoginIllustrationWrapper>
-          <FooterIllustrationsV2 /> */}
-          <Typography variant='h1'>Welcome!</Typography>
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      {!hidden && (
+        <Box
+
+          sx={{
+            flex: 1,
+            display: 'flex',
+            position: 'relative',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflowY: 'auto',
+            scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
+            backgroundImage: `url(${imageSource})`,
+            backgroundSize: 'cover',
+            filter: 'brightness(80%)',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            height: '100vh',
+          }}
+        >
+
+          <LoginIllustration
+            src={imageSource}
+            sx={{
+              display: 'none',
+
+            }}
+          />
+          <Typography
+            variant='h3'
+            sx={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
+          >
+            Fit Buddy
+          </Typography>
+          <Typography
+            variant='h6'
+            sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
+          >
+            Entrena en cualquier momento, en cualquier lugar.
+          </Typography>
+          <Typography
+            variant='h6'
+            sx={{ position: 'absolute', top: '190%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
+          >
+            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
+              Entrená con expertos en cualquier lugar.
+            </Typography>
+            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
+              Planes personalizados a tu medida.
+            </Typography>
+            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
+              Descubrí y elegí entre una amplia variedad de entrenadores.
+            </Typography>
+            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
+              Realizá pagos seguros y confiables a través de la plataforma
+            </Typography>
+            <Typography variant='h6' component="li" sx={{ fontFamily: 'Bebas Neue', fontWeight: 'bold' }} >
+              Comentarios y valoraciones de otros alumnos para ayudarte en tu elección
+            </Typography>
+
+          </Typography>
+          <Typography
+            variant='h6'
+            sx={{ position: 'absolute', top: '250%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, fontFamily: 'Bebas Neue', fontWeight: 'bold' }}
+          >
+            <Typography component="li" sx={{ listStyle: 'disc', listStylePosition: 'inside', fontSize: '3xl', top: '100%', left: '50%' }}>
+              Entrená con expertos en cualquier lugar.
+            </Typography>
+          </Typography>
+
         </Box>
-      ) : null}
+
+      )
+      }
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
         <Box
           sx={{
@@ -175,90 +241,6 @@ const LoginPage = () => {
           }}
         >
           <BoxWrapper>
-            <Box
-              sx={{
-                top: 30,
-                left: 40,
-                display: 'flex',
-                position: 'absolute',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {/* <svg width={47} fill='none' height={26} viewBox='0 0 268 150' xmlns='http://www.w3.org/2000/svg'>
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fill={theme.palette.primary.main}
-                  transform='matrix(-0.865206 0.501417 0.498585 0.866841 195.571 0)'
-                />
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fillOpacity='0.4'
-                  fill='url(#paint0_linear_7821_79167)'
-                  transform='matrix(-0.865206 0.501417 0.498585 0.866841 196.084 0)'
-                />
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fill={theme.palette.primary.main}
-                  transform='matrix(0.865206 0.501417 -0.498585 0.866841 173.147 0)'
-                />
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fill={theme.palette.primary.main}
-                  transform='matrix(-0.865206 0.501417 0.498585 0.866841 94.1973 0)'
-                />
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fillOpacity='0.4'
-                  fill='url(#paint1_linear_7821_79167)'
-                  transform='matrix(-0.865206 0.501417 0.498585 0.866841 94.1973 0)'
-                />
-                <rect
-                  rx='25.1443'
-                  width='50.2886'
-                  height='143.953'
-                  fill={theme.palette.primary.main}
-                  transform='matrix(0.865206 0.501417 -0.498585 0.866841 71.7728 0)'
-                />
-                <defs>
-                  <linearGradient
-                    y1='0'
-                    x1='25.1443'
-                    x2='25.1443'
-                    y2='143.953'
-                    id='paint0_linear_7821_79167'
-                    gradientUnits='userSpaceOnUse'
-                  >
-                    <stop />
-                    <stop offset='1' stopOpacity='0' />
-                  </linearGradient>
-                  <linearGradient
-                    y1='0'
-                    x1='25.1443'
-                    x2='25.1443'
-                    y2='143.953'
-                    id='paint1_linear_7821_79167'
-                    gradientUnits='userSpaceOnUse'
-                  >
-                    <stop />
-                    <stop offset='1' stopOpacity='0' />
-                  </linearGradient>
-                </defs>
-              </svg> */}
-              <Typography variant='h6' sx={{ ml: 2, lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
-                {themeConfig.templateName}
-              </Typography>
-            </Box>
             <Box sx={{ mb: 6 }}>
               <TypographyStyled variant='h5'>{`Bienvenido a ${themeConfig.templateName}! 👋🏻`}</TypographyStyled>
               <Typography variant='body2'>Inicia sesión para comenzar</Typography>
@@ -355,59 +337,18 @@ const LoginPage = () => {
                   Creá una cuenta
                 </Typography>
               </Box>
-              {/* <Divider
-                sx={{
-                  '& .MuiDivider-wrapper': { px: 4 },
-                  mt: theme => `${theme.spacing(5)} !important`,
-                  mb: theme => `${theme.spacing(7.5)} !important`
-                }}
-              >
-                or
-              </Divider>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconButton
-                  href='/'
-                  component={Link}
-                  sx={{ color: '#497ce2' }}
-                  onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}
-                >
-                  <Icon icon='mdi:facebook' />
-                </IconButton>
-                <IconButton
-                  href='/'
-                  component={Link}
-                  sx={{ color: '#1da1f2' }}
-                  onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}
-                >
-                  <Icon icon='mdi:twitter' />
-                </IconButton>
-                <IconButton
-                  href='/'
-                  component={Link}
-                  onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}
-                  sx={{ color: theme => (theme.palette.mode === 'light' ? '#272727' : 'grey.300') }}
-                >
-                  <Icon icon='mdi:github' />
-                </IconButton>
-                <IconButton
-                  href='/'
-                  component={Link}
-                  sx={{ color: '#db4437' }}
-                  onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}
-                >
-                  <Icon icon='mdi:google' />
-                </IconButton>
-              </Box> */}
+
             </form>
           </BoxWrapper>
         </Box>
       </RightWrapper>
-    </Box>
-  )
-}
 
-LoginPage.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
+    </Box >
+  );
+};
 
-LoginPage.guestGuard = true
+LoginPage.getLayout = (page) => <BlankLayout>{page}</BlankLayout>;
 
-export default LoginPage
+LoginPage.guestGuard = true;
+
+export default LoginPage;
