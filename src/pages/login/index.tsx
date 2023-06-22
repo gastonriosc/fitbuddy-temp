@@ -1,6 +1,6 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
-import React, { useState, ReactNode } from 'react'
+import React, { useState, ReactNode, useEffect } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -48,7 +48,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
-import { positions } from '@mui/system'
+import { positions, textAlign } from '@mui/system'
 
 //** Styled Components
 const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -126,6 +126,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showAlumnosFeatures, setShowAlumnosFeatures] = useState(false);
   const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
+  const [showItems, setShowItems] = useState(false);
 
   // ** Hooks
   const auth = useAuth()
@@ -164,8 +165,10 @@ const LoginPage = () => {
 
   const handleShowEntrenadoresFeatures = () => {
     setShowEntrenadoresFeatures(true);
-    setShowAlumnosFeatures(false); // Ocultar el texto de características de alumnos al mostrar el de entrenadores
+    setShowAlumnosFeatures(false);
+    // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
+
 
   const imageSource = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80';
 
@@ -191,48 +194,46 @@ const LoginPage = () => {
           }}>
 
 
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant='h1' sx={{ fontFamily: 'Bebas Neue', font: 'Bold' }}>
+          <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '25%' }}>
+            <Typography variant='h2' sx={{ fontFamily: 'Bebas Neue', font: 'Bold', color: 'white', mb: '10px' }}>
               FitBuddy
             </Typography>
-            <Box sx={{ width: '950px', mx: 'auto', mb: '45px' }}>
-              <Typography variant='h4' >
-                El lugar perfecto para crecer en el mundo del fitness, tanto para alumnos como entrenadores, empieza a crecer ya!
+            <Box sx={{ left: '50%', top: '20%', mx: 'auto', mb: '30px' }}>
+              <Typography variant='h4' sx={{ color: 'white', fontFamily: 'Bebas Neue' }} >
+                Entrene y sea entrenado cuando quiera, donde quiera.
               </Typography>
             </Box>
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-            <Button onClick={handleShowAlumnosFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
+            <Button onClick={handleShowAlumnosFeatures} size='large' type='submit' variant='contained' sx={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(60px)', border: '3px solid black', borderRadius: '50px', mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'white' }}>
               Características de Alumnos
             </Button>
-            <Button onClick={handleShowEntrenadoresFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
+            <Button onClick={handleShowEntrenadoresFeatures} size='large' type='submit' variant='contained' sx={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(60px)', border: '3px solid black', borderRadius: '50px', mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'white' }}>
               Características de Entrenadores
             </Button>
           </Box>
 
           {showAlumnosFeatures && (
-            <List
-              sx={{
-                listStyleType: 'disc',
-                listStylePosition: 'inside',
-                fontSize: '1.6rem',
-                justifyContent: 'center'
-              }}
-            >
-              <ListItem sx={{ display: 'list-item' }}>
+            <List sx={{listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', textAlign: 'center', alignItems: 'center'}} >
+              
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out forwards'}}>
                 Entrená con expertos en cualquier lugar.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+
+              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 1s forwards'}}>
                 Planes personalizados a tu medida.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+
+              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 2s forwards'}}>
                 Descubrí y elegí entre una amplia variedad de entrenadores.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+
+              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 3s forwards'}}>
                 Realizá pagos seguros y confiables a través de la plataforma.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+
+              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 4s forwards'}}>
                 Comentarios y valoraciones de otros alumnos para ayudarte en tu elección.
               </ListItem>
             </List>
@@ -247,19 +248,19 @@ const LoginPage = () => {
                 justifyContent: 'center'
               }}
             >
-              <ListItem sx={{ display: 'list-item' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out forwards' }}>
                 Entrená personas de y desde cualquier parte del mundo.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 1s forwards' }}>
                 Creá tus planes personalizados para cada alumno.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 2s forwards' }}>
                 Realizá el seguimiento de cada alumno.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 3s forwards' }}>
                 Publicá y cobrá tus distintos tipos de planes.
               </ListItem>
-              <ListItem sx={{ display: 'list-item' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 4s forwards' }}>
                 Crea tu perfil profesional y dale visibilidad a tus servicios.
               </ListItem>
             </List>
@@ -278,7 +279,9 @@ const LoginPage = () => {
             backgroundColor: 'background.paper'
           }}
         >
+          
           <BoxWrapper>
+            
             <Box sx={{ mb: 6 }}>
               <TypographyStyled variant='h5'>{`Bienvenido a ${themeConfig.templateName}! 👋🏻`}</TypographyStyled>
               <Typography variant='body2'>Inicia sesión para comenzar</Typography>

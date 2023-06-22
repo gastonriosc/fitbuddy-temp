@@ -103,20 +103,30 @@ const Register = () => {
   // ** Vars
   const { skin } = settings
 
-  const imageSource = skin === 'bordered' ? 'auth-v2-register-illustration-bordered' : 'auth-v2-register-illustration'
+  const imageSource = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80';
 
   return (
     <Box className='content-right'>
       {!hidden ? (
-        <Box sx={{ flex: 1, display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-          <RegisterIllustrationWrapper>
-            <RegisterIllustration
-              alt='register-illustration'
-              src={`/images/pages/${imageSource}-${theme.palette.mode}.png`}
-            />
-          </RegisterIllustrationWrapper>
-          <FooterIllustrationsV2 image={`/images/pages/auth-v2-register-mask-${theme.palette.mode}.png`} />
-        </Box>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex flex-col',
+            position: 'relative',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflowY: 'auto',
+            scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
+            backgroundImage: `url(${imageSource})`,
+            backgroundSize: 'cover',
+            filter: 'brightness(80%)',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            height: '100vh'
+          }}
+        >
+        </Box> 
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
         <Box
