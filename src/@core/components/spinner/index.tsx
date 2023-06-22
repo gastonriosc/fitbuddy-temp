@@ -1,11 +1,11 @@
 // ** MUI Imports
-import { useTheme } from '@mui/material/styles'
+// import { useTheme } from '@mui/material/styles'
 import Box, { BoxProps } from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 
 const FallbackSpinner = ({ sx }: { sx?: BoxProps['sx'] }) => {
   // ** Hook
-  const theme = useTheme()
+  // const theme = useTheme()
 
   return (
     <Box
@@ -18,7 +18,7 @@ const FallbackSpinner = ({ sx }: { sx?: BoxProps['sx'] }) => {
         ...sx
       }}
     >
-      <svg width={80} fill='none' height={44} viewBox='0 0 268 150' xmlns='http://www.w3.org/2000/svg'>
+      {/* <svg width={80} fill='none' height={44} viewBox='0 0 268 150' xmlns='http://www.w3.org/2000/svg'>
         <rect
           rx='25.1443'
           width='50.2886'
@@ -87,7 +87,7 @@ const FallbackSpinner = ({ sx }: { sx?: BoxProps['sx'] }) => {
             <stop offset='1' stopOpacity='0' />
           </linearGradient>
         </defs>
-      </svg>
+      </svg> */}
       <CircularProgress disableShrink sx={{ mt: 6 }} />
     </Box>
   )

@@ -13,19 +13,19 @@ import { UserDataType } from 'src/context/types'
 const users: UserDataType[] = [
   {
     id: 1,
-    role: 'admin',
-    password: 'admin',
-    fullName: 'John Doe',
-    username: 'johndoe',
-    email: 'admin@materialize.com'
+    role: 'entrenador',
+    password: 'entrenador',
+    fullName: 'Juan Targón',
+    username: 'juantargon',
+    email: 'juantargon@gmail.com'
   },
   {
     id: 2,
-    role: 'client',
-    password: 'client',
-    fullName: 'Jane Doe',
-    username: 'janedoe',
-    email: 'client@materialize.com'
+    role: 'alumno',
+    password: 'alumno',
+    fullName: 'Facundo Tissera',
+    username: 'facutissera',
+    email: 'facutissera@gmail.com'
   }
 ]
 

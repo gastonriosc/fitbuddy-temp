@@ -4,26 +4,47 @@ import { VerticalNavItemsType } from 'src/@core/layouts/types'
 const navigation = (): VerticalNavItemsType => {
   return [
     {
-      title: 'Dashboards',
+      title: 'Nuevo Plan',
       icon: 'mdi:home-outline',
+      path: '/pages/plans/newPlan'
+    },
 
-      badgeContent: 'new',
-      badgeColor: 'error',
-      children: [
-        {
-          title: 'CRM',
-          path: '/dashboards/crm'
-        },
-        {
-          title: 'Analytics',
-          path: '/dashboards/analytics'
-        },
-        {
-          title: 'eCommerce',
-          path: '/dashboards/ecommerce'
-        }
-      ]
+    // {
+    //   path: '/plans/myPlans',
+    //   action: 'read',
+    //   subject: 'myPlans-page',
+    //   icon: 'mdi:shield-outline',
+    //   title: 'Mis Planes'
+    // }
+    {
+      path: '/acl',
+      action: 'read',
+      subject: 'acl-page',
+      icon: 'mdi:shield-outline',
+      title: 'Access Control'
     }
+
+    // {
+    //   title: 'Dashboards',
+    //   icon: 'mdi:home-outline',
+
+    //   badgeContent: 'new',
+    //   badgeColor: 'error',
+    //   children: [
+    //     {
+    //       title: 'CRM',
+    //       path: '/dashboards/crm'
+    //     },
+    //     {
+    //       title: 'Analytics',
+    //       path: '/dashboards/analytics'
+    //     },
+    //     {
+    //       title: 'eCommerce',
+    //       path: '/dashboards/ecommerce'
+    //     }
+    //   ]
+    // }
 
     // {
     //   sectionTitle: 'Apps & Pages'
@@ -575,13 +596,6 @@ const navigation = (): VerticalNavItemsType => {
     //       path: '/charts/chartjs'
     //     }
     //   ]
-    // },
-    // {
-    //   path: '/acl',
-    //   action: 'read',
-    //   subject: 'acl-page',
-    //   icon: 'mdi:shield-outline',
-    //   title: 'Access Control'
     // },
     // {
     //   title: 'Others',

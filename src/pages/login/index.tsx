@@ -1,6 +1,6 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
-import React, { useState, ReactNode, useEffect } from 'react'
+import React, { useState, ReactNode } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -47,34 +47,33 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
-import { positions, textAlign } from '@mui/system'
+// import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+// import { positions, textAlign } from '@mui/system'
 
 //** Styled Components
-const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
-  [theme.breakpoints.down('lg')]: {
-    padding: theme.spacing(10)
-  }
-
-}))
+// const LoginIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
+//   [theme.breakpoints.down('lg')]: {
+//     padding: theme.spacing(10)
+//   }
+// }))
 
 
 //* imgg in login function
-const LoginIllustration = styled('img')(({ theme }) => ({
-  width: '100%',
-  [theme.breakpoints.down('xl')]: {
-    maxWidth: '38rem'
-  },
-  [theme.breakpoints.down('lg')]: {
-    maxWidth: '30rem'
-  }
-}))
+// const LoginIllustration = styled('img')(({ theme }) => ({
+//   width: '100%',
+//   [theme.breakpoints.down('xl')]: {
+//     maxWidth: '38rem'
+//   },
+//   [theme.breakpoints.down('lg')]: {
+//     maxWidth: '30rem'
+//   }
+// }))
 
 
 const RightWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
   [theme.breakpoints.up('md')]: {
-    maxWidth: 400
+    maxWidth: '50%'
   },
   [theme.breakpoints.up('lg')]: {
     maxWidth: 450
@@ -112,8 +111,8 @@ const schema = yup.object().shape({
 })
 
 const defaultValues = {
-  password: 'admin',
-  email: 'admin@materialize.com'
+  password: 'entrenador',
+  email: 'juantargon@gmail.com'
 }
 
 interface FormData {
@@ -126,7 +125,6 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showAlumnosFeatures, setShowAlumnosFeatures] = useState(false);
   const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
-  const [showItems, setShowItems] = useState(false);
 
   // ** Hooks
   const auth = useAuth()
@@ -166,6 +164,7 @@ const LoginPage = () => {
   const handleShowEntrenadoresFeatures = () => {
     setShowEntrenadoresFeatures(true);
     setShowAlumnosFeatures(false);
+
     // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
 
@@ -215,25 +214,25 @@ const LoginPage = () => {
           </Box>
 
           {showAlumnosFeatures && (
-            <List sx={{listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', textAlign: 'center', alignItems: 'center'}} >
-              
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out forwards'}}>
+            <List sx={{ listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', textAlign: 'center', alignItems: 'center' }} >
+
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out forwards' }}>
                 Entrená con expertos en cualquier lugar.
               </ListItem>
 
-              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 1s forwards'}}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 1s forwards' }}>
                 Planes personalizados a tu medida.
               </ListItem>
 
-              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 2s forwards'}}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 2s forwards' }}>
                 Descubrí y elegí entre una amplia variedad de entrenadores.
               </ListItem>
 
-              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 3s forwards'}}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 3s forwards' }}>
                 Realizá pagos seguros y confiables a través de la plataforma.
               </ListItem>
 
-              <ListItem sx={{display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 4s forwards'}}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.5s ease-in-out 4s forwards' }}>
                 Comentarios y valoraciones de otros alumnos para ayudarte en tu elección.
               </ListItem>
             </List>
@@ -279,19 +278,19 @@ const LoginPage = () => {
             backgroundColor: 'background.paper'
           }}
         >
-          
+
           <BoxWrapper>
-            
+
             <Box sx={{ mb: 6 }}>
               <TypographyStyled variant='h5'>{`Bienvenido a ${themeConfig.templateName}! 👋🏻`}</TypographyStyled>
               <Typography variant='body2'>Inicia sesión para comenzar</Typography>
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Admin: <strong>admin@materialize.com</strong> / Pass: <strong>admin</strong>
+                Entrenador: <strong>juantargon@gmail.com</strong> / Pass: <strong>entrenador</strong>
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Client: <strong>client@materialize.com</strong> / Pass: <strong>client</strong>
+                Alumno: <strong>facutissera@gmail.com</strong> / Pass: <strong>alumno</strong>
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -308,7 +307,7 @@ const LoginPage = () => {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.email)}
-                      placeholder='admin@materialize.com'
+                      placeholder='email@ejemplo.com'
                     />
                   )}
                 />
