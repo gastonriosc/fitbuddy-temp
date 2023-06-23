@@ -185,7 +185,7 @@ const LoginPage = () => {
             scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
             backgroundImage: `url(${imageSource})`,
             backgroundSize: 'cover',
-            filter: 'brightness(80%)',
+            filter: 'brightness(70%)',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',

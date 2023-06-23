@@ -1,6 +1,8 @@
 // ** React Imports
 import { ReactNode, useState } from 'react'
 
+
+
 // ** Next Import
 import Link from 'next/link'
 
@@ -31,6 +33,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
 import { useSettings } from 'src/@core/hooks/useSettings'
+import { MenuItem, Select } from '@mui/material'
 
 // ** Demo Imports
 // import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
@@ -94,11 +97,37 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 const Register = () => {
   // ** States
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
+  const [showAdditionalSelect, setShowAdditionalSelect] = useState(false);
+  const paises = ["País", "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", "Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica", "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre", "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos", "Estonia", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia", "Guatemala", "Guyana", "Guinea", "Guinea ecuatorial", "Guinea-Bisáu", "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Madagascar", "Malasia", "Malaui", "Maldivas", "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Moldavia", "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Palestina", "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido"];
+  const [selectedCountry, setSelectedCountry] = useState('');
+
+
 
   // ** Hooks
   const theme = useTheme()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
+
+
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleCountryChange = (event) => {
+    setSelectedCountry(event.target.value);
+  };
+
+  const handleRoleChange = (event) => {
+    setSelectedRole(event.target.value);
+    setSelectedOption('');
+    setShowAdditionalSelect(event.target.value === 'Entrenador');
+  };
+
+  const handleOptionChanges = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   // ** Vars
   const { skin } = settings
@@ -119,13 +148,24 @@ const Register = () => {
             scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
             backgroundImage: `url(${imageSource})`,
             backgroundSize: 'cover',
-            filter: 'brightness(80%)',
+            filter: 'brightness(70%)',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',
-            height: '100vh'
-          }}
-        >
+            height: '100vh',
+          }}>
+
+
+          <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '32%' }}>
+            <Typography variant='h2' sx={{ fontFamily: 'Bebas Neue', font: 'Bold', color: 'white', mb: '10px' }}>
+              FitBuddy
+            </Typography>
+            <Box sx={{ left: '50%', top: '30%', mx: 'auto', mb: '30px' }}>
+              <Typography variant='h4' sx={{ color: 'white', fontFamily: 'Bebas Neue' }} >
+                Empieza tu aventura de Fitness con tan solo unos clics.
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       ) : null}
       <RightWrapper sx={skin === 'bordered' && !hidden ? { borderLeft: `1px solid ${theme.palette.divider}` } : {}}>
@@ -225,14 +265,72 @@ const Register = () => {
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Adventure starts here 🚀</TypographyStyled>
-              <Typography variant='body2'>Make your app management easy and fun!</Typography>
+              <TypographyStyled variant='h6'>Tu aventura de Fitness empieza aquí. 🚀</TypographyStyled>
+              <Typography variant='body2'>Complete los siguientes campos y empiece su aventura. </Typography>
             </Box>
             <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Username' placeholder='johndoe' />
-              <TextField fullWidth label='Email' sx={{ mb: 4 }} placeholder='user@email.com' />
+              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Nombre Completo' placeholder='Joaquin Manero' />
+              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Telefono' />
+
+              <Select autoFocus fullWidth sx={{ mb: 4 }}
+                value={selectedOption}
+                onChange={handleOptionChange}
+                displayEmpty
+              >
+                <MenuItem value="" disabled>
+                  Género
+                </MenuItem>
+                <MenuItem value="Femenino">Femenino</MenuItem>
+                <MenuItem value="Masculino">Masculino</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+              <Select autoFocus fullWidth sx={{ mb: 4 }}
+                labelId="role-select-label"
+                id="role-select"
+                value={selectedRole}
+                onChange={handleRoleChange}
+                displayEmpty
+              >
+                <MenuItem value="" disabled>
+                  Rol
+                </MenuItem>
+                <MenuItem value="Alumno">Alumno</MenuItem>
+                <MenuItem value="Entrenador">Entrenador</MenuItem>
+              </Select>
+              {showAdditionalSelect && (
+                <Select autoFocus fullWidth sx={{ mb: 4 }}
+                  labelId="discipline-select-label"
+                  id="discipline-select"
+                  value={selectedOption}
+                  onChange={handleOptionChange}
+                  displayEmpty
+                >
+                  <MenuItem value="" disabled>
+                    Tipo Disciplina
+                  </MenuItem>
+                  <MenuItem value="Musculacion">Musculación</MenuItem>
+                  <MenuItem value="Aerobico">Aeróbico</MenuItem>
+                </Select>)}
+              <Select autoFocus fullWidth sx={{ mb: 4 }}
+                labelId="country-select-label"
+                id="country-select"
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                displayEmpty
+              >
+                <MenuItem value="" disabled>
+                  País
+                </MenuItem>
+                {paises.map((pais, index) => (
+                  <MenuItem key={index} value={pais}>
+                    {pais}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <TextField fullWidth label='Email' sx={{ mb: 4 }} placeholder='correoelectronico@email.com' />
               <FormControl fullWidth>
-                <InputLabel htmlFor='auth-login-v2-password'>Password</InputLabel>
+                <InputLabel htmlFor='auth-login-v2-password'>Contraseña</InputLabel>
                 <OutlinedInput
                   label='Password'
                   id='auth-login-v2-password'
@@ -251,30 +349,30 @@ const Register = () => {
                 />
               </FormControl>
 
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={<Checkbox />}
                 sx={{ mb: 4, mt: 1.5, '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
-                label={
+                label={ 
                   <>
                     <Typography variant='body2' component='span'>
-                      I agree to{' '}
+                      Estoy de acuerdo con las{' '}
                     </Typography>
                     <LinkStyled href='/' onClick={e => e.preventDefault()}>
-                      privacy policy & terms
+                      politicas y términos de privacidad y condiciones
                     </LinkStyled>
                   </>
                 }
-              />
-              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
-                Sign up
+              /> */}
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 5, mb: 7 }}>
+                Registrar
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Typography sx={{ mr: 2, color: 'text.secondary' }}>Already have an account?</Typography>
+                <Typography sx={{ mr: 2, color: 'text.secondary' }}>Ya tienes una cuenta?</Typography>
                 <Typography href='/login' component={Link} sx={{ color: 'primary.main', textDecoration: 'none' }}>
-                  Sign in instead
+                  Inicia sesión
                 </Typography>
               </Box>
-              <Divider
+              {/* <Divider
                 sx={{
                   '& .MuiDivider-wrapper': { px: 4 },
                   mt: theme => `${theme.spacing(5)} !important`,
@@ -282,8 +380,8 @@ const Register = () => {
                 }}
               >
                 or
-              </Divider>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              </Divider> */}
+              {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <IconButton href='/' component={Link} sx={{ color: '#497ce2' }} onClick={e => e.preventDefault()}>
                   <Icon icon='mdi:facebook' />
                 </IconButton>
@@ -301,7 +399,7 @@ const Register = () => {
                 <IconButton href='/' component={Link} sx={{ color: '#db4437' }} onClick={e => e.preventDefault()}>
                   <Icon icon='mdi:google' />
                 </IconButton>
-              </Box>
+              </Box> */}
             </form>
           </BoxWrapper>
         </Box>
