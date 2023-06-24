@@ -168,30 +168,29 @@ const LoginPage = () => {
     // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
 
-
-  //const imageSource = 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80';
-  const imageSource = 'https://www.freepik.es/vector-gratis/ilustracion-concepto-entrenador-personal_7171440.htm#query=ejercicio&position=42&from_view=keyword&track=sph';
+  const imageSource = '/images/pages/fitBuddyLogin.png';
   return (
     <Box className='content-right'>
       {!hidden ? (
         <Box
           sx={{
             flex: 1,
-            display: 'flex flex-col',
+            // display: 'flex flex-col',
             position: 'relative',
             alignItems: 'center',
             justifyContent: 'center',
             overflowY: 'auto',
             scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
             backgroundImage: `url(${imageSource})`,
-            backgroundSize: 'cover',
+            backgroundSize: '18%',
             // filter: 'brightness(70%)',
-            backgroundPosition: 'center',
+            backgroundPosition: 'left bottom',
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',
             height: '100vh',
+
           }}
-          >
+        >
 
 
           {/* <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '25%' }}>
@@ -209,13 +208,13 @@ const LoginPage = () => {
               FitBuddy
             </Typography>
             <Box >
-              <Typography variant='h4' sx={{mb:'6px'}}>
+              <Typography variant='h4' sx={{ mb: '6px' }}>
                 Entrene y sea entrenado cuando quiera, donde quiera.
               </Typography>
             </Box>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px', mt:5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px', mt: 5 }}>
             <Button onClick={handleShowAlumnosFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
               Características de Alumnos
             </Button>
