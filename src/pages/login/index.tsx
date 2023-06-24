@@ -168,19 +168,17 @@ const LoginPage = () => {
     // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
 
-  const imageSource = '/images/pages/fitBuddyLogin.png';
+  const imageSource = '';
   return (
     <Box className='content-right'>
       {!hidden ? (
         <Box
           sx={{
             flex: 1,
-            // display: 'flex flex-col',
+            display: 'flex flex-col',
             position: 'relative',
             alignItems: 'center',
             justifyContent: 'center',
-            overflowY: 'auto',
-            scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
             backgroundImage: `url(${imageSource})`,
             backgroundSize: '18%',
             // filter: 'brightness(70%)',
@@ -188,7 +186,6 @@ const LoginPage = () => {
             backgroundRepeat: 'no-repeat',
             backgroundAttachment: 'fixed',
             height: '100vh',
-
           }}
         >
 
@@ -227,13 +224,13 @@ const LoginPage = () => {
           </Box>
 
           {showAlumnosFeatures && (
-            <List sx={{ listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', textAlign: 'center', alignItems: 'center' }} >
+            <List sx={{ listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', color: 'white', textAlign: 'center', alignItems: 'center' }} >
 
               <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out forwards' }}>
                 Entrená con expertos en cualquier lugar.
               </ListItem>
 
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2 forwards' }}>
+              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2s forwards' }}>
                 Planes personalizados a tu medida.
               </ListItem>
 
