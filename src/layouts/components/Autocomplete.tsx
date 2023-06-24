@@ -58,7 +58,7 @@ interface DefaultSuggestionsType {
 
 const defaultSuggestionsData: DefaultSuggestionsType[] = [
   {
-    category: 'Popular Searchesssss',
+    category: 'Popular Searches',
     suggestions: [
       {
         icon: 'mdi:chart-donut',
@@ -478,15 +478,15 @@ const AutocompleteComponent = ({ hidden, settings }: Props) => {
                   '& + .MuiAutocomplete-popper': {
                     ...(searchValue.length
                       ? {
-                          overflow: 'auto',
-                          maxHeight: 'calc(100vh - 69px)',
-                          borderTop: `1px solid ${theme.palette.divider}`,
-                          height: fullScreenDialog ? 'calc(100vh - 69px)' : 481,
-                          '& .MuiListSubheader-root': { p: theme.spacing(3.75, 6, 0.75) }
-                        }
+                        overflow: 'auto',
+                        maxHeight: 'calc(100vh - 69px)',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                        height: fullScreenDialog ? 'calc(100vh - 69px)' : 481,
+                        '& .MuiListSubheader-root': { p: theme.spacing(3.75, 6, 0.75) }
+                      }
                       : {
-                          '& .MuiAutocomplete-listbox': { pb: 0 }
-                        })
+                        '& .MuiAutocomplete-listbox': { pb: 0 }
+                      })
                   }
                 }}
                 renderInput={(params: AutocompleteRenderInputParams) => {
