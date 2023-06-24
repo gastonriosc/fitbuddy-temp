@@ -6,7 +6,7 @@ import { useTheme } from '@mui/material/styles'
 import { LayoutProps } from 'src/@core/layouts/types'
 
 // ** Footer Content Component
-import FooterContent from './FooterContent'
+// import FooterContent from './FooterContent'
 
 interface Props {
   settings: LayoutProps['settings']
@@ -17,7 +17,8 @@ interface Props {
 
 const Footer = (props: Props) => {
   // ** Props
-  const { settings, footerStyles, footerContent: userFooterContent } = props
+  //const { settings, footerStyles, footerContent: userFooterContent } = props
+  const { settings, footerStyles } = props
 
   // ** Hook
   const theme = useTheme()
@@ -44,9 +45,9 @@ const Footer = (props: Props) => {
           ...(layout === 'vertical'
             ? { px: [4, 6] }
             : {
-                backgroundColor: 'background.paper',
-                ...(skin === 'bordered' ? { borderTop: `1px solid ${theme.palette.divider}` } : { boxShadow: 6 })
-              })
+              backgroundColor: 'background.paper',
+              ...(skin === 'bordered' ? { borderTop: `1px solid ${theme.palette.divider}` } : { boxShadow: 6 })
+            })
         }),
         ...footerStyles
       }}
@@ -64,21 +65,21 @@ const Footer = (props: Props) => {
           }),
           ...(footer === 'fixed'
             ? {
-                px: [5, 6],
-                ...(contentWidth === 'boxed' &&
-                  layout === 'vertical' && {
-                    '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }
-                  }),
-                ...(layout === 'vertical' && {
-                  ...(skin === 'bordered'
-                    ? { border: `1px solid ${theme.palette.divider}`, borderBottomWidth: 0 }
-                    : { boxShadow: 6 })
-                })
-              }
+              px: [5, 6],
+              ...(contentWidth === 'boxed' &&
+                layout === 'vertical' && {
+                '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }
+              }),
+              ...(layout === 'vertical' && {
+                ...(skin === 'bordered'
+                  ? { border: `1px solid ${theme.palette.divider}`, borderBottomWidth: 0 }
+                  : { boxShadow: 6 })
+              })
+            }
             : { px: [4, 6] })
         }}
       >
-        {userFooterContent ? userFooterContent(props) : <FooterContent />}
+        {/* {userFooterContent ? userFooterContent(props) : <FooterContent />} */}
       </Box>
     </Box>
   )
