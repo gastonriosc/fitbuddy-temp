@@ -168,7 +168,6 @@ const LoginPage = () => {
     // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
 
-  const imageSource = '';
   return (
     <Box className='content-right'>
       {!hidden ? (
@@ -179,8 +178,8 @@ const LoginPage = () => {
             position: 'relative',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: `url(${imageSource})`,
             backgroundSize: '18%',
+
             // filter: 'brightness(70%)',
             backgroundPosition: 'left bottom',
             backgroundRepeat: 'no-repeat',

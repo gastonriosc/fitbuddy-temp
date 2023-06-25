@@ -6,6 +6,7 @@ export type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete'
 export type AppAbility = Ability<[Actions, Subjects]> | undefined
 
 export const AppAbility = Ability as any
+
 export type ACLObj = {
   action: Actions
   subject: string
@@ -17,12 +18,14 @@ export type ACLObj = {
  * admin can manage everything and client can just visit ACL page
  */
 const defineRulesFor = (role: string, subject: string) => {
-  const { can, rules } = new AbilityBuilder(AppAbility)
+  const { can, cannot, rules } = new AbilityBuilder(AppAbility)
 
   if (role === 'entrenador') {
-    can('manage', 'all')
+    can(['manage'], ['newPlan-page', 'myProfile-page', 'perfilEntrenador', 'myStudents-page'])
+    cannot('read', ['myPlans-page', 'perfilAlumno', 'search-page'])
   } else if (role === 'alumno') {
-    can(['read'], 'acl-page')
+    can(['manage'], ['acl-page', 'myPlans-page', 'myProfile-page', 'perfilAlumno', 'search-page'])
+    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page'])
   } else {
     can(['read', 'create', 'update', 'delete'], subject)
   }

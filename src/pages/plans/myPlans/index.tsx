@@ -5,12 +5,12 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 
-const newPlan = () => {
+const myPlans = () => {
   return (
     <Grid container spacing={6}>
       <Grid item md={6} xs={12}>
         <Card>
-          <CardHeader title='Nuevo Plan' />
+          <CardHeader title='Mis Planes' />
           <CardContent>
           </CardContent>
         </Card>
@@ -19,4 +19,10 @@ const newPlan = () => {
   )
 }
 
-export default newPlan
+myPlans.acl = {
+  action: 'manage',
+  subject: 'myPlans-page'
+}
+
+
+export default myPlans

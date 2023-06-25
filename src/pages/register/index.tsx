@@ -5,22 +5,24 @@ import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 
 // ** MUI Components
+// import Divider from '@mui/material/Divider'
+// import Checkbox from '@mui/material/Checkbox'
+// import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+// import useMediaQuery from '@mui/material/useMediaQuery'
+// import Typography, { TypographyProps } from '@mui/material/Typography'
+// import { styled, useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import IconButton from '@mui/material/IconButton'
 import Box, { BoxProps } from '@mui/material/Box'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
-import Typography, { TypographyProps } from '@mui/material/Typography'
-import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -32,9 +34,9 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
-import { useSettings } from 'src/@core/hooks/useSettings'
+// import { useSettings } from 'src/@core/hooks/useSettings'
+// import { display } from '@mui/system'
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
-import { display } from '@mui/system'
 
 // ** Demo Imports
 // import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
@@ -76,15 +78,15 @@ const RightWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-const CardContent1 = styled(Box)<BoxProps>(({ theme }) => ({
-  width: '100%',
-  [theme.breakpoints.up('md')]: {
-    maxWidth: 400
-  },
-  [theme.breakpoints.up('lg')]: {
-    maxWidth: 800
-  }
-}))
+// const CardContent1 = styled(Box)<BoxProps>(({ theme }) => ({
+//   width: '100%',
+//   [theme.breakpoints.up('md')]: {
+//     maxWidth: 400
+//   },
+//   [theme.breakpoints.up('lg')]: {
+//     maxWidth: 800
+//   }
+// }))
 
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
@@ -96,25 +98,25 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
-  fontWeight: 600,
-  letterSpacing: '0.18px',
-  marginBottom: theme.spacing(1.5),
-  [theme.breakpoints.down('md')]: { marginTop: theme.spacing(8) }
-}))
+// const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
+//   fontWeight: 600,
+//   letterSpacing: '0.18px',
+//   marginBottom: theme.spacing(1.5),
+//   [theme.breakpoints.down('md')]: { marginTop: theme.spacing(8) }
+// }))
 
-const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4),
-  '& .MuiFormControlLabel-label': {
-    fontSize: '0.875rem',
-    color: theme.palette.text.secondary
-  }
-}))
+// const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
+//   marginBottom: theme.spacing(4),
+//   '& .MuiFormControlLabel-label': {
+//     fontSize: '0.875rem',
+//     color: theme.palette.text.secondary
+//   }
+// }))
 
-const LinkStyled = styled(Link)(({ theme }) => ({
-  textDecoration: 'none',
-  color: theme.palette.primary.main
-}))
+// const LinkStyled = styled(Link)(({ theme }) => ({
+//   textDecoration: 'none',
+//   color: theme.palette.primary.main
+// }))
 
 const Register = () => {
   // ** States
@@ -128,9 +130,9 @@ const Register = () => {
   const [selectedCountry, setSelectedCountry] = useState('')
 
   // ** Hooks
-  const theme = useTheme()
-  const { settings } = useSettings()
-  const hidden = useMediaQuery(theme.breakpoints.down('md'))
+  // const theme = useTheme()
+  // const { settings } = useSettings()
+  // const hidden = useMediaQuery(theme.breakpoints.down('md'))
 
   const handleOptionChange = (event: SelectChangeEvent<string>) => {
     setSelectedOption(event.target.value)
@@ -150,16 +152,6 @@ const Register = () => {
     setSelectedOption('')
     setShowAdditionalSelect(event.target.value === 'Entrenador')
   }
-
-  const handleOptionChanges = (event: SelectChangeEvent<string>) => {
-    setSelectedOption(event.target.value)
-  }
-
-  // ** Vars
-  const { skin } = settings
-
-  const imageSource =
-    'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2669&q=80'
 
   return (
     <Box className='content-center'>
@@ -205,7 +197,7 @@ const Register = () => {
               </Box>
               <Box sx={{ mb: 5, alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                 <Typography variant='body1'>
-                  Complete los siguientes campos para empezar a ser parte de esta gran comunidad 😊
+                  Completá los campos para empezá a ser parte de nuestra comunidad! 😊
                 </Typography>
               </Box>
               <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
@@ -277,7 +269,7 @@ const Register = () => {
                       displayEmpty
                     >
                       <MenuItem value='' disabled>
-                        Tipo Disciplina
+                        Disciplina
                       </MenuItem>
                       <MenuItem value='Musculacion'>Musculación</MenuItem>
                     </Select>
@@ -329,7 +321,7 @@ const Register = () => {
                 {/* <FormControlLabel
                     control={<Checkbox />}
                     sx={{ mb: 4, mt: 1.5, '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
-                    label={ 
+                    label={
                       <>
                         <Typography variant='body2' component='span'>
                           Estoy de acuerdo con las{' '}
@@ -341,12 +333,12 @@ const Register = () => {
                     }
                   /> */}
                 <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 5, mb: 7 }}>
-                  Registrar
+                  Registrarme
                 </Button>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <Typography sx={{ mr: 2, color: 'text.secondary' }}>Ya tienes una cuenta?</Typography>
                   <Typography href='/login' component={Link} sx={{ color: 'primary.main', textDecoration: 'none' }}>
-                    Inicia sesión
+                    Iniciá sesión
                   </Typography>
                 </Box>
                 {/* <Divider
