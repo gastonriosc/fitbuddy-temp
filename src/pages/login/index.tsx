@@ -1,6 +1,9 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
 import React, { useState, ReactNode } from 'react'
+import Stack from '@mui/material/Stack';
+
+import Grid from '@mui/material/Grid';
 
 // ** Next Imports
 import Link from 'next/link'
@@ -132,6 +135,7 @@ const LoginPage = () => {
   const bgColors = useBgColor()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   // ** Vars
   const { skin } = settings
@@ -167,6 +171,7 @@ const LoginPage = () => {
 
     // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
+
 
   return (
     <Box className='content-right'>
@@ -204,7 +209,7 @@ const LoginPage = () => {
               FitBuddy
             </Typography>
             <Box >
-              <Typography variant='h4' sx={{ mb: '6px' }}>
+              <Typography variant='h5' sx={{ mb: '6px' }}>
                 Entrene y sea entrenado cuando quiera, donde quiera.
               </Typography>
             </Box>
@@ -222,57 +227,44 @@ const LoginPage = () => {
             </Button>
           </Box>
 
-          {showAlumnosFeatures && (
-            <List sx={{ listStyleType: 'disc', listStylePosition: 'inside', fontSize: '1.6rem', justifyContent: 'center', color: 'white', textAlign: 'center', alignItems: 'center' }} >
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px', mt: 5, fontSize: '1.2rem' }}>
+            {showAlumnosFeatures && (
+              <Stack>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out forwards' }}>
+                  Entrená con expertos en cualquier lugar.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2s forwards' }}>
+                  Planes personalizados a tu medida.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.4s forwards' }}>
+                  Descubrí y elegí entre una amplia variedad de entrenadores.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.6s forwards' }}>
+                  Realizá pagos seguros y confiables a través de la plataforma.
+                </ListItem>
+              </Stack>
+            )}
+            {showEntrenadoresFeatures && (
+              <Stack>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out forwards' }}>
+                  Entrená personas de y desde cualquier parte del mundo.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2s forwards' }}>
+                  Creá tus planes personalizados para cada alumno.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.4s forwards' }}>
+                  Realiza el seguimiento de cada alumno.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.6s forwards' }}>
+                  Publicá y cobra tus distintos tipos de planes.
+                </ListItem>
+                <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.8s forwards' }}>
+                  Crea tu perfil profesional y dale visibilidad a tus servicios.
+                </ListItem>
+              </Stack>
+            )}
+          </Box>
 
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out forwards' }}>
-                Entrená con expertos en cualquier lugar.
-              </ListItem>
-
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2s forwards' }}>
-                Planes personalizados a tu medida.
-              </ListItem>
-
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.4s forwards' }}>
-                Descubrí y elegí entre una amplia variedad de entrenadores.
-              </ListItem>
-
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.6s forwards' }}>
-                Realizá pagos seguros y confiables a través de la plataforma.
-              </ListItem>
-
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.8s forwards' }}>
-                Comentarios y valoraciones de otros alumnos para ayudarte en tu elección.
-              </ListItem>
-            </List>
-          )}
-
-          {showEntrenadoresFeatures && (
-            <List
-              sx={{
-                listStyleType: 'disc',
-                listStylePosition: 'inside',
-                fontSize: '1.6rem',
-                justifyContent: 'center'
-              }}
-            >
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out forwards' }}>
-                Entrená personas de y desde cualquier parte del mundo.
-              </ListItem>
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.2s forwards' }}>
-                Creá tus planes personalizados para cada alumno.
-              </ListItem>
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.4s forwards' }}>
-                Realizá el seguimiento de cada alumno.
-              </ListItem>
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.6s forwards' }}>
-                Publicá y cobrá tus distintos tipos de planes.
-              </ListItem>
-              <ListItem sx={{ display: 'list-item', justifyContent: 'center', alignItems: 'center', marginLeft: '20%', color: 'white', opacity: 0, animation: 'fadeIn 0.2s ease-in-out 0.8s forwards' }}>
-                Crea tu perfil profesional y dale visibilidad a tus servicios.
-              </ListItem>
-            </List>
-          )}
         </Box>
       ) : null}
 
