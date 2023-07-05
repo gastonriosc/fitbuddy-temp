@@ -3,11 +3,9 @@
 import React, { useState, ReactNode } from 'react'
 import Stack from '@mui/material/Stack';
 
-import Grid from '@mui/material/Grid';
-
 // ** Next Imports
 import Link from 'next/link'
-import { List, ListItem } from '@mui/material';
+import { ListItem } from '@mui/material';
 
 // ** MUI Components
 import Alert from '@mui/material/Alert'
@@ -135,7 +133,6 @@ const LoginPage = () => {
   const bgColors = useBgColor()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   // ** Vars
   const { skin } = settings
