@@ -1,11 +1,9 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
 import React, { useState, ReactNode } from 'react'
-import Stack from '@mui/material/Stack';
 
 // ** Next Imports
 import Link from 'next/link'
-import { ListItem } from '@mui/material';
 
 // ** MUI Components
 import Alert from '@mui/material/Alert'
@@ -23,17 +21,15 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-import 'react-perfect-scrollbar/dist/css/styles.css';
-
-
-// import Divider from '@mui/material/Divider'
+import { ListItem } from '@mui/material';
+import Stack from '@mui/material/Stack';
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
@@ -88,10 +84,6 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-
-
-// const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
-
 const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
   fontWeight: 600,
   letterSpacing: '0.18px',
@@ -107,13 +99,13 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const schema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().min(5).required()
+  email: yup.string().email("Debe ser un email válido").required("Email es un campo obligatorio"),
+  password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo")
 })
 
 const defaultValues = {
-  password: 'entrenador',
-  email: 'juantargon@gmail.com'
+  email: 'juantargon@gmail.com',
+  password: 'entrenador'
 }
 
 interface FormData {
@@ -137,18 +129,20 @@ const LoginPage = () => {
   // ** Vars
   const { skin } = settings
 
+  // ** React-Hook-Form
   const {
     control,
     setError,
     handleSubmit,
     formState: { errors }
-  } = useForm({
+  } = useForm<FormData>({
     defaultValues,
-    mode: 'onBlur',
+    mode: 'onBlur', //onBlur hace que los errores se muestren cuando el campo pierde focus.
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
     const { email, password } = data
     auth.login({ email, password, rememberMe }, () => {
       setError('email', {
@@ -157,6 +151,7 @@ const LoginPage = () => {
       })
     })
   }
+
   const handleShowAlumnosFeatures = () => {
     setShowAlumnosFeatures(true);
     setShowEntrenadoresFeatures(false); // Ocultar el texto de características de entrenadores al mostrar el de alumnos
@@ -164,9 +159,7 @@ const LoginPage = () => {
 
   const handleShowEntrenadoresFeatures = () => {
     setShowEntrenadoresFeatures(true);
-    setShowAlumnosFeatures(false);
-
-    // Ocultar el texto de características de alumnos al mostrar el de entrenadores
+    setShowAlumnosFeatures(false); // Ocultar el texto de características de alumnos al mostrar el de entrenadores
   };
 
 
@@ -189,18 +182,6 @@ const LoginPage = () => {
             height: '100vh',
           }}
         >
-
-
-          {/* <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '25%' }}>
-            <Typography variant='h2' sx={{ fontFamily: 'Bebas Neue', font: 'Bold', color: 'white', mb: '10px' }}>
-              FitBuddy
-            </Typography>
-            <Box sx={{ left: '50%', top: '20%', mx: 'auto', mb: '30px' }}>
-              <Typography variant='h4' sx={{ color: 'white', fontFamily: 'Bebas Neue' }} >
-                Entrene y sea entrenado cuando quiera, donde quiera.
-              </Typography>
-            </Box>
-          </Box> */}
           <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '15%' }}>
             <Typography variant='h2' >
               FitBuddy
@@ -216,9 +197,6 @@ const LoginPage = () => {
             <Button onClick={handleShowAlumnosFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
               Características de Alumnos
             </Button>
-            {/* <Button onClick={handleShowEntrenadoresFeatures} size='large' type='submit' variant='contained' sx={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(60px)', border: '3px solid black', borderRadius: '50px', mb: 7, width: '350px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'white' }}>
-              Características de Entrenadores
-            </Button> */}
             <Button onClick={handleShowEntrenadoresFeatures} size='large' type='submit' variant='contained' sx={{ mb: 7 }} >
               Características de Entrenadores
             </Button>
@@ -276,12 +254,10 @@ const LoginPage = () => {
             backgroundColor: 'background.paper'
           }}
         >
-
           <BoxWrapper>
-
             <Box sx={{ mb: 6 }}>
               <TypographyStyled variant='h5'>{`Bienvenido a ${themeConfig.templateName}! 👋🏻`}</TypographyStyled>
-              <Typography variant='body2'>Inicia sesión para comenzar</Typography>
+              <Typography variant='body2'>Iniciá sesión para comenzar</Typography>
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
@@ -305,14 +281,18 @@ const LoginPage = () => {
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.email)}
-                      placeholder='email@ejemplo.com'
+                      placeholder='ejemplo@email.com'
                     />
                   )}
                 />
-                {errors.email && <FormHelperText sx={{ color: 'error.main' }}>{errors.email.message}</FormHelperText>}
+                {errors.email && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.email.message}
+                  </FormHelperText>
+                )}
               </FormControl>
               <FormControl fullWidth>
-                <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
+                <InputLabel htmlFor='password' error={Boolean(errors.password)}>
                   Contraseña
                 </InputLabel>
                 <Controller
@@ -321,20 +301,20 @@ const LoginPage = () => {
                   rules={{ required: true }}
                   render={({ field: { value, onChange, onBlur } }) => (
                     <OutlinedInput
+                      label='Contraseña'
                       value={value}
                       onBlur={onBlur}
-                      label='Password'
                       onChange={onChange}
-                      id='auth-login-v2-password'
+                      id='password'
                       error={Boolean(errors.password)}
                       type={showPassword ? 'text' : 'password'}
                       endAdornment={
                         <InputAdornment position='end'>
                           <Box sx={{ pr: 2 }}>
                             <IconButton
-                              edge='end'
-                              onMouseDown={e => e.preventDefault()}
                               onClick={() => setShowPassword(!showPassword)}
+                              onMouseDown={e => e.preventDefault()}
+                              edge='end'
                             >
                               <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} fontSize={20} />
                             </IconButton>
@@ -371,7 +351,10 @@ const LoginPage = () => {
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Typography sx={{ mr: 2, color: 'text.secondary' }}>Eres nuevo?</Typography>
-                <Typography href='/register' component={Link} sx={{ color: 'primary.main', textDecoration: 'none' }}>
+                <Typography
+                  component={Link}
+                  href='/register'
+                  sx={{ color: 'primary.main', textDecoration: 'none' }}>
                   Creá una cuenta
                 </Typography>
               </Box>

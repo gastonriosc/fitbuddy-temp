@@ -5,12 +5,6 @@ import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 
 // ** MUI Components
-// import Divider from '@mui/material/Divider'
-// import Checkbox from '@mui/material/Checkbox'
-// import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-// import useMediaQuery from '@mui/material/useMediaQuery'
-// import Typography, { TypographyProps } from '@mui/material/Typography'
-// import { styled, useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
@@ -18,6 +12,7 @@ import IconButton from '@mui/material/IconButton'
 import Box, { BoxProps } from '@mui/material/Box'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
@@ -27,6 +22,11 @@ import Typography from '@mui/material/Typography'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
+// ** Third Party Imports
+import * as yup from 'yup'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
 
@@ -34,21 +34,7 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
-// import { useSettings } from 'src/@core/hooks/useSettings'
-// import { display } from '@mui/system'
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
-
-// ** Demo Imports
-// import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
-
-// ** Styled Components
-// const RegisterIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
-//   padding: theme.spacing(20),
-//   paddingRight: '0 !important',
-//   [theme.breakpoints.down('lg')]: {
-//     padding: theme.spacing(10)
-//   }
-// }))
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -58,38 +44,9 @@ const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   }
 }))
 
-// const RegisterIllustration = styled('img')(({ theme }) => ({
-//   maxWidth: '48rem',
-//   [theme.breakpoints.down('xl')]: {
-//     maxWidth: '38rem'
-//   },
-//   [theme.breakpoints.down('lg')]: {
-//     maxWidth: '30rem'
-//   }
-// }))
-
-const RightWrapper = styled(Box)<BoxProps>(({ theme }) => ({
-  width: '100%',
-  [theme.breakpoints.up('md')]: {
-    maxWidth: 400
-  },
-  [theme.breakpoints.up('lg')]: {
-    maxWidth: 800
-  }
-}))
-
-// const CardContent1 = styled(Box)<BoxProps>(({ theme }) => ({
-//   width: '100%',
-//   [theme.breakpoints.up('md')]: {
-//     maxWidth: 400
-//   },
-//   [theme.breakpoints.up('lg')]: {
-//     maxWidth: 800
-//   }
-// }))
-
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
+
   [theme.breakpoints.down('md')]: {
     maxWidth: 400
   },
@@ -98,280 +55,394 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
-// const TypographyStyled = styled(Typography)<TypographyProps>(({ theme }) => ({
-//   fontWeight: 600,
-//   letterSpacing: '0.18px',
-//   marginBottom: theme.spacing(1.5),
-//   [theme.breakpoints.down('md')]: { marginTop: theme.spacing(8) }
-// }))
+type CountryTypes = 'Argentina'
+type GenderTypes = 'Masculino' | 'Femenino' | 'Otro'
+type RoleTypes = 'Alumno' | 'Entrenador'
+type DisciplineTypes = 'Musculación'
 
-// const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
-//   marginBottom: theme.spacing(4),
-//   '& .MuiFormControlLabel-label': {
-//     fontSize: '0.875rem',
-//     color: theme.palette.text.secondary
-//   }
-// }))
+interface FormData {
+  name: string
+  phone: string
+  country: CountryTypes | ''
+  gender: GenderTypes | ''
+  role: RoleTypes | ''
+  discipline: DisciplineTypes | ''
+  email: string
+  password: string
+  passwordC: string
+}
 
-// const LinkStyled = styled(Link)(({ theme }) => ({
-//   textDecoration: 'none',
-//   color: theme.palette.primary.main
-// }))
+const defaultValues = {
+  name: '',
+  phone: '',
+  country: undefined,
+  gender: undefined,
+  role: undefined,
+  discipline: undefined,
+  email: '',
+  password: '',
+  passwordC: ''
+}
+
+const phoneRegExp = /^(\+?549?|0)(11|[2368]\d)(\d{4})(\d{4})$/;
+
+const schema = yup.object().shape({
+  name: yup.string().required("Nombre es un campo obligatorio"),
+  phone: yup.string().required("Teléfono es un campo obligatorio").matches(phoneRegExp, 'No es un teléfono válido'),
+
+  // country:
+  // gender:
+  // role:
+  // discipline: yup.string().required("Disciplina es un campo obligatorio"),
+  email: yup.string().email("Debe ser un email válido").required("Email es un campo obligatorio"),
+  password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo"),
+  passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden')
+})
 
 const Register = () => {
   // ** States
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showPasswordC, setShowPasswordC] = useState<boolean>(false)
-  const [selectedOption, setSelectedOption] = useState('')
+  const [showDiscipline, setShowDiscipline] = useState<boolean>(false)
+  const [selectedDiscipline, setSelectedDiscipline] = useState('')
   const [selectedGender, setSelectedGender] = useState('')
   const [selectedRole, setSelectedRole] = useState('')
-  const [showAdditionalSelect, setShowAdditionalSelect] = useState(false)
-  const paises = ['Argentina']
   const [selectedCountry, setSelectedCountry] = useState('')
 
-  // ** Hooks
-  // const theme = useTheme()
-  // const { settings } = useSettings()
-  // const hidden = useMediaQuery(theme.breakpoints.down('md'))
+  // ** Default Values
+  const countries: CountryTypes[] = ['Argentina']
+  const genders: GenderTypes[] = ['Masculino', 'Femenino', 'Otro']
+  const roles: RoleTypes[] = ['Alumno', 'Entrenador']
+  const disciplines: DisciplineTypes[] = ['Musculación']
 
-  const handleOptionChange = (event: SelectChangeEvent<string>) => {
-    setSelectedOption(event.target.value)
-  }
-
+  // ** Events
   const handleCountryChange = (event: SelectChangeEvent<string>) => {
     setSelectedCountry(event.target.value)
   }
-
   const handleGenderChange = (event: SelectChangeEvent<string>) => {
     setSelectedGender(event.target.value)
   }
-
-
   const handleRoleChange = (event: SelectChangeEvent<string>) => {
     setSelectedRole(event.target.value)
-    setSelectedOption('')
-    setShowAdditionalSelect(event.target.value === 'Entrenador')
+    setSelectedDiscipline('')
+    setShowDiscipline(event.target.value === 'Entrenador')
+  }
+  const handleDisciplineChange = (event: SelectChangeEvent<string>) => {
+    setSelectedDiscipline(event.target.value)
+  }
+
+  // ** React-Hook-Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues,
+    mode: 'onBlur', //onBlur hace que los errores se muestren cuando el campo pierde focus.
+    resolver: yupResolver(schema)
+  })
+
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    console.log(errors);
+    console.log(data)
   }
 
   return (
     <Box className='content-center'>
-      <Card sx={{ zIndex: 1 }}>
-        <CardContent sx={{ p: theme => `${theme.spacing(15.5, 7, 6.5)} !important` }}>
-          {/* {!hidden ? (
-            // <Box
-            //   sx={{
-            //     flex: 1,
-            //     display: 'flex flex-col',
-            //     position: 'relative',
-            //     alignItems: 'center',
-            //     justifyContent: 'center',
-            //     overflowY: 'auto',
-            //     scrollbarWidth: 'none', // Oculta la barra de desplazamiento en navegadores compatibles
-            //     backgroundImage: `url(${imageSource})`,
-            //     backgroundSize: 'cover',
-            //     filter: 'brightness(70%)',
-            //     backgroundPosition: 'center',
-            //     backgroundRepeat: 'no-repeat',
-            //     backgroundAttachment: 'fixed',
-            //     height: '100vh',
-            //   }}>
+      <Card>
+        <CardContent sx={{ pt: 15, pb: 6, px: 7 }}>
+          <BoxWrapper>
+            <Box
+              sx={{
+                mb: 8, alignItems: 'center', justifyContent: 'center', textAlign: 'center'
+              }}>
+              <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
+                {themeConfig.templateName}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                mb: 5, alignItems: 'center', justifyContent: 'center', textAlign: 'center'
+              }}>
+              <Typography variant='body1'>
+                Completá los campos y empezá a ser parte de nuestra comunidad! 😊
+              </Typography>
+            </Box>
+            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
 
+              {/* Nombre */}
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='name'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      autoFocus
+                      label='Nombre'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.name)}
+                    />
+                  )}
+                />
+                {errors.name && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.name.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
 
-            // </Box>
-          ) : null} */}
-          <RightWrapper sx={{ width: '100%' }}>
-            <BoxWrapper sx={{}}>
-              <Box
-                sx={{
-                  mb: 8,
-                  mt: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
-                  {themeConfig.templateName}
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 5, alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                <Typography variant='body1'>
-                  Completá los campos para empezá a ser parte de nuestra comunidad! 😊
-                </Typography>
-              </Box>
-              <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-                <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Nombre' />
-                <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Telefono' />
-                <Box sx={{ display: 'flex', gap: '5px', width: '100%' }}>
+              {/* Teléfono */}
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='phone'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='Teléfono'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.phone)}
+                      placeholder='+54'
+                    />
+                  )}
+                />
+                {errors.phone && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.phone.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+
+              <Box sx={{
+                display: 'flex',
+                gap: { xs: '1px', md: '1px', lg: '10px' },
+                width: '100%',
+                flexDirection: { xs: 'column', md: 'column', lg: 'row' }
+              }}>
+                {/* País */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <InputLabel id="country-select-label">País</InputLabel>
                   <Select
-                    autoFocus
-                    fullWidth
-                    sx={{ mb: 4 }}
                     labelId='country-select-label'
                     id='country-select'
                     value={selectedCountry}
+                    label="País"
                     onChange={handleCountryChange}
-                    displayEmpty
                   >
-                    <MenuItem value='' disabled>
-                      País
-                    </MenuItem>
-                    {paises.map((pais, index) => (
-                      <MenuItem key={index} value={pais}>
-                        {pais}
+                    {countries.map((country, index) => (
+                      <MenuItem key={index} value={country}>
+                        {country}
                       </MenuItem>
                     ))}
                   </Select>
+                </FormControl>
+
+                {/* Género */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <InputLabel id="gender-select-label">Género</InputLabel>
                   <Select
-                    autoFocus
-                    fullWidth
-                    sx={{ mb: 4 }}
+                    labelId='gender-select-label'
+                    id='gender-select'
                     value={selectedGender}
+                    label="Género"
                     onChange={handleGenderChange}
-                    displayEmpty
                   >
-                    <MenuItem value='' disabled>
-                      Género
-                    </MenuItem>
-                    <MenuItem value='Femenino'>Femenino</MenuItem>
-                    <MenuItem value='Masculino'>Masculino</MenuItem>
-                    <MenuItem value='Otro'>Otro</MenuItem>
+                    {genders.map((gender, index) => (
+                      <MenuItem key={index} value={gender}>
+                        {gender}
+                      </MenuItem>
+                    ))}
                   </Select>
-                </Box>
-                <Box sx={{ display: 'flex', gap: '5px' }}>
+                </FormControl>
+              </Box>
+
+
+              <Box sx={{ display: 'flex', gap: '5px' }}>
+
+                {/* Rol */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <InputLabel id="role-select-label">Rol</InputLabel>
                   <Select
-                    autoFocus
-                    fullWidth
-                    sx={{ mb: 4 }}
                     labelId='role-select-label'
                     id='role-select'
                     value={selectedRole}
+                    label="Rol"
                     onChange={handleRoleChange}
-                    displayEmpty
                   >
-                    <MenuItem value='' disabled>
-                      Rol
-                    </MenuItem>
-                    <MenuItem value='Alumno'>Alumno</MenuItem>
-                    <MenuItem value='Entrenador'>Entrenador</MenuItem>
+                    {roles.map((role, index) => (
+                      <MenuItem key={index} value={role}>
+                        {role}
+                      </MenuItem>
+                    ))}
                   </Select>
+                </FormControl>
 
-                  {showAdditionalSelect && (
+                {/* Disciplina */}
+                {showDiscipline && (
+
+                  <FormControl fullWidth sx={{ mb: 4 }}>
+                    <InputLabel id="discipline-select-label">Disciplina</InputLabel>
                     <Select
-                      autoFocus
-                      fullWidth
-                      sx={{ mb: 4 }}
                       labelId='discipline-select-label'
                       id='discipline-select'
-                      value={selectedOption}
-                      onChange={handleOptionChange}
-                      displayEmpty
+                      value={selectedDiscipline}
+                      label="Disciplina"
+                      onChange={handleDisciplineChange}
                     >
-                      <MenuItem value='' disabled>
-                        Disciplina
-                      </MenuItem>
-                      <MenuItem value='Musculacion'>Musculación</MenuItem>
+                      {disciplines.map((discipline, index) => (
+                        <MenuItem key={index} value={discipline}>
+                          {discipline}
+                        </MenuItem>
+                      ))}
                     </Select>
+                  </FormControl>
+                )}
+              </Box>
+
+              {/* Email */}
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='email'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='Email'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.email)}
+                      placeholder='ejemplo@email.com'
+                    />
                   )}
-                </Box>
+                />
+                {errors.email && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.email.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
 
-                <TextField fullWidth label='Email' sx={{ mb: 4 }} />
-                <Box sx={{ display: 'flex', gap: '5px' }}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor='auth-login-v2-password'>Contraseña</InputLabel>
-                    <OutlinedInput
-                      label='Contraseña'
-                      id='auth-login-v2-password'
-                      type={showPassword ? 'text' : 'password'}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton
-                            edge='end'
-                            onMouseDown={e => e.preventDefault()}
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} />
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  </FormControl>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor='auth-login-v2-passwordC'>Confirme Contraseña</InputLabel>
-                    <OutlinedInput
-                      label='Confirme Contraseña'
-                      id='auth-login-v2-passwordC'
-                      type={showPasswordC ? 'text' : 'password'}
-                      endAdornment={
-                        <InputAdornment position='end'>
-                          <IconButton
-                            edge='end'
-                            onMouseDown={e => e.preventDefault()}
-                            onClick={() => setShowPasswordC(!showPasswordC)}
-                          >
-                            <Icon icon={showPasswordC ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} />
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                  </FormControl>
-                </Box>
+              <Box sx={{
+                display: 'flex',
+                gap: { xs: '15px', md: '15px', lg: '10px' },
+                width: '100%',
+                flexDirection: { xs: 'column', md: 'column', lg: 'row' }
+              }}>
 
-                {/* <FormControlLabel
+                {/* Contraseña */}
+                <FormControl fullWidth>
+                  <InputLabel htmlFor='password' error={Boolean(errors.password)}>
+                    Contraseña
+                  </InputLabel>
+                  <Controller
+                    name='password'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <OutlinedInput
+                        label='Contraseña'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        id='password'
+                        error={Boolean(errors.password)}
+                        type={showPassword ? 'text' : 'password'}
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <Box sx={{ pr: 2 }}>
+                              <IconButton
+                                onClick={() => setShowPassword(!showPassword)}
+                                onMouseDown={e => e.preventDefault()}
+                                edge='end'
+                              >
+                                <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} fontSize={20} />
+                              </IconButton>
+                            </Box>
+                          </InputAdornment>
+                        }
+                      />
+                    )}
+                  />
+                  {errors.password && (
+                    <FormHelperText sx={{ color: 'error.main' }} id=''>
+                      {errors.password.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+
+                {/* Repetir Contraseña */}
+                <FormControl fullWidth>
+                  <InputLabel htmlFor='passwordC' error={Boolean(errors.passwordC)}>
+                    Confirme Contraseña
+                  </InputLabel>
+                  <Controller
+                    name='passwordC'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <OutlinedInput
+                        label='Confirme Contraseña'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        id='passwordC'
+                        error={Boolean(errors.passwordC)}
+                        type={showPasswordC ? 'text' : 'password'}
+                        endAdornment={
+                          <InputAdornment position='end'>
+                            <Box sx={{ pr: 2 }}>
+                              <IconButton
+                                onClick={() => setShowPasswordC(!showPasswordC)}
+                                onMouseDown={e => e.preventDefault()}
+                                edge='end'
+                              >
+                                <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} fontSize={20} />
+                              </IconButton>
+                            </Box>
+                          </InputAdornment>
+                        }
+                      />
+                    )}
+                  />
+                  {errors.passwordC && (
+                    <FormHelperText sx={{ color: 'error.main' }} id=''>
+                      {errors.passwordC.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              </Box>
+
+              {/* <FormControlLabel
                     control={<Checkbox />}
                     sx={{ mb: 4, mt: 1.5, '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
                     label={
                       <>
                         <Typography variant='body2' component='span'>
-                          Estoy de acuerdo con las{' '}
+                          Estoy de acuerdo con los{' '}
                         </Typography>
                         <LinkStyled href='/' onClick={e => e.preventDefault()}>
-                          politicas y términos de privacidad y condiciones
+                          términos y condiciones
                         </LinkStyled>
                       </>
                     }
                   /> */}
-                <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 5, mb: 7 }}>
-                  Registrarme
-                </Button>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <Typography sx={{ mr: 2, color: 'text.secondary' }}>Ya tienes una cuenta?</Typography>
-                  <Typography href='/login' component={Link} sx={{ color: 'primary.main', textDecoration: 'none' }}>
-                    Iniciá sesión
-                  </Typography>
-                </Box>
-                {/* <Divider
-                    sx={{
-                      '& .MuiDivider-wrapper': { px: 4 },
-                      mt: theme => `${theme.spacing(5)} !important`,
-                      mb: theme => `${theme.spacing(7.5)} !important`
-                    }}
-                  >
-                    or
-                  </Divider> */}
-                {/* <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <IconButton href='/' component={Link} sx={{ color: '#497ce2' }} onClick={e => e.preventDefault()}>
-                      <Icon icon='mdi:facebook' />
-                    </IconButton>
-                    <IconButton href='/' component={Link} sx={{ color: '#1da1f2' }} onClick={e => e.preventDefault()}>
-                      <Icon icon='mdi:twitter' />
-                    </IconButton>
-                    <IconButton
-                      href='/'
-                      component={Link}
-                      onClick={e => e.preventDefault()}
-                      sx={{ color: theme => (theme.palette.mode === 'light' ? '#272727' : 'grey.300') }}
-                    >
-                      <Icon icon='mdi:github' />
-                    </IconButton>
-                    <IconButton href='/' component={Link} sx={{ color: '#db4437' }} onClick={e => e.preventDefault()}>
-                      <Icon icon='mdi:google' />
-                    </IconButton>
-                  </Box> */}
-              </form>
-            </BoxWrapper>
-          </RightWrapper>
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 7, mb: 7 }}>
+                Registrarme
+              </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <Typography sx={{ mr: 2, color: 'text.secondary' }}>¿Ya tienes una cuenta?</Typography>
+                <Typography href='/login' component={Link} sx={{ color: 'primary.main', textDecoration: 'none' }}>
+                  Iniciá sesión
+                </Typography>
+              </Box>
+            </form>
+          </BoxWrapper>
         </CardContent>
       </Card>
     </Box>
