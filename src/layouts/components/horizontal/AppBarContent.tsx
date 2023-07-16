@@ -7,7 +7,7 @@ import { Settings } from 'src/@core/context/settingsContext'
 // ** Components
 import Autocomplete from 'src/layouts/components/Autocomplete'
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
-import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
+import UserDropdown from 'src/layouts/components/UserDropdown'
 import LanguageDropdown from 'src/@core/layouts/components/shared-components/LanguageDropdown'
 import NotificationDropdown, {
   NotificationsType
@@ -15,7 +15,7 @@ import NotificationDropdown, {
 import ShortcutsDropdown, { ShortcutsType } from 'src/@core/layouts/components/shared-components/ShortcutsDropdown'
 
 // ** Hook Import
-import { useAuth } from 'src/hooks/useAuth'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   hidden: boolean
@@ -124,14 +124,14 @@ const AppBarContent = (props: Props) => {
   const { hidden, settings, saveSettings } = props
 
   // ** Hook
-  const auth = useAuth()
+  const session = useSession()
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      {auth.user && <Autocomplete hidden={hidden} settings={settings} />}
+      {session.data && session.data.user && <Autocomplete hidden={hidden} settings={settings} />}
       <LanguageDropdown settings={settings} saveSettings={saveSettings} />
       <ModeToggler settings={settings} saveSettings={saveSettings} />
-      {auth.user && (
+      {session.data && session.data.user && (
         <>
           <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
           <NotificationDropdown settings={settings} notifications={notifications} />

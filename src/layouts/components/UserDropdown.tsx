@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography'
 import Icon from 'src/@core/components/icon'
 
 // ** Context
-import { useAuth } from 'src/hooks/useAuth'
+import { signOut } from 'next-auth/react'
 
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
@@ -45,7 +45,7 @@ const UserDropdown = (props: Props) => {
 
   // ** Hooks
   const router = useRouter()
-  const { logout } = useAuth()
+
 
   // ** Vars
   const { direction } = settings
@@ -77,7 +77,9 @@ const UserDropdown = (props: Props) => {
   // }
 
   const handleLogout = () => {
-    logout()
+    signOut({ callbackUrl: '/', redirect: false }).then(() => {
+      router.asPath = '/'
+    })
     handleDropdownClose()
   }
 

@@ -16,10 +16,10 @@ import { Settings } from 'src/@core/context/settingsContext'
 //   NotificationsType
 // } from 'src/@core/layouts/components/shared-components/NotificationDropdown'
 // import ShortcutsDropdown, { ShortcutsType } from 'src/@core/layouts/components/shared-components/ShortcutsDropdown'
-import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
+import UserDropdown from 'src/layouts/components/UserDropdown'
 
 // ** Hook Import
-import { useAuth } from 'src/hooks/useAuth'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   hidden: boolean
@@ -130,7 +130,7 @@ const AppBarContent = (props: Props) => {
   const { hidden, settings, toggleNavVisibility } = props
 
   // ** Hook
-  const auth = useAuth()
+  const session = useSession()
 
   return (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -140,12 +140,12 @@ const AppBarContent = (props: Props) => {
             <Icon icon='mdi:menu' />
           </IconButton>
         ) : null}
-        {/* {auth.user && <Autocomplete hidden={hidden} settings={settings} />} */}
+        {/* {session.data && session.data.user && <Autocomplete hidden={hidden} settings={settings} />} */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         {/* <LanguageDropdown settings={settings} saveSettings={saveSettings} />
         <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
-        {auth.user && (
+        {session.data && session.data.user && (
           <>
             {/* <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
             <NotificationDropdown settings={settings} notifications={notifications} /> */}

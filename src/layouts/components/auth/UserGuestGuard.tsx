@@ -5,7 +5,7 @@ import { ReactNode, ReactElement, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 // ** Hooks Import
-import { useAuth } from 'src/hooks/useAuth'
+import { useSession } from 'next-auth/react'
 
 interface GuestGuardProps {
   children: ReactNode
@@ -14,7 +14,7 @@ interface GuestGuardProps {
 
 const GuestGuard = (props: GuestGuardProps) => {
   const { children, fallback } = props
-  const auth = useAuth()
+  const session = useSession()
   const router = useRouter()
 
   useEffect(() => {
@@ -22,17 +22,17 @@ const GuestGuard = (props: GuestGuardProps) => {
       return
     }
 
-    if (window.localStorage.getItem('userData')) {
+    if (session.status === 'authenticated' && !router.query.returnUrl) {
       router.replace('/')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.route])
+  }, [router.route, session.status])
 
-  if (auth.loading || (!auth.loading && auth.user !== null)) {
+  if (session.status === 'unauthenticated') {
+    return <>{children}</>
+  } else {
     return fallback
   }
-
-  return <>{children}</>
 }
 
 export default GuestGuard

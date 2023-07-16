@@ -33,7 +33,8 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Hooks
-import { useAuth } from 'src/hooks/useAuth'
+import { useRouter } from 'next/router'
+import { signIn } from 'next-auth/react'
 import useBgColor from 'src/@core/hooks/useBgColor'
 import { useSettings } from 'src/@core/hooks/useSettings'
 
@@ -120,7 +121,7 @@ const LoginPage = () => {
   const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
 
   // ** Hooks
-  const auth = useAuth()
+  const router = useRouter()
   const theme = useTheme()
   const bgColors = useBgColor()
   const { settings } = useSettings()
@@ -144,11 +145,18 @@ const LoginPage = () => {
   const onSubmit: SubmitHandler<FormData> = (data) => {
     // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
     const { email, password } = data
-    auth.login({ email, password, rememberMe }, () => {
-      setError('email', {
-        type: 'manual',
-        message: 'Email or Password is invalid'
-      })
+    signIn('credentials', { email, password, redirect: false }).then(res => {
+      if (res && res.ok) {
+        const returnUrl = router.query.returnUrl
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+
+        router.replace(redirectURL as string)
+      } else {
+        setError('email', {
+          type: 'manual',
+          message: 'Email or Password is invalid hola lonig'
+        })
+      }
     })
   }
 
