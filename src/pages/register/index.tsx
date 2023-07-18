@@ -134,6 +134,7 @@ const Register = () => {
   // ** React-Hook-Form
   const {
     control,
+    register,
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
@@ -227,7 +228,7 @@ const Register = () => {
                 {/* País */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="country-select-label">País</InputLabel>
-                  <Select
+                  <Select {...register("country", { required: true })}
                     labelId='country-select-label'
                     id='country-select'
                     value={selectedCountry}
@@ -240,12 +241,21 @@ const Register = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errors.country && errors.country.type === "required" &&
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      País es un campo obligatorio
+                    </FormHelperText>}
+                  {/* {errors.country && errors.country.type === "required" && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      País es un campo obligatorio
+                    </FormHelperText>
+                  )} */}
                 </FormControl>
 
                 {/* Género */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="gender-select-label">Género</InputLabel>
-                  <Select
+                  <Select {...register("gender")}
                     labelId='gender-select-label'
                     id='gender-select'
                     value={selectedGender}
@@ -267,7 +277,7 @@ const Register = () => {
                 {/* Rol */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="role-select-label">Rol</InputLabel>
-                  <Select
+                  <Select {...register("role")}
                     labelId='role-select-label'
                     id='role-select'
                     value={selectedRole}
@@ -287,7 +297,7 @@ const Register = () => {
 
                   <FormControl fullWidth sx={{ mb: 4 }}>
                     <InputLabel id="discipline-select-label">Disciplina</InputLabel>
-                    <Select
+                    <Select {...register("discipline")}
                       labelId='discipline-select-label'
                       id='discipline-select'
                       value={selectedDiscipline}
