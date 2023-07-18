@@ -104,11 +104,6 @@ const schema = yup.object().shape({
   password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo")
 })
 
-const defaultValues = {
-  email: 'juantargon@gmail.com',
-  password: 'entrenador'
-}
-
 interface FormData {
   email: string
   password: string
@@ -137,7 +132,6 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
-    defaultValues,
     mode: 'onBlur', //onBlur hace que los errores se muestren cuando el campo pierde focus.
     resolver: yupResolver(schema)
   })
@@ -147,10 +141,7 @@ const LoginPage = () => {
     const { email, password } = data
     signIn('credentials', { email, password, redirect: false }).then(res => {
       if (res && res.ok) {
-        const returnUrl = router.query.returnUrl
-        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-
-        router.replace(redirectURL as string)
+        router.replace('/myProfile');
       } else {
         setError('email', {
           type: 'manual',
