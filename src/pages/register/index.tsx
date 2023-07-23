@@ -134,11 +134,7 @@ const Register = () => {
   // ** React-Hook-Form
   const {
     control,
-<<<<<<< HEAD
     register,
-    handleSubmit,
-=======
->>>>>>> 8228ebf (register backend done)
     formState: { errors }
   } = useForm<FormData>({
     defaultValues,
