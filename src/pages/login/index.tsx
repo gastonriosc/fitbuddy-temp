@@ -141,11 +141,10 @@ const LoginPage = () => {
     const { email, password } = data
     signIn('credentials', { email, password, redirect: false }).then(res => {
       if (res && res.ok) {
-<<<<<<< HEAD
-        router.replace('/myProfile');
-=======
-        router.replace('/');
->>>>>>> 8228ebf (register backend done)
+        const returnUrl = router.query.returnUrl
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+
+        router.replace(redirectURL as string)
       } else {
         setError('email', {
           type: 'manual',
