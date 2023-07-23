@@ -1,10 +1,10 @@
 // ** Next Imports
-import { NextApiResponse, NextApiRequest } from 'next/types'
-import { connectDB } from 'src/libs/mongodb'
-import User from 'src/models/User'
+import { NextApiRequest, NextApiResponse } from 'next/types'
+import connect from 'src/lib/mongodb'
+import User from 'src/models/userSchema'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await connectDB()
+  await connect()
 
   const { email, password } = req.body
 

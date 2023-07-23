@@ -141,7 +141,11 @@ const LoginPage = () => {
     const { email, password } = data
     signIn('credentials', { email, password, redirect: false }).then(res => {
       if (res && res.ok) {
+<<<<<<< HEAD
         router.replace('/myProfile');
+=======
+        router.replace('/');
+>>>>>>> 8228ebf (register backend done)
       } else {
         setError('email', {
           type: 'manual',

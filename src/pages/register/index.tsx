@@ -24,7 +24,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Configs
@@ -134,8 +134,11 @@ const Register = () => {
   // ** React-Hook-Form
   const {
     control,
+<<<<<<< HEAD
     register,
     handleSubmit,
+=======
+>>>>>>> 8228ebf (register backend done)
     formState: { errors }
   } = useForm<FormData>({
     defaultValues,
@@ -143,10 +146,7 @@ const Register = () => {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(errors);
-    console.log(data)
-  }
+
 
   return (
     <Box className='content-center'>
@@ -169,7 +169,7 @@ const Register = () => {
                 Completá los campos y empezá a ser parte de nuestra comunidad! 😊
               </Typography>
             </Box>
-            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+            <form action='/api/signup/register' method="post">
 
               {/* Nombre */}
               <FormControl fullWidth sx={{ mb: 4 }}>
@@ -181,6 +181,7 @@ const Register = () => {
                     <TextField
                       autoFocus
                       label='Nombre'
+                      name='name'
                       value={value}
                       onBlur={onBlur}
                       onChange={onChange}
@@ -205,6 +206,7 @@ const Register = () => {
                     <TextField
                       label='Teléfono'
                       value={value}
+                      name='phoneNumber'
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.phone)}
@@ -233,6 +235,7 @@ const Register = () => {
                     id='country-select'
                     value={selectedCountry}
                     label="País"
+                    name='country'
                     onChange={handleCountryChange}
                   >
                     {countries.map((country, index) => (
@@ -260,6 +263,7 @@ const Register = () => {
                     id='gender-select'
                     value={selectedGender}
                     label="Género"
+                    name='gender'
                     onChange={handleGenderChange}
                   >
                     {genders.map((gender, index) => (
@@ -271,7 +275,6 @@ const Register = () => {
                 </FormControl>
               </Box>
 
-
               <Box sx={{ display: 'flex', gap: '5px' }}>
 
                 {/* Rol */}
@@ -282,6 +285,7 @@ const Register = () => {
                     id='role-select'
                     value={selectedRole}
                     label="Rol"
+                    name='rol'
                     onChange={handleRoleChange}
                   >
                     {roles.map((role, index) => (
@@ -300,6 +304,7 @@ const Register = () => {
                     <Select {...register("discipline")}
                       labelId='discipline-select-label'
                       id='discipline-select'
+                      name='typeWorkout'
                       value={selectedDiscipline}
                       label="Disciplina"
                       onChange={handleDisciplineChange}
@@ -325,6 +330,7 @@ const Register = () => {
                       label='Email'
                       value={value}
                       onBlur={onBlur}
+                      name='email'
                       onChange={onChange}
                       error={Boolean(errors.email)}
                       placeholder='ejemplo@email.com'
@@ -359,6 +365,7 @@ const Register = () => {
                         label='Contraseña'
                         value={value}
                         onBlur={onBlur}
+                        name='password'
                         onChange={onChange}
                         id='password'
                         error={Boolean(errors.password)}
