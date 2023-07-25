@@ -147,7 +147,7 @@ const LoginPage = () => {
       } else {
         setError('email', {
           type: 'manual',
-          message: 'Email or Password is invalid hola lonig'
+          message: 'Email o contraseña incorrecta'
         })
       }
     })

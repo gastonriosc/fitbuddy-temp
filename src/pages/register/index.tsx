@@ -35,6 +35,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/dist/client/router'
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -115,6 +117,9 @@ const Register = () => {
   const roles: RoleTypes[] = ['Alumno', 'Entrenador']
   const disciplines: DisciplineTypes[] = ['Musculación']
 
+  // ** Hooks
+  const router = useRouter()
+
   // ** Events
   const handleCountryChange = (event: SelectChangeEvent<string>) => {
     setSelectedCountry(event.target.value)
@@ -134,6 +139,7 @@ const Register = () => {
   // ** React-Hook-Form
   const {
     control,
+    setError,
     register,
     handleSubmit,
     formState: { errors }
@@ -156,9 +162,26 @@ const Register = () => {
         body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline })
       })
       if (res.status == 200) {
-        window.location.href = "/"
+        await signIn('credentials', { email, password, redirect: false }).then(res => {
+          if (res && res.ok) {
+            router.replace('/myProfile/alumnoProfile')
+          }
+        })
       }
-      console.log(res.json())
+      else {
+        if (res.status == 409) {
+          setError('email', {
+            type: 'manual',
+            message: 'El email ya se encuentra registrado'
+          })
+        }
+        if (res.status == 400) {
+          setError('email', {
+            type: 'manual',
+            message: 'No se puedo registrar el usuario'
+          })
+        }
+      }
     } catch (error) {
       console.log(error)
     }

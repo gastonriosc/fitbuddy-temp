@@ -103,13 +103,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      // if (session.user) {
-      //   // ** Add custom params to user in session which are added in `jwt()` callback via `token` parameter
-      //   session.user.role = token.role
-      //   session.user.fullName = token.fullName
-      // }
       session.user = token.user as any
-      console.log(session, token)
 
       return session
     }
