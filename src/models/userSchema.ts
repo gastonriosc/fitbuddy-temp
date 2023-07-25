@@ -23,7 +23,7 @@ const usersSchema = new mongoose.Schema({
     default: null,
     required: true
   },
-  typeWorkout: {
+  discipline: {
     type: String,
     default: null
   },
