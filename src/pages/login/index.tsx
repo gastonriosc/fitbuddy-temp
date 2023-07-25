@@ -141,10 +141,9 @@ const LoginPage = () => {
     const { email, password } = data
     signIn('credentials', { email, password, redirect: false }).then(res => {
       if (res && res.ok) {
-        const returnUrl = router.query.returnUrl
-        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
 
-        router.replace(redirectURL as string)
+
+        router.replace('/myProfile/alumnoProfile')
       } else {
         setError('email', {
           type: 'manual',

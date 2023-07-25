@@ -24,7 +24,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Configs
@@ -135,6 +135,7 @@ const Register = () => {
   const {
     control,
     register,
+    handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
     defaultValues,
@@ -142,7 +143,26 @@ const Register = () => {
     resolver: yupResolver(schema)
   })
 
-
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
+    const { email, password, phone, country, gender, role, name, discipline } = data
+    debugger
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline })
+      })
+      if (res.status == 200) {
+        window.location.href = "/"
+      }
+      console.log(res.json())
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <Box className='content-center'>
@@ -165,7 +185,7 @@ const Register = () => {
                 Completá los campos y empezá a ser parte de nuestra comunidad! 😊
               </Typography>
             </Box>
-            <form action='/api/signup/register' method="post">
+            <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
 
               {/* Nombre */}
               <FormControl fullWidth sx={{ mb: 4 }}>
@@ -202,7 +222,7 @@ const Register = () => {
                     <TextField
                       label='Teléfono'
                       value={value}
-                      name='phoneNumber'
+                      name='phone'
                       onBlur={onBlur}
                       onChange={onChange}
                       error={Boolean(errors.phone)}
@@ -273,7 +293,7 @@ const Register = () => {
 
               <Box sx={{ display: 'flex', gap: '5px' }}>
 
-                {/* Rol */}
+                {/* Role */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="role-select-label">Rol</InputLabel>
                   <Select {...register("role")}
@@ -281,7 +301,7 @@ const Register = () => {
                     id='role-select'
                     value={selectedRole}
                     label="Rol"
-                    name='rol'
+                    name='role'
                     onChange={handleRoleChange}
                   >
                     {roles.map((role, index) => (
@@ -300,7 +320,7 @@ const Register = () => {
                     <Select {...register("discipline")}
                       labelId='discipline-select-label'
                       id='discipline-select'
-                      name='typeWorkout'
+                      name='discipline'
                       value={selectedDiscipline}
                       label="Disciplina"
                       onChange={handleDisciplineChange}
