@@ -20,10 +20,10 @@ export type ACLObj = {
 const defineRulesFor = (role: string, subject: string) => {
   const { can, cannot, rules } = new AbilityBuilder(AppAbility)
 
-  if (role === 'entrenador') {
+  if (role === 'Entrenador') {
     can(['manage'], ['newPlan-page', 'myProfile-page', 'perfilEntrenador', 'myStudents-page'])
     cannot('read', ['myPlans-page', 'perfilAlumno', 'search-page'])
-  } else if (role === 'alumno') {
+  } else if (role === 'Alumno') {
     can(['manage'], ['acl-page', 'myPlans-page', 'myProfile-page', 'perfilAlumno', 'search-page'])
     cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page'])
   } else {
