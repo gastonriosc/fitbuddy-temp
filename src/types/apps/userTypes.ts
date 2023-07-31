@@ -17,6 +17,7 @@ export type UsersType = {
   name: string
   phone: number
   gender: string
+  discipline: string
 }
 
 export type ProjectListDataType = {

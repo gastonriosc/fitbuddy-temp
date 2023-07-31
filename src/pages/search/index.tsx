@@ -56,16 +56,17 @@ import { CardStatsHorizontalProps } from 'src/@core/components/card-statistics/t
 import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import Search from './search'
+import { Input } from '@mui/material'
 
 
 
 
 const UserList = ({ apiData }) => {
   // ** State
-  const [role, setRole] = useState<string>('');
-  const [plan, setPlan] = useState<string>('');
+  const [gender, setGender] = useState<string>('');
+  const [discipline, setDiscipline] = useState<string>('');
   const [value, setValue] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
 
 
@@ -73,18 +74,17 @@ const UserList = ({ apiData }) => {
     setValue(val)
   }, [])
 
-
-  const handleRoleChange = (e: SelectChangeEvent) => {
-    setRole(e.target.value);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handlePlanChange = (e: SelectChangeEvent) => {
-    setPlan(e.target.value);
+  const handleGenderChange = (e: SelectChangeEvent) => {
+    setGender(e.target.value);
   };
 
-  const handleStatusChange = (e: SelectChangeEvent) => {
-    setStatus(e.target.value);
-  };
+  const handleDisciplineChange = (e: SelectChangeEvent) => {
+    setDiscipline(e.target.value)
+  }
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen);
 
@@ -105,69 +105,57 @@ const UserList = ({ apiData }) => {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Search Filters' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
+          <CardHeader title='Filtros' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
           <CardContent>
             <Grid container spacing={6}>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='role-select'>Select Role</InputLabel>
+                  <InputLabel id='gender-select'>Género</InputLabel>
                   <Select
                     fullWidth
-                    value={role}
-                    id='select-role'
-                    label='Select Role'
-                    labelId='role-select'
-                    onChange={handleRoleChange}
-                    inputProps={{ placeholder: 'Select Role' }}
+                    value={gender}
+                    id='select-gender'
+                    label='Select gender'
+                    labelId='gender-select'
+                    onChange={handleGenderChange}
+                    inputProps={{ placeholder: 'Selecciona un género' }}
                   >
-                    <MenuItem value=''>Select Role</MenuItem>
-                    <MenuItem value='admin'>Admin</MenuItem>
-                    <MenuItem value='author'>Author</MenuItem>
-                    <MenuItem value='editor'>Editor</MenuItem>
-                    <MenuItem value='maintainer'>Maintainer</MenuItem>
-                    <MenuItem value='subscriber'>Subscriber</MenuItem>
+                    <MenuItem value=''>Seleccione un género</MenuItem>
+                    <MenuItem value='Masculino'>Masculino</MenuItem>
+                    <MenuItem value='Femenino'>Femenino</MenuItem>
+                    <MenuItem value='Otro'>Otro</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='plan-select'>Select Plan</InputLabel>
+                  <InputLabel id='discipline-select'>Disciplina</InputLabel>
                   <Select
                     fullWidth
-                    value={plan}
-                    id='select-plan'
-                    label='Select Plan'
-                    labelId='plan-select'
-                    onChange={handlePlanChange}
-                    inputProps={{ placeholder: 'Select Plan' }}
+                    value={discipline}
+                    id='select-discipline'
+                    label='Select discipline'
+                    labelId='discipline-select'
+                    onChange={handleDisciplineChange}
+                    inputProps={{ placeholder: 'Selecciona una disciplina' }}
                   >
-                    <MenuItem value=''>Select Plan</MenuItem>
-                    <MenuItem value='basic'>Basic</MenuItem>
-                    <MenuItem value='company'>Company</MenuItem>
-                    <MenuItem value='enterprise'>Enterprise</MenuItem>
-                    <MenuItem value='team'>Team</MenuItem>
+                    <MenuItem value=''>Select Discipline</MenuItem>
+                    <MenuItem value='Musculación'>Musculación</MenuItem>
+                    <MenuItem value='Aeróbico'>Aeróbico</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item sm={4} xs={12}>
                 <FormControl fullWidth>
-                  <InputLabel id='status-select'>Select Status</InputLabel>
-                  <Select
+                  <InputLabel id='search-input'>Nombre</InputLabel>
+                  <Input
                     fullWidth
-                    value={status}
-                    id='select-status'
-                    label='Select Status'
-                    labelId='status-select'
-                    onChange={handleStatusChange}
-                    inputProps={{ placeholder: 'Select Status' }}  // Corrected placeholder
-                  >
-                    <MenuItem value=''>Seleccionar Genero</MenuItem>
-                    <MenuItem value='masculino'>Masculino</MenuItem>
-                    <MenuItem value='femenino'>Femenino</MenuItem>
-                    <MenuItem value='otro'>Otro</MenuItem>
-                  </Select>
+                    value={searchTerm}
+                    id='search-input'
+                    onChange={handleSearchChange}
+                    placeholder='Ingrese un nombre para buscar'
+                  />
                 </FormControl>
-
               </Grid>
             </Grid>
           </CardContent>
@@ -175,10 +163,9 @@ const UserList = ({ apiData }) => {
           <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
 
           {/*  Componente Search */}
-          <Search />
+          <Search genderFilter={gender} disciplineFilter={discipline} searchTerm={searchTerm} />
         </Card>
       </Grid>
-
       <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
     </Grid>
   );

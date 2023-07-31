@@ -8,20 +8,25 @@ import Typography from '@mui/material/Typography'
 
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 
-
 // ** Types Imports
 
 import { UsersType } from 'src/types/apps/userTypes'
-
 
 
 interface CellType {
   row: UsersType
 }
 
+interface SearchProps {
+  genderFilter: string;
+  disciplineFilter: string;
+  searchTerm: any
+}
 
-const Search = () => {
-  const [users, setUsers] = useState([]);
+
+const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => {
+  const [users, setUsers] = useState<UsersType[]>([]);
+
 
   useEffect(() => {
     const fetchAlumnoUsers = async () => {
@@ -42,14 +47,14 @@ const Search = () => {
     {
       flex: 0.2,
       minWidth: 250,
-      field: 'name', // Assuming this field exists in the user data
+      field: 'name',
       headerName: 'Name',
       renderCell: ({ row }: CellType) => {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography noWrap variant='caption'>
-                {row.name}
+              <Typography noWrap variant='body2'>
+                <b>{row.name}</b>
               </Typography>
             </Box>
           </Box>
@@ -59,12 +64,12 @@ const Search = () => {
     {
       flex: 0.2,
       minWidth: 250,
-      field: 'email', // Assuming this field exists in the user data
+      field: 'email',
       headerName: 'Email',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            {row.email}
+            <b>{row.email}</b>
           </Typography>
         );
       }
@@ -72,12 +77,12 @@ const Search = () => {
     {
       flex: 0.2,
       minWidth: 250,
-      field: 'phoneNumber', // Assuming this field exists in the user data
+      field: 'phoneNumber',
       headerName: 'PhoneNumber',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            {row.phone}
+            <b>{row.phone}</b>
           </Typography>
         );
       }
@@ -85,12 +90,12 @@ const Search = () => {
     {
       flex: 0.2,
       minWidth: 250,
-      field: 'gender', // Assuming this field exists in the user data
+      field: 'gender',
       headerName: 'Gender',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            {row.gender}
+            <b>{row.gender}</b>
           </Typography>
         );
       }
@@ -98,12 +103,25 @@ const Search = () => {
     {
       flex: 0.2,
       minWidth: 250,
-      field: 'country', // Assuming this field exists in the user data
+      field: 'discipline',
+      headerName: 'Discipline',
+      renderCell: ({ row }: CellType) => {
+        return (
+          <Typography noWrap variant='body2'>
+            <b>{row.discipline}</b>
+          </Typography>
+        );
+      }
+    },
+    {
+      flex: 0.2,
+      minWidth: 250,
+      field: 'country',
       headerName: 'Country',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            {row.country}
+            <b>{row.country}</b>
           </Typography>
         );
       }
@@ -111,9 +129,23 @@ const Search = () => {
   ];
   const getRowId = (user: any) => user._id;
 
+  const filterUsersByName = (users: UsersType[], name: string) => {
+    return users.filter((user) =>
+      user.name.toLowerCase().includes(name.toLowerCase())
+    );
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      (!genderFilter || user.gender === genderFilter) && // Si no hay filtro de género o el género coincide
+      (!disciplineFilter || user.discipline === disciplineFilter) && // Si no hay filtro de disciplina o la disciplina coincide
+      (!searchTerm || filterUsersByName([user], searchTerm).length > 0) // Si no hay término de búsqueda o el nombre coincide
+  );
+
+
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={users} columns={columns} getRowId={getRowId} />
+      <DataGrid rows={filteredUsers} columns={columns} getRowId={getRowId} />
     </div>
   );
 

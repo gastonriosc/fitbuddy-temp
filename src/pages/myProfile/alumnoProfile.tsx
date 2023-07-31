@@ -25,7 +25,8 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import { ChangeEvent, ElementType, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
-
+import { Session } from 'next-auth'
+import { useSession } from 'next-auth/react'
 
 interface Data {
   email: string
@@ -79,6 +80,8 @@ const AlumnoProfile = () => {
   const [formData, setFormData] = useState<Data>(initialData)
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
+  const { data: session } = useSession();
+
 
   // ** Hooks
   const {
@@ -88,6 +91,7 @@ const AlumnoProfile = () => {
   } = useForm({ defaultValues: { checkbox: false } })
 
   const handleClose = () => setOpen(false)
+
 
   const handleSecondDialogClose = () => setSecondDialogOpen(false)
 
@@ -123,10 +127,9 @@ const AlumnoProfile = () => {
 
   return (
     <Grid container spacing={6}>
-
       <Grid item xs={12}>
         <Card>
-          <CardHeader title={`Alumno: ${formData.firstName} ${formData.lastName}`} />
+          <CardHeader title={`Alumno: ${session?.user?.name}`} />
           <form >
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
