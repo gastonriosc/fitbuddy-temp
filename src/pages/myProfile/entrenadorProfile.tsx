@@ -161,7 +161,7 @@ const EntrenadorProfile = () => {
                     fullWidth
                     label='Nombre Completo'
                     placeholder='Juan Targón'
-                    value={formData.firstName}
+                    value={session?.user?.name}
                     onChange={e => handleFormChange('firstName', e.target.value)}
                   />
                 </Grid>
@@ -170,7 +170,7 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='email'
                     label='Email'
-                    value={formData.email}
+                    value={session?.user?.email}
                     placeholder='juantargon@example.com'
                     onChange={e => handleFormChange('email', e.target.value)}
                   />
@@ -180,7 +180,7 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='password'
                     label='Contraseña'
-                    value={formData.password}
+                    value={session?.user?.password}
                     onChange={e => handleFormChange('password', e.target.value)}
                   />
                 </Grid>
@@ -189,7 +189,7 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='number'
                     label='Teléfono'
-                    value={formData.number}
+                    value={session?.user?.phone}
                     placeholder='3513452255'
                     onChange={e => handleFormChange('number', e.target.value)}
                     InputProps={{ startAdornment: <InputAdornment position='start'>ARG (+54)</InputAdornment> }}
@@ -200,10 +200,10 @@ const EntrenadorProfile = () => {
                     <InputLabel>País</InputLabel>
                     <Select
                       label='País'
-                      value={formData.country}
+                      value={session?.user?.country}
                       onChange={e => handleFormChange('country', e.target.value)}
                     >
-                      <MenuItem value='argentina'>Argentina</MenuItem>
+                      <MenuItem value='Argentina'>Argentina</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -212,12 +212,12 @@ const EntrenadorProfile = () => {
                     <InputLabel>Género</InputLabel>
                     <Select
                       label='Genero'
-                      value={formData.genre}
+                      value={session?.user?.gender}
                       onChange={e => handleFormChange('genre', e.target.value)}
                     >
-                      <MenuItem value='femenino'>Femenino</MenuItem>
-                      <MenuItem value='masculino'>Masculino</MenuItem>
-                      <MenuItem value='otro'>Otro</MenuItem>
+                      <MenuItem value='Femenino'>Femenino</MenuItem>
+                      <MenuItem value='Masculino'>Masculino</MenuItem>
+                      <MenuItem value='Otro'>Otro</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -226,10 +226,10 @@ const EntrenadorProfile = () => {
                     <InputLabel>Disciplina</InputLabel>
                     <Select
                       label='Disciplina'
-                      value={formData.typeWorkout}
+                      value={session?.user?.discipline}
                       onChange={e => handleFormChange('typeWorkout', e.target.value)}
                     >
-                      <MenuItem value='musculacion'>Musculación</MenuItem>
+                      <MenuItem value='Musculación'>Musculación</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
