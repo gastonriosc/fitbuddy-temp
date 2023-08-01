@@ -18,7 +18,7 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
-      title: 'Buscar',
+      title: 'Buscar Profesores',
       icon: 'mdi-search',
       path: '/search',
       subject: 'search-page',

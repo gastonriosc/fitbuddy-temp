@@ -53,7 +53,7 @@ import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-
 import { CardStatsHorizontalProps } from 'src/@core/components/card-statistics/types'
 
 // ** Custom Table Components Imports
-import TableHeader from 'src/views/apps/user/list/TableHeader'
+//import TableHeader from 'src/views/apps/user/list/TableHeader'
 import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
 import Search from './search'
 import { Input } from '@mui/material'
@@ -65,14 +65,14 @@ const UserList = ({ apiData }) => {
   // ** State
   const [gender, setGender] = useState<string>('');
   const [discipline, setDiscipline] = useState<string>('');
-  const [value, setValue] = useState<string>('');
+  //const [value, setValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
 
 
-  const handleFilter = useCallback((val: string) => {
-    setValue(val)
-  }, [])
+  // const handleFilter = useCallback((val: string) => {
+  //   setValue(val)
+  // }, [])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -139,7 +139,7 @@ const UserList = ({ apiData }) => {
                     onChange={handleDisciplineChange}
                     inputProps={{ placeholder: 'Selecciona una disciplina' }}
                   >
-                    <MenuItem value=''>Select Discipline</MenuItem>
+                    <MenuItem value=''>Seleccione Disciplina</MenuItem>
                     <MenuItem value='Musculación'>Musculación</MenuItem>
                     <MenuItem value='Aeróbico'>Aeróbico</MenuItem>
                   </Select>
@@ -160,7 +160,7 @@ const UserList = ({ apiData }) => {
             </Grid>
           </CardContent>
           <Divider />
-          <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} />
+          {/* <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} /> */}
 
           {/*  Componente Search */}
           <Search genderFilter={gender} disciplineFilter={discipline} searchTerm={searchTerm} />

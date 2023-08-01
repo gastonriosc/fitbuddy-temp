@@ -12,6 +12,19 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 
 import { UsersType } from 'src/types/apps/userTypes'
 
+// ** Icon Imports
+import Icon from 'src/@core/components/icon'
+
+// iconos
+interface  UserDisciplineType {
+  [key: string]: { icon: string}
+}
+
+const userDisciplineObj: UserDisciplineType = {
+  Musculación: { icon: 'mdi:dumbbell'},
+  Aeróbico: { icon: 'mdi:gymnastics'}
+}
+
 
 interface CellType {
   row: UsersType
@@ -48,7 +61,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       flex: 0.2,
       minWidth: 250,
       field: 'name',
-      headerName: 'Name',
+      headerName: 'Nombre',
       renderCell: ({ row }: CellType) => {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -78,7 +91,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       flex: 0.2,
       minWidth: 250,
       field: 'phoneNumber',
-      headerName: 'PhoneNumber',
+      headerName: 'Telefono',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
@@ -91,7 +104,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       flex: 0.2,
       minWidth: 250,
       field: 'gender',
-      headerName: 'Gender',
+      headerName: 'Genero',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
@@ -104,12 +117,16 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       flex: 0.2,
       minWidth: 250,
       field: 'discipline',
-      headerName: 'Discipline',
+      headerName: 'Disciplina',
       renderCell: ({ row }: CellType) => {
         return (
-          <Typography noWrap variant='body2'>
+          <Box sx={{ display: 'flex', alignItems: 'center'}}>
+            <Icon icon={userDisciplineObj[row.discipline].icon} fontSize={20} />
+            <Typography noWrap variant='body2'>
             <b>{row.discipline}</b>
           </Typography>
+          </Box>
+
         );
       }
     },
@@ -117,7 +134,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       flex: 0.2,
       minWidth: 250,
       field: 'country',
-      headerName: 'Country',
+      headerName: 'Pais',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
