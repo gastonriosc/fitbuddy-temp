@@ -1,5 +1,6 @@
 // ** React Imports
-import { useState, /*useEffect,*/ /*MouseEvent,*/ useCallback } from 'react'
+// import { useState, useEffect, MouseEvent, useCallback } from 'react'
+import { useState } from 'react'
 
 // ** Next Imports
 //import Link from 'next/link'
@@ -65,6 +66,7 @@ const UserList = ({ apiData }) => {
   // ** State
   const [gender, setGender] = useState<string>('');
   const [discipline, setDiscipline] = useState<string>('');
+
   //const [value, setValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
