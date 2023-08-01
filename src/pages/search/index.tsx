@@ -1,12 +1,7 @@
 // ** React Imports
-// import { useState, useEffect, MouseEvent, useCallback } from 'react'
 import { useState } from 'react'
 
-// ** Next Imports
-//import Link from 'next/link'
-
 // ** MUI Imports
-//import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 
 //import Menu from '@mui/material/Menu'
@@ -15,8 +10,6 @@ import Divider from '@mui/material/Divider'
 
 //import { styled } from '@mui/material/styles'
 import MenuItem from '@mui/material/MenuItem'
-
-//import IconButton from '@mui/material/IconButton'
 
 //import Typography from '@mui/material/Typography'
 import CardHeader from '@mui/material/CardHeader'
@@ -27,55 +20,19 @@ import CardContent from '@mui/material/CardContent'
 //import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 
-// ** Icon Imports
-import Icon from 'src/@core/components/icon'
-
-// ** Store Imports
-//import { useDispatch, useSelector } from 'react-redux'
-
-// ** Custom Components Imports
-//import CustomChip from 'src/@core/components/mui/chip'
-//import CustomAvatar from 'src/@core/components/mui/avatar'
-import CardStatisticsHorizontal from 'src/@core/components/card-statistics/card-stats-horizontal'
-
-// ** Utils Import
-//import { getInitials } from 'src/@core/utils/get-initials'
-
-// ** Actions Imports
-//import { fetchData, deleteUser } from 'src/store/apps/user'
-
-// ** Third Party Components
-//import axios from 'axios'
-
-// ** Types Imports
-//import { RootState , AppDispatch } from 'src/store'
-//import { ThemeColor } from 'src/@core/layouts/types'
-//import { UsersType } from 'src/types/apps/userTypes'
-import { CardStatsHorizontalProps } from 'src/@core/components/card-statistics/types'
-
 // ** Custom Table Components Imports
-//import TableHeader from 'src/views/apps/user/list/TableHeader'
-import AddUserDrawer from 'src/views/apps/user/list/AddUserDrawer'
+
 import Search from './search'
 import { Input } from '@mui/material'
 
 
-
-
-const UserList = ({ apiData }) => {
-  // ** State
+const UserList = () => {
+  // ** State:  (gender, discipline, searchTerm) son variables de estado que almacenan el valor seleccionado en el campo de género, disciplina y el de nombre. setGender, setDiscipline, setSearchTerm son funciones que permiten actualizar el valor de las variables de estado de geneder, discipline y searchTerm.
   const [gender, setGender] = useState<string>('');
   const [discipline, setDiscipline] = useState<string>('');
-
-  //const [value, setValue] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
 
-
-  // const handleFilter = useCallback((val: string) => {
-  //   setValue(val)
-  // }, [])
-
+  //Esta es una función de manejo de eventos que se llama cada vez que hay un cambio en el campo de búsqueda (nombre). Cuando el usuario ingresa texto en el campo de nombre, esta función se activa y actualiza el estado searchTerm con el valor ingresado.
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -84,27 +41,13 @@ const UserList = ({ apiData }) => {
     setGender(e.target.value);
   };
 
+  //Esta función y la de arriba, actualizan los estados gender y discipline con los valores seleccionados por el usuario, haciendo que cuando seleccione un genero o una disciplina del Select se actualice..
   const handleDisciplineChange = (e: SelectChangeEvent) => {
     setDiscipline(e.target.value)
   }
 
-  const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen);
-
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12}>
-        {apiData && (
-          <Grid container spacing={6}>
-            {apiData.statsHorizontal.map((item: CardStatsHorizontalProps, index: number) => {
-              return (
-                <Grid item xs={12} md={3} sm={6} key={index}>
-                  <CardStatisticsHorizontal {...item} icon={<Icon icon={item.icon as string} />} />
-                </Grid>
-              );
-            })}
-          </Grid>
-        )}
-      </Grid>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Filtros' sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }} />
@@ -162,20 +105,15 @@ const UserList = ({ apiData }) => {
             </Grid>
           </CardContent>
           <Divider />
-          {/* <TableHeader value={value} handleFilter={handleFilter} toggle={toggleAddUserDrawer} /> */}
-
           {/*  Componente Search */}
           <Search genderFilter={gender} disciplineFilter={discipline} searchTerm={searchTerm} />
         </Card>
       </Grid>
-      <AddUserDrawer open={addUserOpen} toggle={toggleAddUserDrawer} />
     </Grid>
   );
 };
 
-
 export default UserList;
-
 
 UserList.acl = {
   action: 'manage',

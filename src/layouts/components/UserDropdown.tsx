@@ -13,7 +13,6 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { UsersType } from 'src/types/apps/userTypes'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -23,7 +22,6 @@ import { signOut, useSession } from 'next-auth/react'
 
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
-import { Session } from 'next-auth'
 
 interface Props {
   settings: Settings
@@ -128,7 +126,7 @@ const UserDropdown = (props: Props) => {
             <Box sx={{ display: 'flex', ml: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}> {session?.user?.name} </Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                {/* Entrenador */}
+                {session?.user?.role}
               </Typography>
             </Box>
           </Box>
