@@ -23,6 +23,7 @@ import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 import { ListItem } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -114,6 +115,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showAlumnosFeatures, setShowAlumnosFeatures] = useState(false);
   const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   // ** Hooks
   const router = useRouter()
@@ -138,11 +140,11 @@ const LoginPage = () => {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
+    setIsLoading(true)
     const { email, password } = data
     signIn('credentials', { email, password, redirect: false }).then(res => {
+      setIsLoading(false)
       if (res && res.ok) {
-
-
         router.replace('/myProfile/alumnoProfile')
       } else {
         setError('email', {
@@ -348,7 +350,11 @@ const LoginPage = () => {
                 </Typography>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
-                Ingresar
+                {isLoading ? (
+                  <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                    <CircularProgress size={20} thickness={6} color="secondary" />
+                  </Box>
+                ) : (<Typography>Ingresar</Typography>)}
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Typography sx={{ mr: 2, color: 'text.secondary' }}>Eres nuevo?</Typography>
