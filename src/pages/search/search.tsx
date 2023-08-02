@@ -5,12 +5,16 @@ import { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import CustomAvatar from 'src/@core/components/mui/avatar'
+
 
 // ** Types Imports
 import { UsersType } from 'src/types/apps/userTypes'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { Button } from '@mui/material'
+import { getInitials } from 'src/@core/utils/get-initials'
 
 // iconos
 interface UserDisciplineType {
@@ -33,11 +37,26 @@ interface SearchProps {
   searchTerm: any;
 }
 
+const renderClient = (row: UsersType) => {
+  if (row.avatar) {
+    return <CustomAvatar src={row.avatar} sx={{ mr: 3, width: 34, height: 34 }} />
+  } else {
+    return (
+      <CustomAvatar
+        skin='light'
+        color={row.avatarColor || 'primary'}
+        sx={{ mr: 3, width: 34, height: 34, fontSize: '1rem' }}
+      >
+        {getInitials(row.name)}
+      </CustomAvatar>
+    )
+  }
+}
+
 
 // El componente Search recibe tres propiedades como argumentos (genderFilter, disciplineFilter y searchTerm), que se utilizan para filtrar los usuarios.
 const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => {
   const [users, setUsers] = useState<UsersType[]>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
-
 
   useEffect(() => {
     const fetchAlumnoUsers = async () => {              //Funcion asincrona que hace la llamada a la API de students.
@@ -61,11 +80,14 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       field: 'name',
       headerName: 'Nombre',
       renderCell: ({ row }: CellType) => {
+        const { name } = row
+
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {renderClient(row)}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography noWrap variant='body2'>
-                <b>{row.name}</b>
+              <Typography color={'lightgray'} noWrap variant='body2'>
+                <b>{name}</b>
               </Typography>
             </Box>
           </Box>
@@ -79,7 +101,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       headerName: 'Email',
       renderCell: ({ row }: CellType) => {
         return (
-          <Typography noWrap variant='body2'>
+          <Typography color={'lightgray'} noWrap variant='body2'>
             <b>{row.email}</b>
           </Typography>
         );
@@ -92,7 +114,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       headerName: 'Telefono',
       renderCell: ({ row }: CellType) => {
         return (
-          <Typography noWrap variant='body2'>
+          <Typography color={'lightgray'} noWrap variant='body2'>
             <b>{row.phone}</b>
           </Typography>
         );
@@ -105,7 +127,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       headerName: 'Genero',
       renderCell: ({ row }: CellType) => {
         return (
-          <Typography noWrap variant='body2'>
+          <Typography color={'lightgray'} noWrap variant='body2'>
             <b>{row.gender}</b>
           </Typography>
         );
@@ -120,7 +142,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Icon icon={userDisciplineObj[row.discipline].icon} fontSize={20} />
-            <Typography noWrap variant='body2'>
+            <Typography color={'lightgray'} noWrap variant='body2'>
               <b>{row.discipline}</b>
             </Typography>
           </Box>
@@ -135,8 +157,23 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       headerName: 'Pais',
       renderCell: ({ row }: CellType) => {
         return (
-          <Typography noWrap variant='body2'>
+          <Typography color={'lightgray'} noWrap variant='body2'>
             <b>{row.country}</b>
+          </Typography>
+        );
+      }
+    },
+    {
+      flex: 0.2,
+      minWidth: 250,
+      field: 'observe',
+      headerName: 'Actions',
+      renderCell: ({ }: CellType) => {
+        return (
+          <Typography noWrap variant='body2'>
+            <Button >
+              <Icon icon={'mdi:eye-outline'} fontSize={20} />
+            </Button>
           </Typography>
         );
       }
