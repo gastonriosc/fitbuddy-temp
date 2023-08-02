@@ -26,7 +26,7 @@ import { ChangeEvent, ElementType, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 import { useSession } from 'next-auth/react'
-import { IconButton } from '@mui/material'
+import { CircularProgress, IconButton } from '@mui/material'
 
 interface Data {
   email: string
@@ -80,8 +80,8 @@ const AlumnoProfile = () => {
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
   const { data: session } = useSession();
-  const [saveResult, setSaveResult] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showSaveResult, setShowSaveResult] = useState(false);
 
   // ** Hooks
   const {
@@ -139,6 +139,8 @@ const AlumnoProfile = () => {
   }, [session?.user]);
 
   const handleSaveChanges = async () => {
+    setIsLoading(true)
+    setShowSaveResult(false);
     try {
       // Hacemos la solicitud a la API para guardar los cambios en la base de datos con PUT, ya que POST es para "pegar", es decir cuando queremos insertar un nuevo registro.
       const response = await fetch('/api/updateUser', {
@@ -153,12 +155,14 @@ const AlumnoProfile = () => {
       if (response.ok) {
         const updatedUserData = await response.json();  // Obtén los datos actualizados del usuario del backend
         setFormData(updatedUserData);                   // Actualiza la variable de estado de formData con los datos actualizados que vienen de la consulta a la API, almacenandose en updatedUserData.
-        setSaveResult('Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.');
+        setShowSaveResult(true);                        // Mostramos el mensaje una vez que los datos se hayan guardado correctamente
       } else {
         // ... res.status etc...
       }
     } catch (error) {
       // ... res.status etc...
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -274,13 +278,21 @@ const AlumnoProfile = () => {
 
 
                 <Grid item xs={12}>
-                  <Button variant='contained' sx={{ mr: 3 }} onClick={handleSaveChanges}>
-                    Guardar cambios
+                  <Button variant='contained' sx={{ mr: 3, mb: 5 }} onClick={handleSaveChanges}>
+                    {isLoading ? (
+                      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <CircularProgress size={18} thickness={3} color="secondary" />
+                      </Box>
+                    ) : (<Typography>Guardar Cambios</Typography>)}
                   </Button>
-                  <Button type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
+                  <Button sx={{ mb: 5 }} type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
                     Reestablecer
                   </Button>
-                  {saveResult && <Typography sx={{ mt: 2, color: saveResult.includes('Error') ? 'error' : 'success' }}>{saveResult}</Typography>}
+                  {showSaveResult && (
+                    <Typography >
+                      Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>

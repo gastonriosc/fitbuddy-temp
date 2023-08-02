@@ -22,32 +22,30 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Button, { ButtonProps } from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import { ChangeEvent, ElementType, useState } from 'react'
+import { ChangeEvent, ElementType, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 import { useSession } from 'next-auth/react'
-
+import { CircularProgress, IconButton } from '@mui/material'
 
 interface Data {
   email: string
   country: string
-  lastName: string
-  genre: string
-  firstName: string
-  number: number | string
+  gender: string
+  name: string
   password: string
-  typeWorkout: string
+  phone: number | string
+  discipline: string
 }
 
 const initialData: Data = {
-  number: '',
   password: '',
-  lastName: 'Targón',
-  firstName: 'Juan Cruz',
-  genre: '',
-  country: 'argentina',
-  email: 'juantargon@example.com',
-  typeWorkout: 'musculacion'
+  name: '',
+  gender: '',
+  country: '',
+  email: '',
+  phone: '',
+  discipline: ''
 }
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -78,11 +76,14 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 const EntrenadorProfile = () => {
   const [open, setOpen] = useState<boolean>(false)
   const [inputValue, setInputValue] = useState<string>('')
+  const [showPassword, setShowPassword] = useState(false);
   const [userInput, setUserInput] = useState<string>('yes')
-  const [formData, setFormData] = useState<Data>(initialData)
+  const [formData, setFormData] = useState<Data>(initialData);
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
   const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
   const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showSaveResult, setShowSaveResult] = useState(false);
 
   // ** Hooks
   const {
@@ -95,6 +96,8 @@ const EntrenadorProfile = () => {
 
   const handleSecondDialogClose = () => setSecondDialogOpen(false)
 
+  //field: Es el nombre del campo que se va a actualizar. Es de tipo keyof Data, lo que significa que solo se puede pasar el nombre de una propiedad válida del tipo Data.
+  //value: Es el valor que se va a asignar al campo especificado por field. El tipo del valor depende del tipo de datos que tenga la propiedad en el objeto Data.
   const handleFormChange = (field: keyof Data, value: Data[keyof Data]) => {
     setFormData({ ...formData, [field]: value })
   }
@@ -124,6 +127,47 @@ const EntrenadorProfile = () => {
     setImgSrc('/images/avatars/1.png')
   }
 
+  useEffect(() => {
+    if (session?.user) {                    //Si session?.user existe y tiene un valor, el useEffect ejecuta la función dentro de él.
+      setFormData({                         //Dentro de la función, se utiliza setFormData para actualizar la variable de estado de formData con los datos del usuario que provienen de session?.user.
+        name: session?.user?.name || '',
+        email: session?.user?.email || '',
+        password: session.user?.password || '',
+        phone: session?.user?.phone || '',
+        country: session?.user?.country || '',
+        gender: session?.user?.gender || '',
+        discipline: session?.user?.discipline || ''
+      });
+    }
+  }, [session?.user]);
+
+  const handleSaveChanges = async () => {
+    setIsLoading(true)
+    setShowSaveResult(false); // Ocultamos el mensaje antes de hacer la solicitud
+    try {
+      // Hacemos la solicitud a la API para guardar los cambios en la base de datos con PUT, ya que POST es para "pegar", es decir cuando queremos insertar un nuevo registro.
+      const response = await fetch('/api/updateUser', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      // Verifica si la solicitud fue exitosa
+      if (response.ok) {
+        const updatedUserData = await response.json();  // Obtén los datos actualizados del usuario del backend
+        setFormData(updatedUserData);                   // Actualiza la variable de estado de formData con los datos actualizados que vienen de la consulta a la API, almacenandose en updatedUserData.
+        setShowSaveResult(true); // Mostramos el mensaje una vez que los datos se hayan guardado correctamente
+      } else {
+        // ... res.status etc...
+      }
+    } catch (error) {
+      // ... res.status etc...
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Grid container spacing={6}>
@@ -159,10 +203,10 @@ const EntrenadorProfile = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='Nombre Completo'
-                    placeholder='Juan Targón'
-                    value={session?.user?.name}
-                    onChange={e => handleFormChange('firstName', e.target.value)}
+                    label='Nombre'
+                    placeholder='Joaquín Manero'
+                    value={formData.name}
+                    onChange={e => handleFormChange('name', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -170,18 +214,31 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='email'
                     label='Email'
-                    value={session?.user?.email}
-                    placeholder='juantargon@example.com'
+                    value={formData.email}
+                    placeholder='joacomanero@gmail.com'
                     onChange={e => handleFormChange('email', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    type='password'
+                    type={showPassword ? 'text' : 'password'} // Usa el estado showPassword para mostrar u ocultar la contraseña
                     label='Contraseña'
-                    value={session?.user?.password}
+                    value={formData.password}
                     onChange={e => handleFormChange('password', e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position='end'>
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)} // Actualiza el estado showPassword al hacer clic en el botón
+                            onMouseDown={e => e.preventDefault()}
+                            edge='end'
+                          >
+                            <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} fontSize={20} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -189,9 +246,9 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='number'
                     label='Teléfono'
-                    value={session?.user?.phone}
+                    value={formData.phone}
                     placeholder='3513452255'
-                    onChange={e => handleFormChange('number', e.target.value)}
+                    onChange={e => handleFormChange('phone', e.target.value)}
                     InputProps={{ startAdornment: <InputAdornment position='start'>ARG (+54)</InputAdornment> }}
                   />
                 </Grid>
@@ -200,7 +257,7 @@ const EntrenadorProfile = () => {
                     <InputLabel>País</InputLabel>
                     <Select
                       label='País'
-                      value={session?.user?.country}
+                      value={formData.country}
                       onChange={e => handleFormChange('country', e.target.value)}
                     >
                       <MenuItem value='Argentina'>Argentina</MenuItem>
@@ -212,8 +269,8 @@ const EntrenadorProfile = () => {
                     <InputLabel>Género</InputLabel>
                     <Select
                       label='Genero'
-                      value={session?.user?.gender}
-                      onChange={e => handleFormChange('genre', e.target.value)}
+                      value={formData.gender}
+                      onChange={e => handleFormChange('gender', e.target.value)}
                     >
                       <MenuItem value='Femenino'>Femenino</MenuItem>
                       <MenuItem value='Masculino'>Masculino</MenuItem>
@@ -226,21 +283,31 @@ const EntrenadorProfile = () => {
                     <InputLabel>Disciplina</InputLabel>
                     <Select
                       label='Disciplina'
-                      value={session?.user?.discipline}
-                      onChange={e => handleFormChange('typeWorkout', e.target.value)}
+                      value={formData.discipline}
+                      onChange={e => handleFormChange('discipline', e.target.value)}
                     >
                       <MenuItem value='Musculación'>Musculación</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
 
+
                 <Grid item xs={12}>
-                  <Button variant='contained' sx={{ mr: 3 }}>
-                    Guardar cambios
+                  <Button variant='contained' sx={{ mr: 3, mb: 5 }} onClick={handleSaveChanges}>
+                    {isLoading ? (
+                      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <CircularProgress size={18} thickness={3} color="secondary" />
+                      </Box>
+                    ) : (<Typography>Guardar Cambios</Typography>)}
                   </Button>
-                  <Button type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
+                  <Button sx={{ mb: 5 }} type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
                     Reestablecer
                   </Button>
+                  {showSaveResult && (
+                    <Typography >
+                      Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
@@ -262,7 +329,7 @@ const EntrenadorProfile = () => {
                     rules={{ required: true }}
                     render={({ field }) => (
                       <FormControlLabel
-                        label='Soy consciente de que quiero borrar la cuenta.'
+                        label='Soy consciente de que quiero borrar la cuenta'
                         sx={errors.checkbox ? { '& .MuiTypography-root': { color: 'error.main' } } : null}
                         control={
                           <Checkbox
@@ -372,13 +439,13 @@ const EntrenadorProfile = () => {
         </DialogActions>
       </Dialog>
 
-    </Grid>
+    </Grid >
   )
 }
 
 EntrenadorProfile.acl = {
   action: 'manage',
-  subject: 'perfilEntrenador'
+  subject: 'perfilAlumno'
 }
 
 
