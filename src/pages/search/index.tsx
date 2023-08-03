@@ -60,7 +60,7 @@ const UserList = () => {
                     fullWidth
                     value={gender}
                     id='select-gender'
-                    label='Select gender'
+                    label='Genero'
                     labelId='gender-select'
                     onChange={handleGenderChange}
                     inputProps={{ placeholder: 'Selecciona un género' }}
@@ -79,7 +79,7 @@ const UserList = () => {
                     fullWidth
                     value={discipline}
                     id='select-discipline'
-                    label='Select discipline'
+                    label='Disciplina'
                     labelId='discipline-select'
                     onChange={handleDisciplineChange}
                     inputProps={{ placeholder: 'Selecciona una disciplina' }}
