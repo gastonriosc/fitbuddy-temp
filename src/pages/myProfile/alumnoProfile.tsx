@@ -305,126 +305,248 @@ const AlumnoProfile = () => {
         <Card>
           <CardHeader title='Eliminar cuenta' />
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Box sx={{ mb: 4 }}>
-                <FormControl>
-                  <Controller
-                    name='checkbox'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        label='Soy consciente de que quiero borrar la cuenta'
-                        sx={errors.checkbox ? { '& .MuiTypography-root': { color: 'error.main' } } : null}
-                        control={
-                          <Checkbox
-                            {...field}
-                            size='small'
-                            name='validation-basic-checkbox'
-                            sx={errors.checkbox ? { color: 'error.main' } : null}
-                          />
-                        }
-                      />
-                    )}
-                  />
-                  {errors.checkbox && (
-                    <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-checkbox'>
-                      Por favor, confirme de que quiere eliminar la cuenta.
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </Box>
-              <Button variant='contained' color='error' type='submit' disabled={errors.checkbox !== undefined}>
-                Eliminar
-              </Button>
-            </form>
           </CardContent>
         </Card>
       </Grid>
-
-      {/* Deactivate Account Dialogs */}
-      <Dialog fullWidth maxWidth='xs' open={open} onClose={handleClose}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              '& svg': { mb: 6, color: 'warning.main' }
-            }}
-          >
-            <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
-            <Typography>Está seguro de eliminar su cuenta?</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
-            Sí
-          </Button>
-          <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
-            No
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog fullWidth maxWidth='xs' open={secondDialogOpen} onClose={handleSecondDialogClose}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-              '& svg': {
-                mb: 8,
-                color: userInput === 'yes' ? 'success.main' : 'error.main'
-              }
-            }}
-          >
-            <Icon
-              fontSize='5.5rem'
-              icon={userInput === 'yes' ? 'mdi:check-circle-outline' : 'mdi:close-circle-outline'}
-            />
-            <Typography variant='h4' sx={{ mb: 5 }}>
-              {userInput === 'yes' ? 'Cuenta Eliminada' : 'Cancelada'}
-            </Typography>
-            <Typography>
-              {userInput === 'yes' ? 'Tu cuenta se ha eliminado correctamente.' : 'Eliminación de cuenta cancelada.'}
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Button variant='contained' color='success' onClick={handleSecondDialogClose}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-
     </Grid>
+
+    // <Grid container spacing={6}>
+
+    //   <Grid item xs={12}>
+    //     <Card>
+    //       <CardHeader title={`Alumno: ${formData.firstName} ${formData.lastName}`} />
+    //       <form >
+    //         <CardContent sx={{ pt: 0 }}>
+    //           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    //             <ImgStyled src={imgSrc} alt='Profile Pic' />
+    //             <div>
+    //               <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+    //                 Subir foto
+    //                 <input
+    //                   hidden
+    //                   type='file'
+    //                   value={inputValue}
+    //                   accept='image/png, image/jpeg'
+    //                   onChange={handleInputImageChange}
+    //                   id='account-settings-upload-image'
+    //                 />
+    //               </ButtonStyled>
+    //               <ResetButtonStyled color='secondary' variant='outlined' onClick={handleInputImageReset}>
+    //                 Volver al estado inicial
+    //               </ResetButtonStyled>
+    //               <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
+    //             </div>
+    //           </Box>
+    //         </CardContent>
+    //         <Divider />
+    //         <CardContent>
+    //           <Grid container spacing={6}>
+    //             <Grid item xs={12} sm={6}>
+    //               <TextField
+    //                 fullWidth
+    //                 label='Nombre Completo'
+    //                 placeholder='Facundo Tissera'
+    //                 value={formData.firstName}
+    //                 onChange={e => handleFormChange('firstName', e.target.value)}
+    //               />
+    //             </Grid>
+    //             <Grid item xs={12} sm={6}>
+    //               <TextField
+    //                 fullWidth
+    //                 type='email'
+    //                 label='Email'
+    //                 value={formData.email}
+    //                 placeholder='facutissera@example.com'
+    //                 onChange={e => handleFormChange('email', e.target.value)}
+    //               />
+    //             </Grid>
+    //             <Grid item xs={12} sm={6}>
+    //               <TextField
+    //                 fullWidth
+    //                 type='password'
+    //                 label='Contraseña'
+    //                 value={formData.password}
+    //                 onChange={e => handleFormChange('password', e.target.value)}
+    //               />
+    //             </Grid>
+    //             <Grid item xs={12} sm={6}>
+    //               <TextField
+    //                 fullWidth
+    //                 type='number'
+    //                 label='Teléfono'
+    //                 value={formData.number}
+    //                 placeholder='3513452255'
+    //                 onChange={e => handleFormChange('number', e.target.value)}
+    //                 InputProps={{ startAdornment: <InputAdornment position='start'>ARG (+54)</InputAdornment> }}
+    //               />
+    //             </Grid>
+    //             <Grid item xs={12} sm={6}>
+    //               <FormControl fullWidth>
+    //                 <InputLabel>País</InputLabel>
+    //                 <Select
+    //                   label='País'
+    //                   value={formData.country}
+    //                   onChange={e => handleFormChange('country', e.target.value)}
+    //                 >
+    //                   <MenuItem value='argentina'>Argentina</MenuItem>
+    //                 </Select>
+    //               </FormControl>
+    //             </Grid>
+    //             <Grid item xs={12} sm={6}>
+    //               <FormControl fullWidth>
+    //                 <InputLabel>Género</InputLabel>
+    //                 <Select
+    //                   label='Genero'
+    //                   value={formData.genre}
+    //                   onChange={e => handleFormChange('genre', e.target.value)}
+    //                 >
+    //                   <MenuItem value='femenino'>Femenino</MenuItem>
+    //                   <MenuItem value='masculino'>Masculino</MenuItem>
+    //                   <MenuItem value='otro'>Otro</MenuItem>
+    //                 </Select>
+    //               </FormControl>
+    //             </Grid>
+
+
+    //             <Grid item xs={12}>
+    //               <Button variant='contained' sx={{ mr: 3 }}>
+    //                 Guardar cambios
+    //               </Button>
+    //               <Button type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
+    //                 Reestablecer
+    //               </Button>
+    //             </Grid>
+    //           </Grid>
+    //         </CardContent>
+    //       </form>
+    //     </Card>
+    //   </Grid >
+
+    //   {/* Delete Account Card */}
+    //   <Grid item xs={12}>
+    //     <Card>
+    //       <CardHeader title='Eliminar cuenta' />
+    //       <CardContent>
+    //         <form onSubmit={handleSubmit(onSubmit)}>
+    //           <Box sx={{ mb: 4 }}>
+    //             <FormControl>
+    //               <Controller
+    //                 name='checkbox'
+    //                 control={control}
+    //                 rules={{ required: true }}
+    //                 render={({ field }) => (
+    //                   <FormControlLabel
+    //                     label='Soy consciente de que quiero borrar la cuenta'
+    //                     sx={errors.checkbox ? { '& .MuiTypography-root': { color: 'error.main' } } : null}
+    //                     control={
+    //                       <Checkbox
+    //                         {...field}
+    //                         size='small'
+    //                         name='validation-basic-checkbox'
+    //                         sx={errors.checkbox ? { color: 'error.main' } : null}
+    //                       />
+    //                     }
+    //                   />
+    //                 )}
+    //               />
+    //               {errors.checkbox && (
+    //                 <FormHelperText sx={{ color: 'error.main' }} id='validation-basic-checkbox'>
+    //                   Por favor, confirme de que quiere eliminar la cuenta.
+    //                 </FormHelperText>
+    //               )}
+    //             </FormControl>
+    //           </Box>
+    //           <Button variant='contained' color='error' type='submit' disabled={errors.checkbox !== undefined}>
+    //             Eliminar
+    //           </Button>
+    //         </form>
+    //       </CardContent>
+    //     </Card>
+    //   </Grid>
+
+    //   {/* Deactivate Account Dialogs */}
+    //   <Dialog fullWidth maxWidth='xs' open={open} onClose={handleClose}>
+    //     <DialogContent
+    //       sx={{
+    //         pb: theme => `${theme.spacing(6)} !important`,
+    //         px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+    //         pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+    //       }}
+    //     >
+    //       <Box
+    //         sx={{
+    //           display: 'flex',
+    //           textAlign: 'center',
+    //           alignItems: 'center',
+    //           flexDirection: 'column',
+    //           justifyContent: 'center',
+    //           '& svg': { mb: 6, color: 'warning.main' }
+    //         }}
+    //       >
+    //         <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
+    //         <Typography>Está seguro de eliminar su cuenta?</Typography>
+    //       </Box>
+    //     </DialogContent>
+    //     <DialogActions
+    //       sx={{
+    //         justifyContent: 'center',
+    //         px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+    //         pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+    //       }}
+    //     >
+    //       <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
+    //         Sí
+    //       </Button>
+    //       <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
+    //         No
+    //       </Button>
+    //     </DialogActions>
+    //   </Dialog>
+    //   <Dialog fullWidth maxWidth='xs' open={secondDialogOpen} onClose={handleSecondDialogClose}>
+    //     <DialogContent
+    //       sx={{
+    //         pb: theme => `${theme.spacing(6)} !important`,
+    //         px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+    //         pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+    //       }}
+    //     >
+    //       <Box
+    //         sx={{
+    //           display: 'flex',
+    //           alignItems: 'center',
+    //           flexDirection: 'column',
+    //           '& svg': {
+    //             mb: 8,
+    //             color: userInput === 'yes' ? 'success.main' : 'error.main'
+    //           }
+    //         }}
+    //       >
+    //         <Icon
+    //           fontSize='5.5rem'
+    //           icon={userInput === 'yes' ? 'mdi:check-circle-outline' : 'mdi:close-circle-outline'}
+    //         />
+    //         <Typography variant='h4' sx={{ mb: 5 }}>
+    //           {userInput === 'yes' ? 'Cuenta Eliminada' : 'Cancelada'}
+    //         </Typography>
+    //         <Typography>
+    //           {userInput === 'yes' ? 'Tu cuenta se ha eliminado correctamente.' : 'Eliminación de cuenta cancelada.'}
+    //         </Typography>
+    //       </Box>
+    //     </DialogContent>
+    //     <DialogActions
+    //       sx={{
+    //         justifyContent: 'center',
+    //         px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+    //         pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+    //       }}
+    //     >
+    //       <Button variant='contained' color='success' onClick={handleSecondDialogClose}>
+    //         OK
+    //       </Button>
+    //     </DialogActions>
+    //   </Dialog>
+
+    // </Grid>
   )
 }
 

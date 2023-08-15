@@ -171,7 +171,7 @@ const EntrenadorProfile = () => {
 
   return (
     <Grid container spacing={6}>
-      <Grid item xs={12}>
+      <Grid item md={6} xs={12}>
         <Card>
           <CardHeader title={`Entrenador: ${session?.user?.name}`} />
           <form >
@@ -329,7 +329,7 @@ const EntrenadorProfile = () => {
                     rules={{ required: true }}
                     render={({ field }) => (
                       <FormControlLabel
-                        label='Soy consciente de que quiero borrar la cuenta'
+                        label='Soy consciente de que quiero borrar la cuenta.'
                         sx={errors.checkbox ? { '& .MuiTypography-root': { color: 'error.main' } } : null}
                         control={
                           <Checkbox
@@ -439,7 +439,7 @@ const EntrenadorProfile = () => {
         </DialogActions>
       </Dialog>
 
-    </Grid >
+    </Grid>
   )
 }
 

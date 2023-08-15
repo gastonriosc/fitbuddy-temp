@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -111,124 +111,134 @@ const newPlan = () => {
 
 
   return (
-    <TableContainer component={Paper}>
-      <Card>
-        <CardHeader title='Planes' />
-        <Table sx={{ minWidth: 700 }} aria-label='customized table'>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Ejercicio</StyledTableCell>
-              <StyledTableCell align='right'>Series</StyledTableCell>
-              <StyledTableCell align='right'>Repeticiones</StyledTableCell>
-              <StyledTableCell align='right'>Peso</StyledTableCell>
-              <StyledTableCell align='right'>Acciones</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {planList.map((row, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell component='th' scope='row'>
-                  {editingRow === index ? (
-                    <TextField
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                    />
-                  ) : (
-                    row.nombre
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  {editingRow === index ? (
-                    <TextField
-                      type='number'
-                      value={series}
-                      onChange={(e) => setSeries(Number(e.target.value))}
-                    />
-                  ) : (
-                    row.series
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  {editingRow === index ? (
-                    <TextField
-                      type='number'
-                      value={repeticiones}
-                      onChange={(e) => setRepeticiones(Number(e.target.value))}
-                    />
-                  ) : (
-                    row.repeticiones
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  {editingRow === index ? (
-                    <TextField
-                      type='number'
-                      value={peso}
-                      onChange={(e) => setPeso(Number(e.target.value))}
-                    />
-                  ) : (
-                    row.peso
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  {editingRow === index ? (
-                    <>
-                      <ButtonStyled onClick={handleSaveRow}>Guardar</ButtonStyled>
-                      <ButtonStyled onClick={handleCancelEditRow}>Cancelar</ButtonStyled>
-                    </>
-                  ) : (
-                    <>
-                      <ButtonStyled onClick={() => handleEditRow(index)}>Editar</ButtonStyled>
-                      <ButtonStyled onClick={() => handleDeleteRow(index)}>Eliminar</ButtonStyled>
-                    </>
-                  )}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-            {editingRow === planList.length && (
-              <StyledTableRow>
-                <StyledTableCell component='th' scope='row'>
-                  <TextField
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  <TextField
-                    type='number'
-                    value={series}
-                    onChange={(e) => setSeries(Number(e.target.value))}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  <TextField
-                    type='number'
-                    value={repeticiones}
-                    onChange={(e) => setRepeticiones(Number(e.target.value))}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  <TextField
-                    type='number'
-                    value={peso}
-                    onChange={(e) => setPeso(Number(e.target.value))}
-                  />
-                </StyledTableCell>
-                <StyledTableCell align='right'>
-                  <ButtonStyled onClick={handleSaveRow}>Guardar</ButtonStyled>
-                  <ButtonStyled onClick={handleCancelEditRow}>Cancelar</ButtonStyled>
-                </StyledTableCell>
-              </StyledTableRow>
-            )}
-          </TableBody>
-        </Table>
-        <CardContent>
-          <ButtonStyled variant='contained' onClick={handleAddRow}>
-            Agregar Ejercicio
-          </ButtonStyled>
-        </CardContent>
-      </Card>
-    </TableContainer >
+    <Grid container spacing={6}>
+      <Grid item md={6} xs={12}>
+        <Card>
+          <CardHeader title='Planes' />
+          <CardContent>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+
+    // <TableContainer component={Paper}>
+    //   <Card>
+    //     <CardHeader title='Planes' />
+    //     <Table sx={{ minWidth: 700 }} aria-label='customized table'>
+    //       <TableHead>
+    //         <TableRow>
+    //           <StyledTableCell>Ejercicio</StyledTableCell>
+    //           <StyledTableCell align='right'>Series</StyledTableCell>
+    //           <StyledTableCell align='right'>Repeticiones</StyledTableCell>
+    //           <StyledTableCell align='right'>Peso</StyledTableCell>
+    //           <StyledTableCell align='right'>Acciones</StyledTableCell>
+    //         </TableRow>
+    //       </TableHead>
+    //       <TableBody>
+    //         {planList.map((row, index) => (
+    //           <StyledTableRow key={index}>
+    //             <StyledTableCell component='th' scope='row'>
+    //               {editingRow === index ? (
+    //                 <TextField
+    //                   value={nombre}
+    //                   onChange={(e) => setNombre(e.target.value)}
+    //                 />
+    //               ) : (
+    //                 row.nombre
+    //               )}
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               {editingRow === index ? (
+    //                 <TextField
+    //                   type='number'
+    //                   value={series}
+    //                   onChange={(e) => setSeries(Number(e.target.value))}
+    //                 />
+    //               ) : (
+    //                 row.series
+    //               )}
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               {editingRow === index ? (
+    //                 <TextField
+    //                   type='number'
+    //                   value={repeticiones}
+    //                   onChange={(e) => setRepeticiones(Number(e.target.value))}
+    //                 />
+    //               ) : (
+    //                 row.repeticiones
+    //               )}
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               {editingRow === index ? (
+    //                 <TextField
+    //                   type='number'
+    //                   value={peso}
+    //                   onChange={(e) => setPeso(Number(e.target.value))}
+    //                 />
+    //               ) : (
+    //                 row.peso
+    //               )}
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               {editingRow === index ? (
+    //                 <>
+    //                   <ButtonStyled onClick={handleSaveRow}>Guardar</ButtonStyled>
+    //                   <ButtonStyled onClick={handleCancelEditRow}>Cancelar</ButtonStyled>
+    //                 </>
+    //               ) : (
+    //                 <>
+    //                   <ButtonStyled onClick={() => handleEditRow(index)}>Editar</ButtonStyled>
+    //                   <ButtonStyled onClick={() => handleDeleteRow(index)}>Eliminar</ButtonStyled>
+    //                 </>
+    //               )}
+    //             </StyledTableCell>
+    //           </StyledTableRow>
+    //         ))}
+    //         {editingRow === planList.length && (
+    //           <StyledTableRow>
+    //             <StyledTableCell component='th' scope='row'>
+    //               <TextField
+    //                 value={nombre}
+    //                 onChange={(e) => setNombre(e.target.value)}
+    //               />
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               <TextField
+    //                 type='number'
+    //                 value={series}
+    //                 onChange={(e) => setSeries(Number(e.target.value))}
+    //               />
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               <TextField
+    //                 type='number'
+    //                 value={repeticiones}
+    //                 onChange={(e) => setRepeticiones(Number(e.target.value))}
+    //               />
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               <TextField
+    //                 type='number'
+    //                 value={peso}
+    //                 onChange={(e) => setPeso(Number(e.target.value))}
+    //               />
+    //             </StyledTableCell>
+    //             <StyledTableCell align='right'>
+    //               <ButtonStyled onClick={handleSaveRow}>Guardar</ButtonStyled>
+    //               <ButtonStyled onClick={handleCancelEditRow}>Cancelar</ButtonStyled>
+    //             </StyledTableCell>
+    //           </StyledTableRow>
+    //         )}
+    //       </TableBody>
+    //     </Table>
+    //     <CardContent>
+    //       <ButtonStyled variant='contained' onClick={handleAddRow}>
+    //         Agregar Ejercicio
+    //       </ButtonStyled>
+    //     </CardContent>
+    //   </Card>
+    // </TableContainer>
   );
 };
 
