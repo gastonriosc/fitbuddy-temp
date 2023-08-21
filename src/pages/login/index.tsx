@@ -145,7 +145,7 @@ const LoginPage = () => {
     signIn('credentials', { email, password, redirect: false }).then(res => {
       setIsLoading(false)
       if (res && res.ok) {
-        router.replace('/myProfile/alumnoProfile')
+        router.replace('/mySettings/')
       } else {
         setError('email', {
           type: 'manual',

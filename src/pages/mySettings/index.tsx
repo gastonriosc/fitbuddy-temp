@@ -8,8 +8,8 @@ import { AbilityContext } from 'src/layouts/components/acl/Can'
 import Grid from '@mui/material/Grid'
 
 // ** Customs
-import AlumnoProfile from './alumnoProfile'
-import EntrenadorProfile from './entrenadorProfile'
+import AlumnoProfile from './alumnoSettings'
+import EntrenadorProfile from './entrenadorSettings'
 
 const MyProfile = () => {
   // ** Hooks
@@ -29,7 +29,7 @@ const MyProfile = () => {
 
 MyProfile.acl = {
   action: 'manage',
-  subject: 'myProfile-page'
+  subject: 'mySettings-page'
 }
 
 

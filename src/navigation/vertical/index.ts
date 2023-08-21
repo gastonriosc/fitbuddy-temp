@@ -32,10 +32,10 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
-      title: 'Perfil',
+      title: 'Configuracion',
       icon: 'mdi-account',
-      path: '/myProfile',
-      subject: 'myProfile-page',
+      path: '/mySettings',
+      subject: 'mySettings-page',
       action: 'manage'
     }
 
