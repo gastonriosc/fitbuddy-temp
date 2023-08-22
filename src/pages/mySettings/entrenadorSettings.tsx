@@ -215,6 +215,7 @@ const EntrenadorProfile = () => {
                     type='email'
                     label='Email'
                     value={formData.email}
+                    disabled={true}
                     placeholder='joacomanero@gmail.com'
                     onChange={e => handleFormChange('email', e.target.value)}
                   />

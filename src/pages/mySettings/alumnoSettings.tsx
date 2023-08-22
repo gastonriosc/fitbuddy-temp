@@ -217,6 +217,7 @@ const AlumnoProfile = () => {
                     type='email'
                     label='Email'
                     value={formData.email}
+                    disabled={true}
                     placeholder='facutissera@example.com'
                     onChange={e => handleFormChange('email', e.target.value)}
                   />
