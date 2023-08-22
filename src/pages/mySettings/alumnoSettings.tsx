@@ -82,6 +82,7 @@ const AlumnoProfile = () => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
+  const [var1, setVar1] = useState("");
 
   // ** Hooks
   const {
@@ -155,9 +156,13 @@ const AlumnoProfile = () => {
       if (response.ok) {
         const updatedUserData = await response.json();  // Obtén los datos actualizados del usuario del backend
         setFormData(updatedUserData);                   // Actualiza la variable de estado de formData con los datos actualizados que vienen de la consulta a la API, almacenandose en updatedUserData.
-        setShowSaveResult(true);                        // Mostramos el mensaje una vez que los datos se hayan guardado correctamente
+        setVar1("Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.");                // Mostramos el mensaje una vez que los datos se hayan guardado correctamente
+        setShowSaveResult(true);
       } else {
-        // ... res.status etc...
+        if (response.status == 404) {
+          setVar1("Usuario no encontrado");
+          setShowSaveResult(true);
+        }
       }
     } catch (error) {
       // ... res.status etc...
@@ -290,7 +295,7 @@ const AlumnoProfile = () => {
                   </Button>
                   {showSaveResult && (
                     <Typography >
-                      Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.
+                      {var1}
                     </Typography>
                   )}
                 </Grid>
