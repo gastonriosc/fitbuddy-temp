@@ -1,5 +1,6 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -26,6 +27,8 @@ import LinearProgress from '@mui/material/LinearProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import DialogContentText from '@mui/material/DialogContentText'
 
+//import Router, { useRouter } from 'next/router'
+
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
@@ -41,6 +44,10 @@ import { UsersType } from 'src/types/apps/userTypes'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
+import { userAgent } from 'next/server'
+import { redirect } from 'next/dist/server/api-utils'
+
+//import axios from 'axios'
 
 interface ColorsType {
   [key: string]: ThemeColor
@@ -49,7 +56,7 @@ interface ColorsType {
 const data: UsersType = {
   _id: 1,
   role: 'admin',
-  status: 'active',
+  status: 'pending',
   username: 'gslixby0',
   avatarColor: 'primary',
   country: 'El Salvador',
@@ -58,16 +65,20 @@ const data: UsersType = {
   currentPlan: 'enterprise',
   fullName: 'Daisy Patterson',
   email: 'gslixby0@abc.net.au',
-  avatar: '/images/avatars/4.png'
+  avatar: '/images/avatars/4.png',
+  name: '',
+  phone: 0,
+  gender: '',
+  discipline: ''
 }
 
-const roleColors: ColorsType = {
-  admin: 'error',
-  editor: 'info',
-  author: 'warning',
-  maintainer: 'success',
-  subscriber: 'primary'
-}
+// const roleColors: ColorsType | string = {
+//   admin: 'error',
+//   editor: 'info',
+//   author: 'warning',
+//   maintainer: 'success',
+//   subscriber: 'primary'
+// }
 
 const statusColors: ColorsType = {
   active: 'success',
@@ -90,12 +101,47 @@ const Sub = styled('sub')({
   alignSelf: 'flex-end'
 })
 
-const UserViewLeft = () => {
+
+const MyProfile = () => {
   // ** States
   const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [openPlans, setOpenPlans] = useState<boolean>(false)
   const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
   const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState<boolean>(false)
+
+  // const storedSelectedUser = localStorage.getItem('selectedUser');
+  // const selectedUser = storedSelectedUser ? JSON.parse(storedSelectedUser) : {};
+  const route = useRouter();
+  const [users, setUsers] = useState<UsersType>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const id = route.query.id       //Funcion asincrona que hace la llamada a la API de students.
+      try {
+        // ** Login API Call to match the user credentials and receive user data in response along with his role
+        const res = await fetch('/api/myProfile/?id=' + id, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+        if (res.status == 200) {
+          const user = await res.json()
+          setUsers(user)                              //Cargamos users con la data que viene de la solicitud a la API.
+        }
+        if (res.status == 404) {
+          route.replace('/404')
+        }
+        if (res.status == 500) {
+          route.replace('/500')
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchProfile();                                 //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
+  }, []);
 
   // Handle Edit dialog
   const handleEditClickOpen = () => setOpenEdit(true)
@@ -115,7 +161,6 @@ const UserViewLeft = () => {
                 <CustomAvatar
                   src={data.avatar}
                   variant='rounded'
-                  alt={data.fullName}
                   sx={{ width: 120, height: 120, fontWeight: 600, mb: 4 }}
                 />
               ) : (
@@ -129,13 +174,16 @@ const UserViewLeft = () => {
                 </CustomAvatar>
               )}
               <Typography variant='h6' sx={{ mb: 2 }}>
-                {data.fullName}
+                {users.name}
               </Typography>
+
               <CustomChip
                 skin='light'
                 size='small'
-                label={data.role}
-                color={roleColors[data.role]}
+
+                label={users.discipline}
+
+                color={statusColors[data.status]}
                 sx={{
                   height: 20,
                   fontWeight: 600,
@@ -147,7 +195,7 @@ const UserViewLeft = () => {
               />
             </CardContent>
 
-            <CardContent sx={{ my: 1 }}>
+            {/* <CardContent sx={{ my: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Box sx={{ mr: 8, display: 'flex', alignItems: 'center' }}>
                   <CustomAvatar skin='light' variant='rounded' sx={{ mr: 3 }}>
@@ -172,25 +220,25 @@ const UserViewLeft = () => {
                   </div>
                 </Box>
               </Box>
-            </CardContent>
+            </CardContent> */}
 
             <CardContent>
-              <Typography variant='h6'>Details</Typography>
+              <Typography variant='h6'>Información del profesional</Typography>
               <Divider sx={{ mt: theme => `${theme.spacing(4)} !important` }} />
               <Box sx={{ pt: 2, pb: 1 }}>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>
-                    Username:
+                    Nombre Completo:
                   </Typography>
-                  <Typography variant='body2'>@{data.username}</Typography>
+                  <Typography variant='body2'>{users.name}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>
-                    Billing Email:
+                    Email de contacto :
                   </Typography>
-                  <Typography variant='body2'>{data.email}</Typography>
+                  <Typography variant='body2'>{users.email}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', mb: 2.7 }}>
+                {/* <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>
                     Status:
                   </Typography>
@@ -207,40 +255,36 @@ const UserViewLeft = () => {
                       textTransform: 'capitalize'
                     }}
                   />
-                </Box>
+                </Box> */}
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Role:</Typography>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Disciplina:</Typography>
                   <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>
-                    {data.role}
+                    {users.discipline}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Tax ID:</Typography>
-                  <Typography variant='body2'>Tax-8894</Typography>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Teléfono:</Typography>
+                  <Typography variant='body2'>{users.phone}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Contact:</Typography>
-                  <Typography variant='body2'>+1 {data.contact}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Language:</Typography>
-                  <Typography variant='body2'>English</Typography>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Género:</Typography>
+                  <Typography variant='body2'>{users.gender}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Country:</Typography>
-                  <Typography variant='body2'>{data.country}</Typography>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>País:</Typography>
+                  <Typography variant='body2'>{users.country}</Typography>
                 </Box>
               </Box>
             </CardContent>
 
-            <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+            {/* <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button variant='contained' sx={{ mr: 2 }} onClick={handleEditClickOpen}>
                 Edit
               </Button>
               <Button color='error' variant='outlined' onClick={() => setSuspendDialogOpen(true)}>
                 Suspend
               </Button>
-            </CardActions>
+            </CardActions> */}
 
             <Dialog
               open={openEdit}
@@ -283,7 +327,7 @@ const UserViewLeft = () => {
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                      <TextField fullWidth type='email' label='Billing Email' defaultValue={data.email} />
+                      {/* <TextField fullWidth type='email' label='Billing Email' defaultValue={selectedUser.email} /> */}
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
@@ -568,4 +612,11 @@ const UserViewLeft = () => {
   }
 }
 
-export default UserViewLeft
+
+MyProfile.acl = {
+  action: 'manage',
+  subject: 'myProfile-page'
+}
+
+
+export default MyProfile

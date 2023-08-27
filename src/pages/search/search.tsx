@@ -1,5 +1,6 @@
 // ** React Imports
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -76,7 +77,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
   const columns: GridColDef[] = [
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 280,
       field: 'name',
       headerName: 'Nombre',
       renderCell: ({ row }: CellType) => {
@@ -96,7 +97,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     },
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 280,
       field: 'email',
       headerName: 'Email',
       renderCell: ({ row }: CellType) => {
@@ -122,7 +123,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     },
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 200,
       field: 'gender',
       headerName: 'Genero',
       renderCell: ({ row }: CellType) => {
@@ -135,7 +136,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     },
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 200,
       field: 'discipline',
       headerName: 'Disciplina',
       renderCell: ({ row }: CellType) => {
@@ -152,7 +153,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     },
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 200,
       field: 'country',
       headerName: 'Pais',
       renderCell: ({ row }: CellType) => {
@@ -165,13 +166,13 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     },
     {
       flex: 0.2,
-      minWidth: 250,
+      minWidth: 200,
       field: 'observe',
       headerName: 'Actions',
-      renderCell: ({ }: CellType) => {
+      renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            <Button >
+            <Button href={'/myProfile/' + row._id}>
               <Icon icon={'mdi:eye-outline'} fontSize={20} />
             </Button>
           </Typography>
