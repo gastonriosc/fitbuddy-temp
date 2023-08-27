@@ -1,6 +1,5 @@
 // ** React Imports
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -14,7 +13,7 @@ import { UsersType } from 'src/types/apps/userTypes'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { Button } from '@mui/material'
+import { Button, CircularProgress } from '@mui/material'
 import { getInitials } from 'src/@core/utils/get-initials'
 
 // iconos
@@ -58,13 +57,16 @@ const renderClient = (row: UsersType) => {
 // El componente Search recibe tres propiedades como argumentos (genderFilter, disciplineFilter y searchTerm), que se utilizan para filtrar los usuarios.
 const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => {
   const [users, setUsers] = useState<UsersType[]>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    setIsLoading(true)
     const fetchAlumnoUsers = async () => {              //Funcion asincrona que hace la llamada a la API de students.
       try {
         const response = await fetch('/api/students');
         const data = await response.json();
-        setUsers(data);                                 //Cargamos users con la data que viene de la solicitud a la API.
+        setUsers(data);          //Cargamos users con la data que viene de la solicitud a la API.
+        setIsLoading(false)
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -198,10 +200,22 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
 
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={filteredUsers} columns={columns} getRowId={getRowId} />
+      {isLoading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
+          <CircularProgress size={60} thickness={4} color="secondary" />
+        </Box>
+      ) : (
+        <DataGrid rows={filteredUsers} columns={columns} getRowId={getRowId} />
+      )}
     </div>
   );
-
 };
 
 export default Search;
