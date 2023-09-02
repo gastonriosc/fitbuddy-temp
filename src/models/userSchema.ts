@@ -34,16 +34,6 @@ const usersSchema = new mongoose.Schema({
   country: {
     type: String,
     default: null
-  },
-  trainerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    default: null,
-    unique: true
-  },
-  studentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    default: null,
-    unique: true
   }
 })
 
