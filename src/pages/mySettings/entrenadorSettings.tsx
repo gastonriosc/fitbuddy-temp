@@ -171,14 +171,14 @@ const EntrenadorProfile = () => {
 
   return (
     <Grid container spacing={6}>
-      <Grid item md={6} xs={12}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title={`Entrenador: ${session?.user?.name}`} />
           <form >
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <ImgStyled src={imgSrc} alt='Profile Pic' />
-                {/* <div>
+                <div>
                   <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Subir foto
                     <input
@@ -194,7 +194,7 @@ const EntrenadorProfile = () => {
                     Volver al estado inicial
                   </ResetButtonStyled>
                   <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
-                </div> */}
+                </div>
               </Box>
             </CardContent>
             <Divider />

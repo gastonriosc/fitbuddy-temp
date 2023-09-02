@@ -180,7 +180,7 @@ const AlumnoProfile = () => {
             <CardContent sx={{ pt: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <ImgStyled src={imgSrc} alt='Profile Pic' />
-                {/* <div>
+                <div>
                   <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Subir foto
                     <input
@@ -196,7 +196,7 @@ const AlumnoProfile = () => {
                     Volver al estado inicial
                   </ResetButtonStyled>
                   <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
-                </div> */}
+                </div>
               </Box>
             </CardContent>
             <Divider />
@@ -307,7 +307,7 @@ const AlumnoProfile = () => {
       </Grid >
 
       {/* Delete Account Card */}
-      {/* <Grid item xs={12}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title='Eliminar cuenta' />
           <CardContent>
@@ -346,10 +346,10 @@ const AlumnoProfile = () => {
             </form>
           </CardContent>
         </Card>
-      </Grid> */}
+      </Grid>
 
       {/* Deactivate Account Dialogs */}
-      {/* <Dialog fullWidth maxWidth='xs' open={open} onClose={handleClose}>
+      <Dialog fullWidth maxWidth='xs' open={open} onClose={handleClose}>
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
@@ -428,7 +428,7 @@ const AlumnoProfile = () => {
             OK
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
 
     </Grid>
   )
