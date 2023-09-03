@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
+// import { ChangeEvent } from 'react'
+
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -17,8 +19,10 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
 import CardContent from '@mui/material/CardContent'
+import Fab from '@mui/material/Typography'
 
-import CardActions from '@mui/material/CardActions'
+// import useMediaQuery from '@mui/material/useMediaQuery'
+// import CardActions from '@mui/material/CardActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import DialogContent from '@mui/material/DialogContent'
@@ -27,6 +31,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import LinearProgress from '@mui/material/LinearProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import DialogContentText from '@mui/material/DialogContentText'
+
+// import { Theme } from '@mui/material/styles'
 
 //import Router, { useRouter } from 'next/router'
 
@@ -103,6 +109,10 @@ const Sub = styled('sub')({
   alignSelf: 'flex-end'
 })
 
+// interface Props {
+//   plan: string
+//   handleChange: (e: ChangeEvent<{ checked: boolean }>) => void
+// }
 
 const MyProfile = () => {
   // ** States
@@ -110,6 +120,12 @@ const MyProfile = () => {
   const [openPlans, setOpenPlans] = useState<boolean>(false)
   const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
   const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState<boolean>(false)
+
+  // ** Props
+  // const { plan, handleChange } = props
+
+  // // ** Hook
+  // const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   // const storedSelectedUser = localStorage.getItem('selectedUser');
   // const selectedUser = storedSelectedUser ? JSON.parse(storedSelectedUser) : {};
@@ -153,10 +169,11 @@ const MyProfile = () => {
   const handlePlansClickOpen = () => setOpenPlans(true)
   const handlePlansClose = () => setOpenPlans(false)
 
+
   if (data) {
     return (
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        <Grid item xs={12} md={3}>
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               {data.avatar ? (
@@ -419,195 +436,265 @@ const MyProfile = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
-          <Card sx={{ boxShadow: 'none', border: theme => `2px solid ${theme.palette.primary.main}` }}>
-            <CardContent
-              sx={{ display: 'flex', flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between' }}
-            >
-              <CustomChip
-                skin='light'
-                size='small'
-                color='primary'
-                label='Standard'
-                sx={{ fontSize: '0.75rem', borderRadius: '4px' }}
-              />
-              <Box sx={{ display: 'flex', position: 'relative' }}>
-                <Sup>$</Sup>
-                <Typography
-                  variant='h3'
-                  sx={{
-                    mb: -1.2,
-                    lineHeight: 1,
-                    color: 'primary.main'
-                  }}
-                >
-                  99
-                </Typography>
-                <Sub>/ month</Sub>
-              </Box>
-            </CardContent>
-
-            <CardContent>
-              <Box sx={{ mt: 4, mb: 5 }}>
-                <Box
-                  sx={{ display: 'flex', mb: 2.5, alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}
-                >
-                  <Icon icon='mdi:circle' fontSize='0.625rem' />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    10 Users
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    mt: 2.5,
-                    display: 'flex',
-                    mb: 2.5,
-                    alignItems: 'center',
-                    '& svg': { mr: 2, color: 'text.secondary' }
-                  }}
-                >
-                  <Icon icon='mdi:circle' fontSize='0.625rem' />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    Up to 10GB storage
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    mt: 2.5,
-                    display: 'flex',
-                    mb: 2.5,
-                    alignItems: 'center',
-                    '& svg': { mr: 2, color: 'text.secondary' }
-                  }}
-                >
-                  <Icon icon='mdi:circle' fontSize='0.625rem' />
-                  <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    Basic Support
-                  </Typography>
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', mb: 1.5, justifyContent: 'space-between' }}>
-                <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                  Days
-                </Typography>
-                <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                  26 of 30 Days
-                </Typography>
-              </Box>
-              <LinearProgress value={86.66} variant='determinate' sx={{ height: 8, borderRadius: '5px' }} />
-              <Typography variant='caption' sx={{ mt: 1.5, mb: 6 }}>
-                4 days remaining
+        <Grid item xs={12} md={9}>
+          {/* <Box sx={{ mb: [10, 17.5], textAlign: 'center' }}>
+            <Typography variant='h4'>Pricing Plans</Typography>
+            <Box sx={{ mt: 2.5, mb: 10.75 }}>
+              <Typography variant='body2'>
+                All plans include 40+ advanced tools and features to boost your product.
               </Typography>
-              <Button variant='contained' sx={{ width: '100%' }} onClick={handlePlansClickOpen}>
-                Upgrade Plan
-              </Button>
-            </CardContent>
-
-            <Dialog
-              open={openPlans}
-              onClose={handlePlansClose}
-              aria-labelledby='user-view-plans'
-              aria-describedby='user-view-plans-description'
-              sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
-            >
-              <DialogTitle
-                id='user-view-plans'
-                sx={{
-                  textAlign: 'center',
-                  fontSize: '1.5rem !important',
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                  pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-                }}
+              <Typography variant='body2'>Choose the best plan to fit your needs.</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+              <InputLabel
+                htmlFor='pricing-switch'
+                sx={{ fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem', color: 'text.secondary' }}
               >
-                Upgrade Plan
-              </DialogTitle>
+                Monthly
+              </InputLabel>
+              <Switch color='secondary' id='pricing-switch' onChange={handleChange} checked={plan === 'annually'} />
+              <InputLabel htmlFor='pricing-switch' sx={{ fontWeight: 500, cursor: 'pointer', fontSize: '0.875rem' }}>
+                Annually
+              </InputLabel>
 
-              <DialogContent
-                sx={{ px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`] }}
-              >
-                <DialogContentText variant='body2' sx={{ textAlign: 'center' }} id='user-view-plans-description'>
-                  Choose the best plan for the user.
-                </DialogContentText>
-              </DialogContent>
-
-              <DialogContent
+              <Box
                 sx={{
+                  top: -30,
+                  left: '50%',
                   display: 'flex',
-                  alignItems: 'center',
-                  flexWrap: ['wrap', 'nowrap'],
-                  pt: theme => `${theme.spacing(2)} !important`,
-                  pb: theme => `${theme.spacing(8)} !important`,
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+                  position: 'absolute',
+                  transform: 'translateX(35%)',
+                  '& svg': { mt: 2, mr: 1, color: 'text.disabled' }
                 }}
               >
-                <FormControl fullWidth size='small' sx={{ mr: [0, 3], mb: [3, 0] }}>
-                  <InputLabel id='user-view-plans-select-label'>Choose Plan</InputLabel>
-                  <Select
-                    label='Choose Plan'
-                    defaultValue='Standard'
-                    id='user-view-plans-select'
-                    labelId='user-view-plans-select-label'
+                <Icon icon='mdi:arrow-down-left' />
+                <CustomChip size='small' skin='light' color='primary' label='Save up to 10%' />
+                </Box>
+
+                </Box>
+              </Box> */}
+          <Grid item xs={12} md={3}>
+            <Card sx={{ boxShadow: 'none', border: theme => `2px solid ${theme.palette.primary.main}` }}>
+              <CardContent
+                sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between' }}
+              >
+                {/* <CustomChip
+                  skin='light'
+                  size='small'
+                  color='primary'
+                  label='Standard'
+                  sx={{ fontSize: '0.75rem', borderRadius: '4px' }}
+                /> */}
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant='h5' sx={{ mb: 1.5 }}>
+                    Estandar
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Typography variant='body2' sx={{ mt: 1.6, fontWeight: 600, alignSelf: 'flex-start' }}>
+                      $
+                    </Typography>
+                    <Typography variant='h3' sx={{ fontWeight: 600, color: 'primary.main', lineHeight: 1.17 }}>
+                      99
+                    </Typography>
+                    <Typography variant='body2' sx={{ mb: 1.6, fontWeight: 600, alignSelf: 'flex-end' }}>
+                      /month
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+
+              <CardContent>
+                <Box sx={{ mt: 4, mb: 5 }}>
+                  <Box
+                    sx={{ display: 'flex', mb: 2.5, alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}
                   >
-                    <MenuItem value='Basic'>Basic - $0/month</MenuItem>
-                    <MenuItem value='Standard'>Standard - $99/month</MenuItem>
-                    <MenuItem value='Enterprise'>Enterprise - $499/month</MenuItem>
-                    <MenuItem value='Company'>Company - $999/month</MenuItem>
-                  </Select>
-                </FormControl>
-                <Button variant='contained' sx={{ minWidth: ['100%', 0] }}>
-                  Upgrade
-                </Button>
-              </DialogContent>
+                    <Icon icon='mdi:circle' fontSize='0.625rem' />
+                    <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                      10 Users
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      mt: 2.5,
+                      display: 'flex',
+                      mb: 2.5,
+                      alignItems: 'center',
+                      '& svg': { mr: 2, color: 'text.secondary' }
+                    }}
+                  >
+                    <Icon icon='mdi:circle' fontSize='0.625rem' />
+                    <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                      Up to 10GB storage
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      mt: 2.5,
+                      display: 'flex',
+                      mb: 2.5,
+                      alignItems: 'center',
+                      '& svg': { mr: 2, color: 'text.secondary' }
+                    }}
+                  >
+                    <Icon icon='mdi:circle' fontSize='0.625rem' />
+                    <Typography component='span' sx={{ fontSize: '0.875rem' }}>
+                      Basic Support
+                    </Typography>
+                  </Box>
+                </Box>
+                {/* <Box sx={{ display: 'flex', mb: 1.5, justifyContent: 'space-between' }}>
+                  <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                    Days
+                  </Typography>
+                  <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                    26 of 30 Days
+                  </Typography>
+                </Box> */}
+                {/* <LinearProgress value={86.66} variant='determinate' sx={{ height: 8, borderRadius: '5px' }} />
+                <Typography variant='caption' sx={{ mt: 1.5, mb: 6 }}>
+                  4 days remaining
+                </Typography> */}
 
-              <Divider sx={{ m: '0 !important' }} />
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button variant='contained' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={handlePlansClickOpen}>
+                    {/* <Fab color='secondary' aria-label='edit'> */}
+                    <Icon icon='mdi:pencil' />
+                    {/* </Fab> */}
+                  </Button>
+                </Box>
 
-              <DialogContent
-                sx={{
-                  pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(8)} !important`],
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                  pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-                }}
+              </CardContent>
+
+              <Dialog
+                open={openPlans}
+                onClose={handlePlansClose}
+                aria-labelledby='user-view-plans'
+                aria-describedby='user-view-plans-description'
+                sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
               >
-                <Typography sx={{ fontWeight: 500, mb: 2, fontSize: '0.875rem' }}>
-                  User current plan is standard plan
-                </Typography>
-                <Box
+                <DialogTitle
+                  id='user-view-plans'
+                  sx={{
+                    textAlign: 'center',
+                    fontSize: '1.5rem !important',
+                    px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                    pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+                  }}
+                >
+                  Editar suscripción
+                </DialogTitle>
+
+                {/* <DialogContent
+                  sx={{ px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`] }}
+                >
+                  <DialogContentText variant='body2' sx={{ textAlign: 'center' }} id='user-view-plans-description'>
+                    Choose the best plan for the user.
+                  </DialogContentText>
+                </DialogContent> */}
+
+                <DialogContent
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     flexWrap: ['wrap', 'nowrap'],
-                    justifyContent: 'space-between'
+                    pt: theme => `${theme.spacing(2)} !important`,
+                    pb: theme => `${theme.spacing(8)} !important`,
+                    px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
                   }}
                 >
-                  <Box sx={{ mr: 3, display: 'flex', ml: 2.4, position: 'relative' }}>
-                    <Sup>$</Sup>
-                    <Typography
-                      variant='h3'
+
+
+                  {/* <FormControl fullWidth size='small' sx={{ mr: [0, 3], mb: [3, 0] }}> */}
+
+                  <form noValidate autoComplete='off' >
+                    {/* Nombre */}
+                    <FormControl fullWidth sx={{ mb: 4 }}>
+                      {/* <Controller */}
+
+                      {/* rules={{ required: true }} */}
+                      {/* render={({ field: { value, onChange, onBlur } }) => ( */}
+                      <TextField
+                        autoFocus
+                        label='Nombre'
+                        name='name'
+                        inputProps={{ maxLength: 50 }}
+                      />
+
+                    </FormControl>
+                    <FormControl fullWidth sx={{ mb: 4 }}>
+                      {/* <Controller */}
+
+                      {/* rules={{ required: true }} */}
+                      {/* render={({ field: { value, onChange, onBlur } }) => ( */}
+                      <TextField
+                        autoFocus
+                        label='Precio'
+                        name='amount'
+                        inputProps={{ maxLength: 50 }}
+                      />
+
+                    </FormControl>
+                    <FormControl fullWidth sx={{ mb: 4 }}>
+                      {/* <Controller */}
+
+                      {/* rules={{ required: true }} */}
+                      {/* render={({ field: { value, onChange, onBlur } }) => ( */}
+                      <TextField rows={4} multiline label='Descripcion' id='textarea-outlined-static' />
+
+                    </FormControl>
+
+
+                    <Button
+                      color='success'
                       sx={{
-                        mb: -1.2,
-                        lineHeight: 1,
-                        color: 'primary.main',
-                        fontSize: '3rem !important'
+                        ml: '82%'
                       }}
+                      variant='outlined'
+                      onClick={() => setSubscriptionDialogOpen(true)}
                     >
-                      99
-                    </Typography>
-                    <Sub>/ month</Sub>
-                  </Box>
-                  <Button
-                    color='error'
-                    sx={{ mt: 2 }}
-                    variant='outlined'
-                    onClick={() => setSubscriptionDialogOpen(true)}
+                      Editar
+                    </Button>
+
+                    {/* </FormControl> */}
+
+                    {/* <Button variant='contained' sx={{ minWidth: ['100%', 0] }}>
+                    Upgrade
+                  </Button> */}
+                  </form>
+                </DialogContent>
+                {/*
+                <Divider sx={{ m: '0 !important' }} /> */}
+
+                {/* <DialogContent
+                  sx={{
+                    pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(8)} !important`],
+                    px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                    pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flexWrap: ['wrap', 'nowrap'],
+                      justifyContent: 'space-between'
+                    }}
                   >
-                    Cancel Subscription
-                  </Button>
-                </Box>
-              </DialogContent>
-            </Dialog>
-          </Card>
+                    <Button
+                      color='error'
+                      sx={{ mt: 2 }}
+                      variant='outlined'
+                      onClick={() => setSubscriptionDialogOpen(true)}
+                    >
+                      Cancel Subscription
+                    </Button>
+                  </Box>
+                </DialogContent> */}
+              </Dialog>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      </Grid >
     )
   } else {
     return null

@@ -106,9 +106,9 @@ const HorizontalLayout = (props: LayoutProps) => {
             transition: 'border-bottom 0.2s ease-in-out, backdrop-filter .25s ease-in-out, box-shadow .25s ease-in-out',
             ...(appBar === 'fixed'
               ? appBarBlur && {
-                  backdropFilter: 'blur(8px)',
-                  backgroundColor: theme => hexToRGBA(theme.palette.background.paper, 0.9)
-                }
+                backdropFilter: 'blur(8px)',
+                backgroundColor: theme => hexToRGBA(theme.palette.background.paper, 0.9)
+              }
               : {}),
             ...userAppBarStyle
           }}
@@ -185,7 +185,7 @@ const HorizontalLayout = (props: LayoutProps) => {
         <Footer {...props} footerStyles={footerProps?.sx} footerContent={footerProps?.content} />
 
         {/* Customizer */}
-        {themeConfig.disableCustomizer || hidden ? null : <Customizer />}
+        {/* {themeConfig.disableCustomizer || hidden ? null : <Customizer />} */}
 
         {/* Scroll to top button */}
         {scrollToTop ? (
