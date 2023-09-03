@@ -1,7 +1,12 @@
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
+import { useSession } from 'next-auth/react'
+
 const navigation = (): VerticalNavItemsType => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { data: session } = useSession()
+
   return [
     {
       title: 'Nuevo Plan',
@@ -32,8 +37,22 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
-      title: 'Configuracion',
+      title: 'Mi perfil',
       icon: 'mdi-account',
+      path: '/myProfile/myStudentProfile',
+      subject: 'myStudentProfile-page',
+      action: 'manage'
+    },
+    {
+      title: 'Mi perfil',
+      icon: 'mdi-account',
+      path: '/myProfile/' + session?.user?._id,
+      subject: 'myTrainerProfile-page',
+      action: 'manage'
+    },
+    {
+      title: 'Configuración',
+      icon: 'mdi-settings',
       path: '/mySettings',
       subject: 'mySettings-page',
       action: 'manage'
