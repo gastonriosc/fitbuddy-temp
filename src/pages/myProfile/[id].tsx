@@ -130,14 +130,14 @@ const MyProfile = () => {
 
   const schema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio"),
-    amount: yup.string().required("Precio es un campo numerico y obligatorio"),
-    description: yup.string().required("Descripcion es un campo obligatorio"),
+    amount: yup.string().required("Precio es un campo numérico y obligatorio"),
+    description: yup.string().required("Descripción es un campo obligatorio"),
   })
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio"),
-    amount: yup.string().required("Precio es un campo numerico y obligatorio"),
-    description: yup.string().required("Descripcion es un campo obligatorio"),
+    amount: yup.string().required("Precio es un campo numérico y obligatorio"),
+    description: yup.string().required("Descripción es un campo obligatorio"),
   })
 
   const defaultValues = {
@@ -231,12 +231,11 @@ const MyProfile = () => {
       }
     };
 
-    fetchProfile();                                 //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
+    fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
   }, []);
 
 
   const createSubscription: SubmitHandler<FormData> = async (data) => {
-    // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
     const trainerId = route.query.id
     const { name, amount, description } = data;
     try {
@@ -249,7 +248,7 @@ const MyProfile = () => {
       })
       if (res.status == 200) {
         handleAddSubscriptionClose();
-        setTitlePopUp('Suscripcion creada!')
+        setTitlePopUp('Suscripción creada!')
         setPopUp(true)
       }
       else {
@@ -280,7 +279,7 @@ const MyProfile = () => {
       })
       if (res.status == 200) {
         handlePlansClose()
-        setTitlePopUp('Suscripcion editada!')
+        setTitlePopUp('Suscripción editada!')
         setPopUp(true)
       }
       else {
@@ -314,7 +313,7 @@ const MyProfile = () => {
   if (data) {
     return (
       <Grid container spacing={6}>
-        <Grid item xs={12} md={3} sx={{ height: '550px' }}>
+        <Grid item xs={12} md={4} sx={{ height: '550px' }}>
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               {data.avatar ? (
@@ -359,15 +358,11 @@ const MyProfile = () => {
               <Divider sx={{ mt: theme => `${theme.spacing(4)} !important` }} />
               <Box sx={{ pt: 2, pb: 1 }}>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>
-                    Nombre Completo:
-                  </Typography>
+                  <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>Nombre:</Typography>
                   <Typography variant='body2'>{users.name}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
-                  <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>
-                    Email de contacto :
-                  </Typography>
+                  <Typography variant='subtitle2' sx={{ mr: 2, color: 'text.primary' }}>Email:</Typography>
                   <Typography variant='body2'>{users.email}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
@@ -387,7 +382,7 @@ const MyProfile = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={9} sx={{ height: '550px' }}>
+        <Grid item xs={12} md={8} sx={{ height: '550px' }}>
           <Grid container spacing={2} sx={{ height: '480px' }}>
             {subs.map((sub, index) => (
               <Grid item xs={12} md={4} key={index} sx={{ height: '450px' }}>
@@ -531,7 +526,7 @@ const MyProfile = () => {
                                 rows={4}
                                 multiline
                                 id='textarea-outlined-static'
-                                label='Descripcion'
+                                label='Descripción'
                                 name='description'
                                 value={value || editSubs?.description}
                                 onBlur={onBlur}
