@@ -13,8 +13,9 @@ import TableRow, { TableRowProps } from '@mui/material/TableRow';
 import TableCell, { TableCellProps, tableCellClasses } from '@mui/material/TableCell';
 import Button, { ButtonProps } from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+
+// import jsPDF from 'jspdf';
+// import 'jspdf-autotable';
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -71,27 +72,27 @@ const NewPlan = () => {
     setEditingRow([...editingRow, newPlanLists[dayIndex].length - 1]);
   };
 
-  const exportToPDF = () => {
-    const doc = new jsPDF();
+  // const exportToPDF = () => {
+  //   const doc = new jsPDF();
 
-    doc.setFontSize(14);
+  //   doc.setFontSize(14);
 
-    planLists.forEach((day, index) => {
-      if (index > 0) {
-        doc.addPage(); // Agregar una página en blanco después de la primera página
-      }
-      doc.text(`Día ${index + 1}`, 10, 20);
-      const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso]);
+  //   planLists.forEach((day, index) => {
+  //     if (index > 0) {
+  //       doc.addPage(); // Agregar una página en blanco después de la primera página
+  //     }
+  //     doc.text(`Día ${index + 1}`, 10, 20);
+  //     const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso]);
 
-      // @ts-ignore
-      doc.autoTable({
-        head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso']],
-        body: tableData,
-        startY: 30,
-      });
-    });
-    doc.save('PlanDeEntrenamiento.pdf');
-  };
+  //     // @ts-ignore
+  //     doc.autoTable({
+  //       head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso']],
+  //       body: tableData,
+  //       startY: 30,
+  //     });
+  //   });
+  //   doc.save('PlanDeEntrenamiento.pdf');
+  // };
 
   const handleDeleteDay = () => {
     if (planLists.length > 0) {
@@ -276,9 +277,9 @@ const NewPlan = () => {
           <ButtonStyled onClick={handleDeleteDay}>
             Eliminar Día
           </ButtonStyled>
-          <ButtonStyled onClick={exportToPDF}>
+          {/* <ButtonStyled onClick={exportToPDF}>
             Exportar a PDF
-          </ButtonStyled>
+          </ButtonStyled> */}
         </Grid>
       </Grid>
     </form>

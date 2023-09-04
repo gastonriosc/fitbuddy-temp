@@ -6,9 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await connect()
     if (req.method === 'POST') {
-      console.log(req.body)
       const subscription = await Subscription.create(req.body)
-      console.log(subscription)
       if (subscription) {
         return res.status(200).json(subscription)
       } else {

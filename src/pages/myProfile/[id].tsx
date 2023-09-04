@@ -13,7 +13,7 @@ import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import FormHelperText from '@mui/material/FormHelperText'
-import UserSuspendDialog from './newSubsPopUp'
+import DialogActions from '@mui/material/DialogActions'
 
 // import Select from '@mui/material/Select'
 // import Switch from '@mui/material/Switch'
@@ -150,8 +150,10 @@ const MyProfile = () => {
   // const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [openPlans, setOpenPlans] = useState<boolean>(false)
   const [addSubscription, setAddSubscription] = useState<boolean>(false)
-  const [createSubsOpen, setCreateSubsOpen] = useState<boolean>(false)
   const [editSubs, setEditSubscription] = useState<FormData>()
+  const [popUp, setPopUp] = useState<boolean>(false)
+  const [titlePopUp, setTitlePopUp] = useState<string>()
+  const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
 
 
   // const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
@@ -166,11 +168,18 @@ const MyProfile = () => {
   // const storedSelectedUser = localStorage.getItem('selectedUser');
   // const selectedUser = storedSelectedUser ? JSON.parse(storedSelectedUser) : {};
   const route = useRouter();
-
+  const closePopUp = () => setPopUp(false)
+  const solicitudEnviada = () => {
+    setTitlePopUp('Solicitud enviada!')
+    setTextPopUp('')
+    setPopUp(true)
+  }
+  const openPopUp = () => setPopUp(true)
   const { data: session } = useSession();
   const [users, setUsers] = useState<UsersType>([]);
   const [subs, setSubs] = useState<[]>([]);    //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
   const disabled = subs.length >= 3;
+  const isTrainerSession = route.query.id === session?.user._id
 
   // ** React-Hook-Form
   const {
@@ -210,8 +219,6 @@ const MyProfile = () => {
           const data = await res.json();
           setUsers(data.user);
           setSubs(data.subs);
-
-
         }
         if (res.status == 404) {
           route.replace('/404')
@@ -242,7 +249,8 @@ const MyProfile = () => {
       })
       if (res.status == 200) {
         handleAddSubscriptionClose();
-        setCreateSubsOpen(true)
+        setTitlePopUp('Suscripcion creada!')
+        setPopUp(true)
       }
       else {
         if (res.status == 409) {
@@ -272,7 +280,8 @@ const MyProfile = () => {
       })
       if (res.status == 200) {
         handlePlansClose()
-        setCreateSubsOpen(true)
+        setTitlePopUp('Suscripcion editada!')
+        setPopUp(true)
       }
       else {
         if (res.status == 409) {
@@ -295,7 +304,6 @@ const MyProfile = () => {
   const handlePlansClickOpen = () => setOpenPlans(true)
   const handlePlansClose = () => setOpenPlans(false)
   const handleEditClick = (sub) => {
-    console.log(sub)
     setEditSubscription(sub); // Al hacer clic en "Editar", establece los datos de la fila seleccionada
     setOpenPlans(true);
   };
@@ -391,7 +399,7 @@ const MyProfile = () => {
                       <Typography variant='h5' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                         {sub.name}
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: '10px' }}>
                         <Typography variant='body2' sx={{ mt: 1.6, fontWeight: 600, alignSelf: 'flex-start' }}>
                           $
                         </Typography>
@@ -418,11 +426,20 @@ const MyProfile = () => {
                   </CardContent>
                   <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button variant='contained' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
-                        {/* <Fab color='secondary' aria-label='edit'> */}
-                        <Icon icon='mdi:pencil' />
-                        {/* </Fab> */}
-                      </Button>
+                      {isTrainerSession ? (
+
+                        <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
+                          {/* <Fab color='secondary' aria-label='edit'> */}
+                          <Icon icon='mdi:pencil' />
+                          {/* </Fab> */}
+                        </Button>
+                      ) :
+                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => solicitudEnviada()}>
+                          {/* <Fab color='secondary' aria-label='edit'> */}
+                          <Icon icon='mdi:send' />
+                          {/* </Fab> */}
+                        </Button>
+                      }
                     </Box>
                   </CardContent>
 
@@ -544,10 +561,12 @@ const MyProfile = () => {
             ))}
           </Grid>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
-              <Icon icon='mdi:plus' />
-              Agregar
-            </Button>
+            {isTrainerSession ? (
+              <Button variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
+                <Icon icon='mdi:plus' />
+                Agregar
+              </Button>
+            ) : null}
           </Box>
           <Dialog
             open={addSubscription}
@@ -661,7 +680,47 @@ const MyProfile = () => {
             </DialogContent>
 
           </Dialog>
-          <UserSuspendDialog open={createSubsOpen} setOpen={setCreateSubsOpen} />
+          <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+            <DialogContent
+              sx={{
+                pb: theme => `${theme.spacing(6)} !important`,
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  textAlign: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  '& svg': { mb: 6, color: 'success.main' }
+                }}
+              >
+                <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
+                <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+                <Typography>{textPopUp}</Typography>
+              </Box>
+            </DialogContent>
+            <DialogActions
+              sx={{
+                justifyContent: 'center',
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+              }}
+            >
+              {/* <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
+            Yes
+            </Button>
+            <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
+            Cancel
+          </Button> */}
+              <Button variant='outlined' color='success' onClick={closePopUp}>
+                OK
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Grid >
       </Grid >
     )

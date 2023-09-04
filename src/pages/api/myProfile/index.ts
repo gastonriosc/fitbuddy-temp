@@ -12,8 +12,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       debugger
       const user = await User.findOne({ _id: id })
       const subs = await Subscription.find({ trainerId: id })
-      console.log(user)
-      console.log(subs)
       if (user) {
         const responseData = {
           user: user,
