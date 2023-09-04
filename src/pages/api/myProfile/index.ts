@@ -1,6 +1,7 @@
 // ** Next Imports
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import connect from 'src/lib/mongodb'
+import Subscription from 'src/models/subscriptionSchema'
 import User from 'src/models/userSchema'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -8,11 +9,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     try {
       const { id } = req.query
-
+      debugger
       const user = await User.findOne({ _id: id })
-
+      const subs = await Subscription.find({ trainerId: id })
+      console.log(user)
+      console.log(subs)
       if (user) {
-        return res.status(200).json(user)
+        const responseData = {
+          user: user,
+          subs: subs
+        }
+
+        return res.status(200).json(responseData)
       } else {
         return res.status(404).json({ message: 'No se encontro el usuario' })
       }
