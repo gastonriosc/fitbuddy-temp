@@ -2,9 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
-
-// import { ChangeEvent } from 'react'
+import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -15,35 +13,16 @@ import Dialog from '@mui/material/Dialog'
 import FormHelperText from '@mui/material/FormHelperText'
 import DialogActions from '@mui/material/DialogActions'
 
-// import Select from '@mui/material/Select'
-// import Switch from '@mui/material/Switch'
 import Divider from '@mui/material/Divider'
 
-// import MenuItem from '@mui/material/MenuItem'
-// import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
-// import InputLabel from '@mui/material/InputLabel'
 import CardContent from '@mui/material/CardContent'
 
-// import Fab from '@mui/material/Typography'
-
-// import useMediaQuery from '@mui/material/useMediaQuery'
-// import CardActions from '@mui/material/CardActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import DialogContent from '@mui/material/DialogContent'
-
-// import DialogActions from '@mui/material/DialogActions'
-// import InputAdornment from '@mui/material/InputAdornment'
-// import LinearProgress from '@mui/material/LinearProgress'
-// import FormControlLabel from '@mui/material/FormControlLabel'
-// import DialogContentText from '@mui/material/DialogContentText'
-
-// import { Theme } from '@mui/material/styles'
-
-//import Router, { useRouter } from 'next/router'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -55,8 +34,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
-// import UserSuspendDialog from 'src/views/apps/user/view/UserSuspendDialog'
-// import UserSubscriptionDialog from 'src/views/apps/user/view/UserSubscriptionDialog'
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
@@ -65,13 +42,17 @@ import { UsersType } from 'src/types/apps/userTypes'
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
 
-// import { userAgent } from 'next/server'
-// import { redirect } from 'next/dist/server/api-utils'
-
-//import axios from 'axios'
 
 interface ColorsType {
   [key: string]: ThemeColor
+}
+
+interface Subscription {
+  _id: string
+  name: string
+  amount: string
+  description: string
+  trainerId: string
 }
 
 const data: UsersType = {
@@ -93,36 +74,15 @@ const data: UsersType = {
   discipline: ''
 }
 
-
 const statusColors: ColorsType = {
   active: 'success',
   pending: 'warning',
   inactive: 'secondary'
 }
 
-// // ** Styled <sup> component
-// const Sup = styled('sup')(({ theme }) => ({
-//   top: '0.2rem',
-//   left: '-0.6rem',
-//   position: 'absolute',
-//   color: theme.palette.primary.main
-// }))
-
-// // ** Styled <sub> component
-// const Sub = styled('sub')({
-//   fontWeight: 300,
-//   fontSize: '1rem',
-//   alignSelf: 'flex-end'
-// })
-
-// interface Props {
-//   plan: string
-//   handleChange: (e: ChangeEvent<{ checked: boolean }>) => void
-// }
-
-
 const MyProfile = () => {
   interface FormData {
+    _id: number | string
     name: string
     amount: string
     description: string
@@ -147,7 +107,6 @@ const MyProfile = () => {
   }
 
   // ** States
-  // const [openEdit, setOpenEdit] = useState<boolean>(false)
   const [openPlans, setOpenPlans] = useState<boolean>(false)
   const [addSubscription, setAddSubscription] = useState<boolean>(false)
   const [editSubs, setEditSubscription] = useState<FormData>()
@@ -155,18 +114,6 @@ const MyProfile = () => {
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
 
-
-  // const [suspendDialogOpen, setSuspendDialogOpen] = useState<boolean>(false)
-  // const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState<boolean>(false)
-
-  // ** Props
-  // const { plan, handleChange } = props
-
-  // // ** Hook
-  // const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
-
-  // const storedSelectedUser = localStorage.getItem('selectedUser');
-  // const selectedUser = storedSelectedUser ? JSON.parse(storedSelectedUser) : {};
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
   const solicitudEnviada = () => {
@@ -174,17 +121,21 @@ const MyProfile = () => {
     setTextPopUp('')
     setPopUp(true)
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const openPopUp = () => setPopUp(true)
+
   const { data: session } = useSession();
-  const [users, setUsers] = useState<UsersType>([]);
-  const [subs, setSubs] = useState<[]>([]);    //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+  const [users, setUsers] = useState<UsersType>([]); //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+  const [subs, setSubs] = useState<[]>([]);
   const disabled = subs.length >= 3;
   const isTrainerSession = route.query.id === session?.user._id
 
   // ** React-Hook-Form
   const {
     control: control,
-    register: register,
+
+    //register: register,
     handleSubmit: handleSubmit,
     formState: { errors: errors },
   } = useForm({
@@ -195,7 +146,8 @@ const MyProfile = () => {
 
   const {
     control: updateControl,
-    register: register2,
+
+    //register: register2,
     handleSubmit: updateHandleSubmit,
     formState: { errors: updateErrors },
   } = useForm({
@@ -235,7 +187,7 @@ const MyProfile = () => {
   }, []);
 
 
-  const createSubscription: SubmitHandler<FormData> = async (data) => {
+  const createSubscription: SubmitHandler<FieldValues> = async (data) => {
     const trainerId = route.query.id
     const { name, amount, description } = data;
     try {
@@ -253,10 +205,10 @@ const MyProfile = () => {
       }
       else {
         if (res.status == 409) {
-
+          console.log('error 409')
         }
         if (res.status == 400) {
-
+          console.log('error 400')
         }
       }
     } catch (error) {
@@ -264,8 +216,7 @@ const MyProfile = () => {
     }
   }
 
-  const updateSubscription: SubmitHandler<FormData> = async (data) => {
-    // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
+  const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id
     const { name, amount, description } = data;
     debugger
@@ -284,10 +235,10 @@ const MyProfile = () => {
       }
       else {
         if (res.status == 409) {
-
+          console.log('error 409')
         }
         if (res.status == 400) {
-
+          console.log('error 400')
         }
       }
     } catch (error) {
@@ -300,9 +251,10 @@ const MyProfile = () => {
   // const handleEditClose = () => setOpenEdit(false)
 
   // Handle Upgrade Plan dialog
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handlePlansClickOpen = () => setOpenPlans(true)
   const handlePlansClose = () => setOpenPlans(false)
-  const handleEditClick = (sub) => {
+  const handleEditClick = (sub: any) => {
     setEditSubscription(sub); // Al hacer clic en "Editar", establece los datos de la fila seleccionada
     setOpenPlans(true);
   };
@@ -384,15 +336,16 @@ const MyProfile = () => {
 
         <Grid item xs={12} md={8} sx={{ height: '550px' }}>
           <Grid container spacing={2} sx={{ height: '480px' }}>
-            {subs.map((sub, index) => (
-              <Grid item xs={12} md={4} key={index} sx={{ height: '450px' }}>
+            {subs.map((sub: Subscription, index) => (
+              <Grid item xs={12} md={4} key={index} sx={{ height: '450px', mb: '20px' }}>
                 <Card sx={{ boxShadow: 'none', height: '450px', border: theme => `2px solid ${theme.palette.primary.main}` }}>
                   <CardContent
-                    sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between' }}
+                    sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between', }}
                   >
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant='h5' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                         {sub.name}
+
                       </Typography>
                       <Box sx={{ display: 'flex', justifyContent: 'center', mt: '10px' }}>
                         <Typography variant='body2' sx={{ mt: 1.6, fontWeight: 600, alignSelf: 'flex-start' }}>
@@ -413,31 +366,29 @@ const MyProfile = () => {
                       <Box
                         sx={{ display: 'flex', mb: 2.5, alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}
                       >
+
                         <Typography component='span' sx={{ fontSize: '0.875rem' }}>
                           {sub.description}
                         </Typography>
                       </Box>
                     </Box>
+
                   </CardContent>
                   <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                       {isTrainerSession ? (
 
                         <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
-                          {/* <Fab color='secondary' aria-label='edit'> */}
                           <Icon icon='mdi:pencil' />
-                          {/* </Fab> */}
                         </Button>
                       ) :
                         <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => solicitudEnviada()}>
-                          {/* <Fab color='secondary' aria-label='edit'> */}
                           <Icon icon='mdi:send' />
-                          {/* </Fab> */}
                         </Button>
                       }
                     </Box>
                   </CardContent>
-
 
                   <Dialog
                     open={openPlans}
@@ -488,7 +439,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.name && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.name.message}
+                              {updateErrors.name.message?.toString()}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -512,7 +463,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.amount && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.amount.message}
+                              {updateErrors.amount.message?.toString()}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -537,7 +488,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.description && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.description.message}
+                              {updateErrors.description.message?.toString()}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -554,15 +505,17 @@ const MyProfile = () => {
                 </Card>
               </Grid>
             ))}
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginLeft: 'auto', marginTop: 'auto' }}>
+              {isTrainerSession ? (
+                <Button sx={{ marginBottom: '-30px' }} variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
+                  <Icon icon='mdi:plus' />
+                  Agregar
+                </Button>
+              ) : null}
+            </Box>
+
           </Grid>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            {isTrainerSession ? (
-              <Button variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
-                <Icon icon='mdi:plus' />
-                Agregar
-              </Button>
-            ) : null}
-          </Box>
+
           <Dialog
             open={addSubscription}
             onClose={handleAddSubscriptionClose}
@@ -705,12 +658,7 @@ const MyProfile = () => {
                 pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
               }}
             >
-              {/* <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
-            Yes
-            </Button>
-            <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
-            Cancel
-          </Button> */}
+
               <Button variant='outlined' color='success' onClick={closePopUp}>
                 OK
               </Button>
