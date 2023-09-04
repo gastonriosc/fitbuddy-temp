@@ -67,7 +67,7 @@ const data: UsersType = {
   currentPlan: 'enterprise',
   fullName: 'Daisy Patterson',
   email: 'gslixby0@abc.net.au',
-  avatar: '/images/avatars/4.png',
+  avatar: '/images/avatars/1.png',
   name: '',
   phone: 0,
   gender: '',
@@ -185,7 +185,8 @@ const MyProfile = () => {
 
     fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
   }, []);
-
+  console.log(route.query.id)
+  console.log(session?.user._id)
 
   const createSubscription: SubmitHandler<FieldValues> = async (data) => {
     const trainerId = route.query.id

@@ -8,7 +8,6 @@ import Select from '@mui/material/Select'
 import Dialog from '@mui/material/Dialog'
 import Divider from '@mui/material/Divider'
 import { styled } from '@mui/material/styles'
-import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -18,15 +17,16 @@ import FormControl from '@mui/material/FormControl'
 import CardContent from '@mui/material/CardContent'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
-import Button, { ButtonProps } from '@mui/material/Button'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import { ChangeEvent, ElementType, useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import Button from '@mui/material/Button'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 import { useSession } from 'next-auth/react'
 import { CircularProgress, IconButton } from '@mui/material'
+import CustomChip from 'src/@core/components/mui/chip'
+import { UsersType } from 'src/types/apps/userTypes'
+
 
 interface Data {
   email: string
@@ -35,6 +35,25 @@ interface Data {
   name: string
   password: string
   phone: number | string
+}
+
+const data: UsersType = {
+  _id: 1,
+  role: 'admin',
+  status: 'pending',
+  username: 'gslixby0',
+  avatarColor: 'primary',
+  country: 'El Salvador',
+  company: 'Yotz PVT LTD',
+  contact: '(479) 232-9151',
+  currentPlan: 'enterprise',
+  fullName: 'Daisy Patterson',
+  email: 'gslixby0@abc.net.au',
+  avatar: '/images/avatars/1.png',
+  name: '',
+  phone: 0,
+  gender: '',
+  discipline: '',
 }
 
 const initialData: Data = {
@@ -53,27 +72,34 @@ const ImgStyled = styled('img')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius
 }))
 
-const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    textAlign: 'center'
-  }
-}))
+// const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     textAlign: 'center'
+//   }
+// }))
 
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
-  }
-}))
+// const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
+//   marginLeft: theme.spacing(4),
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     marginLeft: 0,
+//     textAlign: 'center',
+//     marginTop: theme.spacing(4)
+//   }
+// }))
+
+const statusColors: ColorsType = {
+  active: 'success',
+  pending: 'warning',
+  inactive: 'secondary'
+}
 
 
 const AlumnoProfile = () => {
   const [open, setOpen] = useState<boolean>(false)
-  const [inputValue, setInputValue] = useState<string>('')
+
+  //const [inputValue, setInputValue] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false);
   const [userInput, setUserInput] = useState<string>('yes')
   const [formData, setFormData] = useState<Data>(initialData);
@@ -86,8 +112,8 @@ const AlumnoProfile = () => {
 
   // ** Hooks
   const {
-    control,
-    handleSubmit,
+    //control,
+    //handleSubmit,
     formState: { errors }
   } = useForm({ defaultValues: { checkbox: false } })
 
@@ -101,7 +127,7 @@ const AlumnoProfile = () => {
     setFormData({ ...formData, [field]: value })
   }
 
-  const onSubmit = () => setOpen(true)
+  //const onSubmit = () => setOpen(true)
 
   const handleConfirmation = (value: string) => {
     handleClose()
@@ -109,22 +135,22 @@ const AlumnoProfile = () => {
     setSecondDialogOpen(true)
   }
 
-  const handleInputImageChange = (file: ChangeEvent) => {
-    const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
-    if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
-      reader.readAsDataURL(files[0])
+  // const handleInputImageChange = (file: ChangeEvent) => {
+  //   const reader = new FileReader()
+  //   const { files } = file.target as HTMLInputElement
+  //   if (files && files.length !== 0) {
+  //     reader.onload = () => setImgSrc(reader.result as string)
+  //     reader.readAsDataURL(files[0])
 
-      if (reader.result !== null) {
-        setInputValue(reader.result as string)
-      }
-    }
-  }
-  const handleInputImageReset = () => {
-    setInputValue('')
-    setImgSrc('/images/avatars/1.png')
-  }
+  //     if (reader.result !== null) {
+  //       setInputValue(reader.result as string)
+  //     }
+  //   }
+  // }
+  // const handleInputImageReset = () => {
+  //   setInputValue('')
+  //   setImgSrc('/images/avatars/1.png')
+  // }
 
   useEffect(() => {
     if (session?.user) {                    //Si session?.user existe y tiene un valor, el useEffect ejecuta la función dentro de él.
@@ -175,11 +201,11 @@ const AlumnoProfile = () => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title={`Alumno: ${session?.user?.name}`} />
+          <CardHeader sx={{ textAlign: 'center', marginBottom: '-1%' }} title={` ${session?.user?.name}`} />
           <form >
-            <CardContent sx={{ pt: 0 }}>
+            <CardContent sx={{ pt: 0, textAlign: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ImgStyled src={imgSrc} alt='Profile Pic' />
+                <ImgStyled sx={{ margin: '0 auto' }} src={imgSrc} alt='Profile Pic' />
                 {/* <div>
                   <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Subir foto
@@ -198,6 +224,24 @@ const AlumnoProfile = () => {
                   <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
                 </div> */}
               </Box>
+              <CustomChip
+                skin='light'
+                size='small'
+
+                label={session?.user.role}
+
+                color={statusColors[data.status]}
+                sx={{
+                  alignItems: 'center',
+                  marginTop: '8px',
+                  height: 20,
+                  fontWeight: 600,
+                  borderRadius: '5px',
+                  fontSize: '0.875rem',
+                  textTransform: 'capitalize',
+                  '& .MuiChip-label': { mt: -0.25 }
+                }}
+              />
             </CardContent>
             <Divider />
             <CardContent>
@@ -210,6 +254,8 @@ const AlumnoProfile = () => {
                     value={formData.name}
                     onChange={e => handleFormChange('name', e.target.value)}
                   />
+
+
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField

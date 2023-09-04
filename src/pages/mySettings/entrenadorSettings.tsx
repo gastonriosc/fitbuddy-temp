@@ -20,13 +20,15 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
-import Button, { ButtonProps } from '@mui/material/Button'
+import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import { ChangeEvent, ElementType, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 import { useSession } from 'next-auth/react'
 import { CircularProgress, IconButton } from '@mui/material'
+import CustomChip from 'src/@core/components/mui/chip'
+import { UsersType } from 'src/types/apps/userTypes'
 
 interface Data {
   email: string
@@ -36,6 +38,25 @@ interface Data {
   password: string
   phone: number | string
   discipline: string
+}
+
+const data: UsersType = {
+  _id: 1,
+  role: 'admin',
+  status: 'pending',
+  username: 'gslixby0',
+  avatarColor: 'primary',
+  country: 'El Salvador',
+  company: 'Yotz PVT LTD',
+  contact: '(479) 232-9151',
+  currentPlan: 'enterprise',
+  fullName: 'Daisy Patterson',
+  email: 'gslixby0@abc.net.au',
+  avatar: '/images/avatars/1.png',
+  name: '',
+  phone: 0,
+  gender: '',
+  discipline: '',
 }
 
 const initialData: Data = {
@@ -55,27 +76,34 @@ const ImgStyled = styled('img')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius
 }))
 
-const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    textAlign: 'center'
-  }
-}))
+// const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     textAlign: 'center'
+//   }
+// }))
 
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
-  }
-}))
+// const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
+//   marginLeft: theme.spacing(4),
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     marginLeft: 0,
+//     textAlign: 'center',
+//     marginTop: theme.spacing(4)
+//   }
+// }))
+
+const statusColors: ColorsType = {
+  active: 'success',
+  pending: 'warning',
+  inactive: 'secondary'
+}
 
 
 const EntrenadorProfile = () => {
   const [open, setOpen] = useState<boolean>(false)
-  const [inputValue, setInputValue] = useState<string>('')
+
+  //const [inputValue, setInputValue] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false);
   const [userInput, setUserInput] = useState<string>('yes')
   const [formData, setFormData] = useState<Data>(initialData);
@@ -110,22 +138,22 @@ const EntrenadorProfile = () => {
     setSecondDialogOpen(true)
   }
 
-  const handleInputImageChange = (file: ChangeEvent) => {
-    const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
-    if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
-      reader.readAsDataURL(files[0])
+  // const handleInputImageChange = (file: ChangeEvent) => {
+  //   const reader = new FileReader()
+  //   const { files } = file.target as HTMLInputElement
+  //   if (files && files.length !== 0) {
+  //     reader.onload = () => setImgSrc(reader.result as string)
+  //     reader.readAsDataURL(files[0])
 
-      if (reader.result !== null) {
-        setInputValue(reader.result as string)
-      }
-    }
-  }
-  const handleInputImageReset = () => {
-    setInputValue('')
-    setImgSrc('/images/avatars/1.png')
-  }
+  //     if (reader.result !== null) {
+  //       setInputValue(reader.result as string)
+  //     }
+  //   }
+  // }
+  // const handleInputImageReset = () => {
+  //   setInputValue('')
+  //   setImgSrc('/images/avatars/1.png')
+  // }
 
   useEffect(() => {
     if (session?.user) {                    //Si session?.user existe y tiene un valor, el useEffect ejecuta la función dentro de él.
@@ -173,12 +201,12 @@ const EntrenadorProfile = () => {
     <Grid container spacing={6}>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title={`Entrenador: ${session?.user?.name}`} />
+          <CardHeader sx={{ textAlign: 'center', marginBottom: '-1%' }} title={` ${session?.user?.name}`} />
           <form >
-            <CardContent sx={{ pt: 0 }}>
+            <CardContent sx={{ pt: 0, textAlign: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ImgStyled src={imgSrc} alt='Profile Pic' />
-                <div>
+                <ImgStyled sx={{ margin: '0 auto' }} src={imgSrc} alt='Profile Pic' />
+                {/* <div>
                   <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Subir foto
                     <input
@@ -194,8 +222,26 @@ const EntrenadorProfile = () => {
                     Volver al estado inicial
                   </ResetButtonStyled>
                   <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
-                </div>
+                </div> */}
               </Box>
+              <CustomChip
+                skin='light'
+                size='small'
+
+                label={session?.user.role}
+
+                color={statusColors[data.status]}
+                sx={{
+                  alignItems: 'center',
+                  marginTop: '8px',
+                  height: 20,
+                  fontWeight: 600,
+                  borderRadius: '5px',
+                  fontSize: '0.875rem',
+                  textTransform: 'capitalize',
+                  '& .MuiChip-label': { mt: -0.25 }
+                }}
+              />
             </CardContent>
             <Divider />
             <CardContent>
