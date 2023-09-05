@@ -113,13 +113,15 @@ const MyProfile = () => {
   const [popUp, setPopUp] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
+  const [openSubscriptionRequest, setOpenSuscriptionRequest] = useState<boolean>(false)
 
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
-  const solicitudEnviada = () => {
+  const requestSend = () => {
     setTitlePopUp('Solicitud enviada!')
     setTextPopUp('')
     setPopUp(true)
+    hanldeSubscriptionRequest()
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -261,7 +263,8 @@ const MyProfile = () => {
   };
   const handleAddSubscriptionOpen = () => setAddSubscription(true)
   const handleAddSubscriptionClose = () => setAddSubscription(false)
-
+  const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
+  const handleOpenSubscriptionRequest = () => setOpenSuscriptionRequest(true)
 
   if (data) {
     return (
@@ -384,7 +387,7 @@ const MyProfile = () => {
                           <Icon icon='mdi:pencil' />
                         </Button>
                       ) :
-                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => solicitudEnviada()}>
+                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenSubscriptionRequest()}>
                           <Icon icon='mdi:send' />
                         </Button>
                       }
@@ -623,6 +626,121 @@ const MyProfile = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button color='success' variant='outlined' type='submit'>
                     Agregar
+                  </Button>
+                </Box>
+              </form>
+            </DialogContent>
+
+          </Dialog>
+          <Dialog
+            open={openSubscriptionRequest}
+            onClose={hanldeSubscriptionRequest}
+            aria-labelledby='user-view-plans'
+            aria-describedby='user-view-plans-description'
+            sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
+          >
+            <DialogTitle
+              id='user-view-plans'
+              sx={{
+                textAlign: 'center',
+                fontSize: '1.5rem !important',
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+              }}
+            >
+              Solicitud de suscripción
+              <Typography sx={{ textAlign: 'center', fontSize: '0.9rem !important', mt: '10px' }}>
+                Indicale tus preferencias al profesor.
+              </Typography>
+            </DialogTitle>
+            <DialogContent
+              sx={{
+                alignItems: 'center',
+                flexWrap: ['wrap', 'nowrap'],
+                pt: theme => `${theme.spacing(2)} !important`,
+                pb: theme => `${theme.spacing(8)} !important`,
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+              }}
+            >
+              <form noValidate autoComplete='off' >
+
+                {/* <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='name'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        autoFocus
+                        label='Nombre'
+                        name='name'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.name)}
+                      />
+                    )}
+                  />
+                  {errors.name && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.name.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='amount'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        label='Precio'
+                        name='amount'
+                        type='number'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.name)}
+                      />
+                    )}
+                  />
+                  {errors.amount && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.amount.message}
+                    </FormHelperText>
+                  )}
+                </FormControl> */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  {/* <Controller
+                    name='description'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => ( */}
+                  <TextField
+                    rows={4}
+                    multiline
+                    id='textarea-outlined-static'
+                    label='Descripcion'
+                    name='description'
+
+                  // value={value}
+                  // onBlur={onBlur}
+                  // onChange={onChange}
+                  // error={Boolean(errors.name)}
+                  />
+                  {/* )}
+                  />
+                  {errors.description && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.description.message}
+                    </FormHelperText>
+                  )} */}
+                </FormControl>
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button variant='outlined' color='success' endIcon={<Icon icon='mdi:send' />} onClick={() => requestSend()}>
+                    Enviar
                   </Button>
                 </Box>
               </form>
