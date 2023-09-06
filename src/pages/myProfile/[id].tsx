@@ -89,22 +89,17 @@ const MyProfile = () => {
   }
 
   const schema = yup.object().shape({
-    name: yup.string().required("Nombre es un campo obligatorio"),
+    name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
     amount: yup.string().required("Precio es un campo numérico y obligatorio"),
-    description: yup.string().required("Descripción es un campo obligatorio"),
+    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
   })
 
   const updateSchema = yup.object().shape({
-    name: yup.string().required("Nombre es un campo obligatorio"),
+    name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
     amount: yup.string().required("Precio es un campo numérico y obligatorio"),
-    description: yup.string().required("Descripción es un campo obligatorio"),
+    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
   })
 
-  const defaultValues = {
-    name: '',
-    amount: '',
-    description: ''
-  }
 
   // ** States
   const [openPlans, setOpenPlans] = useState<boolean>(false)
@@ -114,7 +109,11 @@ const MyProfile = () => {
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
   const [openSubscriptionRequest, setOpenSuscriptionRequest] = useState<boolean>(false)
+  const { data: session } = useSession();
+  const [users, setUsers] = useState<UsersType>([]); //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+  const [subs, setSubs] = useState<[]>([]);
 
+  const openPopUp = () => setPopUp(true);
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
   const requestSend = () => {
@@ -123,36 +122,35 @@ const MyProfile = () => {
     setPopUp(true)
     hanldeSubscriptionRequest()
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const openPopUp = () => setPopUp(true)
-
-  const { data: session } = useSession();
-  const [users, setUsers] = useState<UsersType>([]); //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
-  const [subs, setSubs] = useState<[]>([]);
   const disabled = subs.length >= 3;
   const isTrainerSession = route.query.id === session?.user._id
 
   // ** React-Hook-Form
   const {
-    control: control,
-
-    //register: register,
-    handleSubmit: handleSubmit,
-    formState: { errors: errors },
-  } = useForm({
-    defaultValues: defaultValues,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      name: '',
+      amount: '',
+      description: '',
+    },
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
 
   const {
     control: updateControl,
-
-    //register: register2,
     handleSubmit: updateHandleSubmit,
+    setValue,
     formState: { errors: updateErrors },
-  } = useForm({
+  } = useForm<FormData>({
+    defaultValues: {
+      name: '',
+      amount: '',
+      description: '',
+    },
     mode: 'onBlur',
     resolver: yupResolver(updateSchema),
   });
@@ -258,7 +256,10 @@ const MyProfile = () => {
   const handlePlansClickOpen = () => setOpenPlans(true)
   const handlePlansClose = () => setOpenPlans(false)
   const handleEditClick = (sub: any) => {
-    setEditSubscription(sub); // Al hacer clic en "Editar", establece los datos de la fila seleccionada
+    setValue("name", sub.name)
+    setValue("amount", sub.amount)
+    setValue("description", sub.description)
+    setEditSubscription(sub);
     setOpenPlans(true);
   };
   const handleAddSubscriptionOpen = () => setAddSubscription(true)
@@ -431,10 +432,10 @@ const MyProfile = () => {
                             rules={{ required: true }}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-                                autoFocus
+
                                 label='Nombre'
                                 name='name'
-                                value={value || editSubs?.name}
+                                value={value}
                                 onBlur={onBlur}
                                 onChange={onChange}
                                 error={Boolean(updateErrors.name)}
@@ -443,7 +444,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.name && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.name.message?.toString()}
+                              {updateErrors.name.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -458,7 +459,7 @@ const MyProfile = () => {
                                 label='Precio'
                                 name='amount'
                                 type='number'
-                                value={value || editSubs?.amount}
+                                value={value}
                                 onBlur={onBlur}
                                 onChange={onChange}
                                 error={Boolean(updateErrors.amount)}
@@ -467,7 +468,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.amount && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.amount.message?.toString()}
+                              {updateErrors.amount.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -483,7 +484,7 @@ const MyProfile = () => {
                                 id='textarea-outlined-static'
                                 label='Descripción'
                                 name='description'
-                                value={value || editSubs?.description}
+                                value={value}
                                 onBlur={onBlur}
                                 onChange={onChange}
                                 error={Boolean(updateErrors.description)}
@@ -492,7 +493,7 @@ const MyProfile = () => {
                           />
                           {updateErrors.description && (
                             <FormHelperText sx={{ color: 'error.main' }}>
-                              {updateErrors.description.message?.toString()}
+                              {updateErrors.description.message}
                             </FormHelperText>
                           )}
                         </FormControl>
@@ -587,7 +588,7 @@ const MyProfile = () => {
                         value={value}
                         onBlur={onBlur}
                         onChange={onChange}
-                        error={Boolean(errors.name)}
+                        error={Boolean(errors.amount)}
                       />
                     )}
                   />
@@ -612,7 +613,7 @@ const MyProfile = () => {
                         value={value}
                         onBlur={onBlur}
                         onChange={onChange}
-                        error={Boolean(errors.name)}
+                        error={Boolean(errors.description)}
                       />
                     )}
                   />
