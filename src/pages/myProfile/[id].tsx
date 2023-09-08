@@ -479,7 +479,7 @@ const MyProfile = () => {
                             rules={{ required: true }}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-                                rows={4}
+                                rows={6}
                                 multiline
                                 id='textarea-outlined-static'
                                 label='Descripción'
@@ -664,54 +664,6 @@ const MyProfile = () => {
               }}
             >
               <form noValidate autoComplete='off' >
-
-                {/* <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='name'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        autoFocus
-                        label='Nombre'
-                        name='name'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.name)}
-                      />
-                    )}
-                  />
-                  {errors.name && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.name.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='amount'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        label='Precio'
-                        name='amount'
-                        type='number'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.name)}
-                      />
-                    )}
-                  />
-                  {errors.amount && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.amount.message}
-                    </FormHelperText>
-                  )}
-                </FormControl> */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   {/* <Controller
                     name='description'
@@ -719,7 +671,7 @@ const MyProfile = () => {
                     rules={{ required: true }}
                     render={({ field: { value, onChange, onBlur } }) => ( */}
                   <TextField
-                    rows={4}
+                    rows={6}
                     multiline
                     id='textarea-outlined-static'
                     label='Descripcion'
