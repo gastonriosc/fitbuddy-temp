@@ -12,7 +12,7 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import FormHelperText from '@mui/material/FormHelperText'
 import DialogActions from '@mui/material/DialogActions'
-
+import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 
 import TextField from '@mui/material/TextField'
@@ -114,6 +114,7 @@ const MyProfile = () => {
   const { data: session } = useSession();
   const [users, setUsers] = useState<UsersType>([]); //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
   const [subs, setSubs] = useState<[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const openPopUp = () => setPopUp(true);
   const route = useRouter();
@@ -173,6 +174,7 @@ const MyProfile = () => {
           const data = await res.json();
           setUsers(data.user);
           setSubs(data.subs);
+          setIsLoading(true);
         }
         if (res.status == 404) {
           route.replace('/404')
@@ -297,7 +299,7 @@ const MyProfile = () => {
     setOpenDeleteSubs(true)
   }
 
-  if (data) {
+  if (data && isLoading) {
     return (
       <Grid container spacing={6}>
         <Grid item xs={12} md={4} sx={{ height: '550px' }}>
@@ -550,7 +552,7 @@ const MyProfile = () => {
               {isTrainerSession ? (
                 <Button sx={{ marginBottom: '-30px' }} variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
                   <Icon icon='mdi:plus' />
-                  Agregar
+                  Suscripción
                 </Button>
               ) : null}
             </Box>
@@ -816,7 +818,12 @@ const MyProfile = () => {
       </Grid >
     )
   } else {
-    return null
+    return (
+      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <CircularProgress size={100} thickness={6} color="primary" />
+      </Box>
+    )
+
   }
 }
 
