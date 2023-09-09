@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { subsId, ...updatedData } = req.body
 
       const subscription = await Subscription.findOne({ _id: subsId })
+
       if (!subscription) {
         return res.status(404).json({ message: 'Usuario no encontrado' })
       }

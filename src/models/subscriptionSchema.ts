@@ -16,6 +16,10 @@ const subscriptionSchema = new mongoose.Schema({
   trainerId: {
     type: String,
     require: true
+  },
+  deleted: {
+    type: Boolean,
+    require: true
   }
 })
 

@@ -103,6 +103,8 @@ const MyProfile = () => {
 
   // ** States
   const [openPlans, setOpenPlans] = useState<boolean>(false)
+  const [openDeleteSubs, setOpenDeleteSubs] = useState<boolean>(false)
+  const [deletedSubs, setDeletedSubs] = useState<FormData>()
   const [addSubscription, setAddSubscription] = useState<boolean>(false)
   const [editSubs, setEditSubscription] = useState<FormData>()
   const [popUp, setPopUp] = useState<boolean>(false)
@@ -190,6 +192,7 @@ const MyProfile = () => {
 
   const createSubscription: SubmitHandler<FieldValues> = async (data) => {
     const trainerId = route.query.id
+    const deleted = false;
     const { name, amount, description } = data;
     try {
       const res = await fetch('/api/subscription', {
@@ -197,7 +200,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, amount, description, trainerId })
+        body: JSON.stringify({ name, amount, description, trainerId, deleted })
       })
       if (res.status == 200) {
         handleAddSubscriptionClose();
@@ -218,21 +221,43 @@ const MyProfile = () => {
   }
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
-    const subsId = editSubs?._id
-    const { name, amount, description } = data;
-    debugger
+    const subsId = editSubs?._id || deletedSubs?._id
+    let name, amount, description;
+    let deleted;
+
+    if (openPlans) {
+      name = data.name
+      amount = data.amount
+      description = data.description;
+      deleted = false;
+    }
+    else {
+      name = deletedSubs?.name
+      amount = deletedSubs?.amount
+      description = deletedSubs?.description;
+      deleted = true;
+    }
+
     try {
       const res = await fetch('/api/subscription', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ subsId, name, amount, description })
+        body: JSON.stringify({ subsId, name, amount, description, deleted })
       })
       if (res.status == 200) {
-        handlePlansClose()
-        setTitlePopUp('Suscripción editada!')
-        setPopUp(true)
+        if (openPlans) {
+          handlePlansClose()
+          setTitlePopUp('Suscripción editada!')
+          setPopUp(true)
+        }
+        else {
+          hadleCloseDeleteSubscriptionPopUp()
+          setTitlePopUp('Suscripción borrada!')
+          setPopUp(true)
+        }
+
       }
       else {
         if (res.status == 409) {
@@ -266,6 +291,11 @@ const MyProfile = () => {
   const handleAddSubscriptionClose = () => setAddSubscription(false)
   const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
   const handleOpenSubscriptionRequest = () => setOpenSuscriptionRequest(true)
+  const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
+  const handleOpenDeleteSubscriptionPopUp = (sub: any) => {
+    setDeletedSubs(sub)
+    setOpenDeleteSubs(true)
+  }
 
   if (data) {
     return (
@@ -383,11 +413,17 @@ const MyProfile = () => {
 
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                       {isTrainerSession ? (
+                        <Box sx={{ display: 'flex', gap: '10px' }}>
 
-                        <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
-                          <Icon icon='mdi:pencil' />
-                        </Button>
+                          <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
+                            <Icon icon='mdi:pencil' />
+                          </Button>
+                          <Button variant='contained' color='error' title='Borrar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenDeleteSubscriptionPopUp(sub)} >
+                            <Icon icon='mdi:delete' />
+                          </Button>
+                        </Box>
                       ) :
+
                         <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenSubscriptionRequest()}>
                           <Icon icon='mdi:send' />
                         </Button>
@@ -700,6 +736,46 @@ const MyProfile = () => {
             </DialogContent>
 
           </Dialog>
+          {/* POPUP BORRAR SUSCRIPCION */}
+          <Dialog fullWidth open={openDeleteSubs} onClose={hadleCloseDeleteSubscriptionPopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}>
+            <DialogContent
+              sx={{
+                pb: theme => `${theme.spacing(6)} !important`,
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  textAlign: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  '& svg': { mb: 6, color: 'warning.main' }
+                }}
+              >
+                <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
+                <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas borrar la suscripción?</Typography>
+                <Typography>Una vez borrada, no podrás recuperar la suscripción.</Typography>
+              </Box>
+            </DialogContent>
+            <DialogActions
+              sx={{
+                justifyContent: 'center',
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+              }}
+            >
+              <Button variant='contained' sx={{ mr: 2 }} onClick={updateSubscription}>
+                Confirmar
+              </Button>
+              <Button variant='outlined' color='secondary' onClick={hadleCloseDeleteSubscriptionPopUp} >
+                Cancelar
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {/* POPUP EDITAR/ENVIAR/BORRAR */}
           <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
             <DialogContent
               sx={{
