@@ -97,32 +97,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
         );
       }
     },
-    {
-      flex: 0.2,
-      minWidth: 280,
-      field: 'email',
-      headerName: 'Email',
-      renderCell: ({ row }: CellType) => {
-        return (
-          <Typography color={'lightgray'} noWrap variant='body2'>
-            <b>{row.email}</b>
-          </Typography>
-        );
-      }
-    },
-    {
-      flex: 0.2,
-      minWidth: 250,
-      field: 'phoneNumber',
-      headerName: 'Telefono',
-      renderCell: ({ row }: CellType) => {
-        return (
-          <Typography color={'lightgray'} noWrap variant='body2'>
-            <b>{row.phone}</b>
-          </Typography>
-        );
-      }
-    },
+
     {
       flex: 0.2,
       minWidth: 200,
