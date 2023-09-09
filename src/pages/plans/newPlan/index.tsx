@@ -16,9 +16,9 @@ import TextField from '@mui/material/TextField';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import { Box, Dialog, DialogActions, DialogContent, Icon, Typography } from '@mui/material';
-import { useRouter } from 'next/router';
+import { Box, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
+import Icon from 'src/@core/components/icon';
 
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
@@ -70,15 +70,10 @@ const NewPlan = () => {
   const [peso, setPeso] = useState(0);
   const [popUp, setPopUp] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
-  const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
-  const solicitudEnviada = () => {
-    setTitlePopUp('Solicitud enviada!')
-    setTextPopUp('')
-    setPopUp(true)
-  }
-  const route = useRouter()
+
+  const textPopUp = 'Refresque la pagina para ver los cambios'
 
   const handleAddRow = (dayIndex: number) => {
     const newPlanLists = [...planLists];
@@ -346,7 +341,6 @@ const NewPlan = () => {
             </ButtonStyled>
           </Grid>
         </Grid>
-
         <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
           <DialogContent
             sx={{
@@ -365,6 +359,7 @@ const NewPlan = () => {
                 '& svg': { mb: 6, color: 'success.main' }
               }}
             >
+              <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
               <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
               <Typography>{textPopUp}</Typography>
             </Box>
@@ -376,13 +371,17 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
+
             <Button variant='outlined' color='success' onClick={closePopUp}>
               OK
             </Button>
           </DialogActions>
         </Dialog>
+
       </Grid>
+
     </form >
+
   );
 };
 
