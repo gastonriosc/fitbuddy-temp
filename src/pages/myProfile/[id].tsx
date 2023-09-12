@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
+import NewSubsPopUp from './newSubsPopUp'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -88,11 +89,7 @@ const MyProfile = () => {
     description: string
   }
 
-  const schema = yup.object().shape({
-    name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    amount: yup.string().required("Precio es un campo numérico y obligatorio"),
-    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-  })
+
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
@@ -105,7 +102,9 @@ const MyProfile = () => {
   const [openPlans, setOpenPlans] = useState<boolean>(false)
   const [openDeleteSubs, setOpenDeleteSubs] = useState<boolean>(false)
   const [deletedSubs, setDeletedSubs] = useState<FormData>()
-  const [addSubscription, setAddSubscription] = useState<boolean>(false)
+  const [newSubsPopUpOpen, setNewSubsPopUpOpen] = useState<boolean>(false)
+
+  // const [addSubscription, setAddSubscription] = useState<boolean>(false)
   const [editSubs, setEditSubscription] = useState<FormData>()
   const [popUp, setPopUp] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
@@ -116,7 +115,7 @@ const MyProfile = () => {
   const [subs, setSubs] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const openPopUp = () => setPopUp(true);
+  // const openPopUp = () => setPopUp(true);
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
   const requestSend = () => {
@@ -129,19 +128,7 @@ const MyProfile = () => {
   const isTrainerSession = route.query.id === session?.user._id
 
   // ** React-Hook-Form
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      name: '',
-      amount: '',
-      description: '',
-    },
-    mode: 'onBlur',
-    resolver: yupResolver(schema),
-  });
+
 
   const {
     control: updateControl,
@@ -192,35 +179,6 @@ const MyProfile = () => {
   console.log(route.query.id)
   console.log(session?.user._id)
 
-  const createSubscription: SubmitHandler<FieldValues> = async (data) => {
-    const trainerId = route.query.id
-    const deleted = false;
-    const { name, amount, description } = data;
-    try {
-      const res = await fetch('/api/subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, amount, description, trainerId, deleted })
-      })
-      if (res.status == 200) {
-        handleAddSubscriptionClose();
-        setTitlePopUp('Suscripción creada!')
-        setPopUp(true)
-      }
-      else {
-        if (res.status == 409) {
-          console.log('error 409')
-        }
-        if (res.status == 400) {
-          console.log('error 400')
-        }
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
@@ -289,8 +247,9 @@ const MyProfile = () => {
     setEditSubscription(sub);
     setOpenPlans(true);
   };
-  const handleAddSubscriptionOpen = () => setAddSubscription(true)
-  const handleAddSubscriptionClose = () => setAddSubscription(false)
+
+  // const handleAddSubscriptionOpen = () => setAddSubscription(true)
+  // const handleAddSubscriptionClose = () => setAddSubscription(false)
   const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
   const handleOpenSubscriptionRequest = () => setOpenSuscriptionRequest(true)
   const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
@@ -550,7 +509,7 @@ const MyProfile = () => {
             ))}
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginLeft: 'auto', marginTop: 'auto' }}>
               {isTrainerSession ? (
-                <Button sx={{ marginBottom: '-30px' }} variant='contained' onClick={handleAddSubscriptionOpen} disabled={disabled}>
+                <Button sx={{ marginBottom: '-30px' }} variant='contained' onClick={() => setNewSubsPopUpOpen(true)} disabled={disabled}>
                   <Icon icon='mdi:plus' />
                   Suscripción
                 </Button>
@@ -559,118 +518,8 @@ const MyProfile = () => {
 
           </Grid>
 
-          <Dialog
-            open={addSubscription}
-            onClose={handleAddSubscriptionClose}
-            aria-labelledby='user-view-plans'
-            aria-describedby='user-view-plans-description'
-            sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
-          >
-            <DialogTitle
-              id='user-view-plans'
-              sx={{
-                textAlign: 'center',
-                fontSize: '1.5rem !important',
-                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-              }}
-            >
-              Agregar suscripción
-            </DialogTitle>
-            <DialogContent
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: ['wrap', 'nowrap'],
-                pt: theme => `${theme.spacing(2)} !important`,
-                pb: theme => `${theme.spacing(8)} !important`,
-                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
-              }}
-            >
-              <form noValidate autoComplete='off' onSubmit={handleSubmit(createSubscription)}>
-
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='name'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        autoFocus
-                        label='Nombre'
-                        name='name'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.name)}
-                      />
-                    )}
-                  />
-                  {errors.name && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.name.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='amount'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        label='Precio'
-                        name='amount'
-                        type='number'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.amount)}
-                      />
-                    )}
-                  />
-                  {errors.amount && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.amount.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='description'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        rows={4}
-                        multiline
-                        id='textarea-outlined-static'
-                        label='Descripcion'
-                        name='description'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.description)}
-                      />
-                    )}
-                  />
-                  {errors.description && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.description.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button color='success' variant='outlined' type='submit'>
-                    Agregar
-                  </Button>
-                </Box>
-              </form>
-            </DialogContent>
-
-          </Dialog>
+          {/* componente que realiza la nueva suscripcion */}
+          <NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen}></NewSubsPopUp>
           <Dialog
             open={openSubscriptionRequest}
             onClose={hanldeSubscriptionRequest}
@@ -777,7 +626,7 @@ const MyProfile = () => {
               </Button>
             </DialogActions>
           </Dialog>
-          {/* POPUP EDITAR/ENVIAR/BORRAR */}
+          {/* POPUP EDITAR//BORRAR */}
           <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
             <DialogContent
               sx={{
