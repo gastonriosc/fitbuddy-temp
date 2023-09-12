@@ -53,7 +53,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mis Solicitudes',
       icon: 'mdi:inbox',
-      path: '/myRequests',
+      path: '/myRequests/' + session?.user?._id,
       subject: 'myRequests-page',
       action: 'manage'
     },

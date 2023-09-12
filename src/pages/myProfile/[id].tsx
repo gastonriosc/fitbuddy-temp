@@ -89,7 +89,9 @@ const MyProfile = () => {
     description: string
   }
 
-
+  const schema = yup.object().shape({
+    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+  })
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
@@ -103,8 +105,7 @@ const MyProfile = () => {
   const [openDeleteSubs, setOpenDeleteSubs] = useState<boolean>(false)
   const [deletedSubs, setDeletedSubs] = useState<FormData>()
   const [newSubsPopUpOpen, setNewSubsPopUpOpen] = useState<boolean>(false)
-
-  // const [addSubscription, setAddSubscription] = useState<boolean>(false)
+  const [sendSubsRequest, setSendSubsRequest] = useState<FormData>()
   const [editSubs, setEditSubscription] = useState<FormData>()
   const [popUp, setPopUp] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
@@ -115,20 +116,50 @@ const MyProfile = () => {
   const [subs, setSubs] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  // const openPopUp = () => setPopUp(true);
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
-  const requestSend = () => {
-    setTitlePopUp('Solicitud enviada!')
-    setTextPopUp('')
-    setPopUp(true)
-    hanldeSubscriptionRequest()
+
+  // const requestSend = () => {
+  //   setTitlePopUp('Solicitud enviada!')
+  //   setTextPopUp('')
+  //   setPopUp(true)
+  //   hanldeSubscriptionRequest()
+  // }
+  const handlePlansClose = () => setOpenPlans(false)
+  const handleEditClick = (sub: any) => {
+    setValue("name", sub.name)
+    setValue("amount", sub.amount)
+    setValue("description", sub.description)
+    setEditSubscription(sub);
+    setOpenPlans(true);
+  };
+
+  const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
+  const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
+  const handleOpenDeleteSubscriptionPopUp = (sub: any) => {
+    setDeletedSubs(sub)
+    setOpenDeleteSubs(true)
   }
+  const handleSendSubsRequest = (sub: any) => {
+    setSendSubsRequest(sub)
+    setOpenSuscriptionRequest(true)
+  }
+
   const disabled = subs.length >= 3;
   const isTrainerSession = route.query.id === session?.user._id
 
   // ** React-Hook-Form
-
+  const {
+    control,
+    handleSubmit: sendSubsRequestHandleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      description: '',
+    },
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+  });
 
   const {
     control: updateControl,
@@ -176,9 +207,6 @@ const MyProfile = () => {
 
     fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
   }, []);
-  console.log(route.query.id)
-  console.log(session?.user._id)
-
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
@@ -224,7 +252,7 @@ const MyProfile = () => {
           console.log('error 409')
         }
         if (res.status == 400) {
-          console.log('error 400')
+          route.replace('/404')
         }
       }
     } catch (error) {
@@ -232,31 +260,38 @@ const MyProfile = () => {
     }
   }
 
-  // Handle Edit dialog
-  // const handleEditClickOpen = () => setOpenEdit(true)
-  // const handleEditClose = () => setOpenEdit(false)
+  const sendSubscriptionRequest: SubmitHandler<FieldValues> = async (data) => {
+    const { description } = data;
+    const status = "pendiente"
+    const trainerId = route.query.id
+    const studentId = session?.user._id
+    const subscriptionId = sendSubsRequest?._id
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() - 3)
+    const formattedDate = currentDate.toISOString();
+    try {
+      const res = await fetch('/api/subsRequests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, date: formattedDate })
+      })
+      if (res.status == 200) {
+        hanldeSubscriptionRequest()
+        setTitlePopUp('Solicitud enviada!')
+        setTextPopUp('')
+        setPopUp(true)
+      }
+      if (res.status == 400) {
+        route.replace('/404')
+      }
 
-  // Handle Upgrade Plan dialog
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handlePlansClickOpen = () => setOpenPlans(true)
-  const handlePlansClose = () => setOpenPlans(false)
-  const handleEditClick = (sub: any) => {
-    setValue("name", sub.name)
-    setValue("amount", sub.amount)
-    setValue("description", sub.description)
-    setEditSubscription(sub);
-    setOpenPlans(true);
-  };
-
-  // const handleAddSubscriptionOpen = () => setAddSubscription(true)
-  // const handleAddSubscriptionClose = () => setAddSubscription(false)
-  const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
-  const handleOpenSubscriptionRequest = () => setOpenSuscriptionRequest(true)
-  const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
-  const handleOpenDeleteSubscriptionPopUp = (sub: any) => {
-    setDeletedSubs(sub)
-    setOpenDeleteSubs(true)
+    } catch (error) {
+      console.log(error)
+    }
   }
+
 
   if (data && isLoading) {
     return (
@@ -385,7 +420,7 @@ const MyProfile = () => {
                         </Box>
                       ) :
 
-                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenSubscriptionRequest()}>
+                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleSendSubsRequest(sub)}>
                           <Icon icon='mdi:send' />
                         </Button>
                       }
@@ -550,36 +585,34 @@ const MyProfile = () => {
                 px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
               }}
             >
-              <form noValidate autoComplete='off' >
+              <form noValidate autoComplete='off' onSubmit={sendSubsRequestHandleSubmit(sendSubscriptionRequest)}>
                 <FormControl fullWidth sx={{ mb: 4 }}>
-                  {/* <Controller
+                  <Controller
                     name='description'
                     control={control}
                     rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => ( */}
-                  <TextField
-                    rows={6}
-                    multiline
-                    id='textarea-outlined-static'
-                    label='Descripcion'
-                    name='description'
-
-                  // value={value}
-                  // onBlur={onBlur}
-                  // onChange={onChange}
-                  // error={Boolean(errors.name)}
-                  />
-                  {/* )}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextField
+                        rows={6}
+                        multiline
+                        id='textarea-outlined-static'
+                        label='Descripcion'
+                        name='description'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.description)}
+                      />
+                    )}
                   />
                   {errors.description && (
                     <FormHelperText sx={{ color: 'error.main' }}>
                       {errors.description.message}
                     </FormHelperText>
-                  )} */}
+                  )}
                 </FormControl>
-
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button variant='outlined' color='success' endIcon={<Icon icon='mdi:send' />} onClick={() => requestSend()}>
+                  <Button variant='outlined' color='success' endIcon={<Icon icon='mdi:send' />} type='submit'>
                     Enviar
                   </Button>
                 </Box>

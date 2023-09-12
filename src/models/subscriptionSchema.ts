@@ -14,7 +14,7 @@ const subscriptionSchema = new mongoose.Schema({
     required: true
   },
   trainerId: {
-    type: String,
+    type: mongoose.Schema.ObjectId,
     require: true
   },
   deleted: {

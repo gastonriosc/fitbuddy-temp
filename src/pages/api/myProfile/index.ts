@@ -9,7 +9,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     try {
       const { id } = req.query
-      debugger
       const user = await User.findOne({ _id: id })
       const subs = await Subscription.find({ trainerId: id, deleted: false })
       if (user) {

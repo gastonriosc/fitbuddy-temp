@@ -97,22 +97,6 @@ const NewSubsPopUp = (props: Props) => {
     }
   }
 
-
-
-  // // ** States
-  // const [userInput, setUserInput] = useState<string>('yes')
-  // const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
-
-  // const handleClose = () => setOpen(false)
-
-  // const handleSecondDialogClose = () => setSecondDialogOpen(false)
-
-  // const handleConfirmation = (value: string) => {
-  //   handleClose()
-  //   setUserInput(value)
-  //   setSecondDialogOpen(true)
-  // }
-
   return (
     <>
       <Dialog
@@ -197,9 +181,9 @@ const NewSubsPopUp = (props: Props) => {
                 name='description'
                 control={control}
                 rules={{ required: true }}
-                render={({ field: { value, onChange, onBlur } }) => (
+                render={({ field: { onChange, onBlur, value } }) => (
                   <TextField
-                    rows={4}
+                    rows={6}
                     multiline
                     id='textarea-outlined-static'
                     label='Descripcion'
@@ -217,7 +201,6 @@ const NewSubsPopUp = (props: Props) => {
                 </FormHelperText>
               )}
             </FormControl>
-
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button color='success' variant='outlined' type='submit'>
                 Agregar
@@ -263,92 +246,6 @@ const NewSubsPopUp = (props: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* <Dialog fullWidth open={open} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              '& svg': { mb: 6, color: 'success.main' }
-            }}
-          >
-            <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
-            <Typography variant='h4' sx={{ mb: 5 }}>Suscripcion creada!</Typography>
-            <Typography>Refresque la pagina para ver la suscripción</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
-            Yes
-            </Button>
-            <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
-            Cancel
-          </Button>
-          <Button variant='outlined' color='success' onClick={handleClose}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog> */}
-      {/* <Dialog
-        fullWidth
-        open={secondDialogOpen}
-        onClose={handleSecondDialogClose}
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}
-      >
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column',
-              '& svg': {
-                mb: 8,
-                color: userInput === 'yes' ? 'success.main' : 'error.main'
-              }
-            }}
-          >
-            <Icon
-              fontSize='5.5rem'
-              icon={userInput === 'yes' ? 'mdi:check-circle-outline' : 'mdi:close-circle-outline'}
-            />
-            <Typography variant='h4' sx={{ mb: 5 }}>
-              {userInput === 'yes' ? 'Unsubscribed!' : 'Cancelled'}
-            </Typography>
-            <Typography>
-              {userInput === 'yes' ? 'Your subscription cancelled successfully.' : 'Unsubscription Cancelled!!'}
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-        </DialogActions>
-      </Dialog> */}
     </>
   )
 }
