@@ -13,6 +13,8 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Grid, { GridProps } from '@mui/material/Grid'
 import Chip from '@mui/material/Chip'
+import { flexbox } from '@mui/system'
+import Icon from 'src/@core/components/icon'
 
 
 // Styled Grid component
@@ -52,6 +54,17 @@ const Img = styled('img')(({ theme }) => ({
 
 const MyRequests = () => {
 
+  interface subsRequest {
+    _id: string
+    description: string
+    status: string
+    trainerId: string
+    studentId: string
+    subscriptionId: string
+    date: string
+    studentName: string
+    subscriptionName: string
+  }
   const [subsRequest, setSubsRequest] = useState<[]>([]);
   const route = useRouter();
   const session = useSession();
@@ -92,33 +105,54 @@ const MyRequests = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <Grid container spacing={6}>
-          <StyledGrid2 item xs={12} md={3}>
-            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Img alt='Avatar' src='/images/avatars/3.png' />
-            </CardContent>
-          </StyledGrid2>
-          <StyledGrid1 item xs={12} md={9}>
-            <CardContent sx={{ p: theme => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-              <Typography variant='h5' sx={{ mb: 2 }}>
-                Gastón Ríos Cardona
-              </Typography>
-              <Typography variant='body1' color='light-grey' sx={{ mb: 2 }}>
-                Tipo de plan:
-                <Chip sx={{ mx: 2 }} label='Basic' />
-              </Typography>
-              <Typography variant='body1' sx={{ mb: 2 }}>
+      <>
+        <Grid spacing={2}>
 
-              </Typography>
-            </CardContent>
-            <CardActions className='card-action-dense' sx={{ width: '100%', mb: 2 }}>
-              <Button variant='contained' color='success'>Aceptar</Button>
-              <Button variant='contained' color='error'>Rechazar</Button>
-            </CardActions>
-          </StyledGrid1>
+          {subsRequest.map((sub: subsRequest, index) => (
+            <Card key={index} sx={{ marginBottom: 2 }}>
+              <Grid container spacing={6}>
+                <StyledGrid2 item xs={12} md={3}>
+                  <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Img alt='Avatar' src='/images/avatars/1.png' />
+                  </CardContent>
+                </StyledGrid2>
+                <StyledGrid1 item xs={12} md={9}>
+                  <CardContent sx={{ p: theme => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                    <Typography variant='h5' sx={{ mb: 2 }}>
+                      {sub.studentName}
+                    </Typography>
+                    <Box display='flex'>
+                      <Typography variant='body1' color='light-grey' sx={{ mb: 2 }}>
+                        Tipo de plan:
+                        <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
+                      </Typography>
+                      <Typography>
+                        Fecha:
+                        <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
+                      </Typography>
+                    </Box>
+                    <Typography variant='body1' sx={{ mb: 2 }}>
+                      {sub.description}
+                    </Typography>
+                  </CardContent>
+                  <CardActions className='card-action-dense' sx={{ width: '100%', mb: 2 }}>
+                    <Button variant='contained' color='success' title='Aceptar'>
+                      <Icon icon='line-md:confirm' />
+                    </Button>
+                    <Button variant='contained' color='error' title='Rechazar'>
+                      <Icon icon='iconoir:cancel' />
+                    </Button>
+                    <Button variant='contained' color='primary' title='Perfil'>
+                      <Icon icon='mdi:eye' />
+                    </Button>
+                  </CardActions>
+                </StyledGrid1>
+              </Grid>
+            </Card>
+          ))
+          }
         </Grid>
-      </Card>
+      </>
     )
 
   } else {
