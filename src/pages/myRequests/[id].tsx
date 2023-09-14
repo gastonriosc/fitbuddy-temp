@@ -13,8 +13,8 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Grid, { GridProps } from '@mui/material/Grid'
 import Chip from '@mui/material/Chip'
-import { flexbox } from '@mui/system'
 import Icon from 'src/@core/components/icon'
+import RequestPopUp from './requestPopUp'
 
 
 // Styled Grid component
@@ -69,6 +69,23 @@ const MyRequests = () => {
   const route = useRouter();
   const session = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [requestPopUp, setRequestPopUp] = useState<boolean>(false)
+  const [typeAction, setTypeAction] = useState<string>('')
+  const [subsRequestId, setSubsRequestId] = useState<string>('')
+  const [title, setTitle] = useState<string>('')
+
+  const aceptarSubsRequest = (sub: subsRequest) => {
+    setRequestPopUp(true)
+    setTypeAction('aceptar')
+    setSubsRequestId(sub._id)
+    setTitle('aceptada')
+  }
+  const rechazarSubsRequest = (sub: subsRequest) => {
+    setRequestPopUp(true)
+    setTypeAction('rechazar')
+    setSubsRequestId(sub._id)
+    setTitle('rechazada')
+  }
 
   useEffect(() => {
     const fetchMyRequests = async () => {
@@ -136,22 +153,31 @@ const MyRequests = () => {
                     </Typography>
                   </CardContent>
                   <CardActions className='card-action-dense' sx={{ width: '100%', mb: 2 }}>
-                    <Button variant='contained' color='success' title='Aceptar'>
-                      <Icon icon='line-md:confirm' />
-                    </Button>
-                    <Button variant='contained' color='error' title='Rechazar'>
-                      <Icon icon='iconoir:cancel' />
-                    </Button>
-                    <Button variant='contained' color='primary' title='Perfil'>
-                      <Icon icon='mdi:eye' />
-                    </Button>
+                    <Box marginRight={1}>
+                      <Button variant='contained' color='success' title='Aceptar' onClick={() => aceptarSubsRequest(sub)}>
+                        <Icon icon='line-md:confirm' />
+                      </Button>
+                    </Box>
+                    <Box marginRight={1}>
+
+                      <Button variant='contained' color='error' title='Rechazar' onClick={() => rechazarSubsRequest(sub)}>
+                        <Icon icon='iconoir:cancel' />
+                      </Button>
+                    </Box>
+                    <Box marginRight={1}>
+
+                      <Button variant='contained' color='primary' title='Perfil' href={'/myProfile/myStudentProfile/' + sub.studentId}>
+                        <Icon icon='mdi:eye' />
+                      </Button>
+                    </Box>
                   </CardActions>
                 </StyledGrid1>
               </Grid>
             </Card>
           ))
           }
-        </Grid>
+          <RequestPopUp requestPopUp={requestPopUp} setRequestPopUp={setRequestPopUp} type={typeAction} title={title} requestId={subsRequestId} ></RequestPopUp>
+        </Grid >
       </>
     )
 

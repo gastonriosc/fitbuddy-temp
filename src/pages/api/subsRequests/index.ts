@@ -64,8 +64,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
         ])
-
-        console.log(subsRequest)
         if (subsRequest) {
           const responseData = {
             subsRequest: subsRequest

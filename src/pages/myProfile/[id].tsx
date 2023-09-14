@@ -555,6 +555,7 @@ const MyProfile = () => {
 
           {/* componente que realiza la nueva suscripcion */}
           <NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen}></NewSubsPopUp>
+
           <Dialog
             open={openSubscriptionRequest}
             onClose={hanldeSubscriptionRequest}
@@ -660,7 +661,7 @@ const MyProfile = () => {
             </DialogActions>
           </Dialog>
           {/* POPUP EDITAR//BORRAR */}
-          <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}>
             <DialogContent
               sx={{
                 pb: theme => `${theme.spacing(6)} !important`,

@@ -39,7 +39,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mi perfil',
       icon: 'mdi-account',
-      path: '/myProfile/myStudentProfile',
+      path: '/myProfile/myStudentProfile/' + session?.user._id,
       subject: 'myStudentProfile-page',
       action: 'manage'
     },
