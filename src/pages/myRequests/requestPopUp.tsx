@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import { useRouter } from 'next/router'
 
 type Props = {
   requestPopUp: boolean
@@ -26,68 +27,50 @@ type Props = {
 const RequestPopUp = (props: Props) => {
 
   //*props
-  const { requestPopUp, setRequestPopUp, requestId, type, title } = props
-
+  const { requestPopUp, setRequestPopUp, requestId, type, title, subsRequest, setSubsRequest } = props
 
   //*state
   const [popUp, setPopUp] = useState<boolean>(false)
   const closePopUp = () => setPopUp(false)
   const handleCloseRequestPopUp = () => setRequestPopUp(false)
-  const handleOpenPopUp = () => {
-    handleCloseRequestPopUp()
-    setPopUp(true)
+
+  const route = useRouter();
+
+  const updateSubscriptionRequest = async () => {
+    let status;
+
+    if (type === 'aceptar') {
+      status = 'aceptada';
+    }
+    else {
+      status = 'rechazada';
+    }
+    debugger
+    try {
+      const res = await fetch('/api/subsRequests', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ requestId, status })
+      })
+      if (res.status == 200) {
+        setRequestPopUp(false)
+        setPopUp(true)
+        setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+      }
+      else {
+        if (res.status == 409) {
+          route.replace('/404')
+        }
+        if (res.status == 400) {
+          route.replace('/404')
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
-
-  // const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
-  //   let name, amount, description;
-  //   let deleted;
-
-  //   if (openPlans) {
-  //     name = data.name
-  //     amount = data.amount
-  //     description = data.description;
-  //     deleted = false;
-  //   }
-  //   else {
-  //     name = deletedSubs?.name
-  //     amount = deletedSubs?.amount
-  //     description = deletedSubs?.description;
-  //     deleted = true;
-  //   }
-
-  //   try {
-  //     const res = await fetch('/api/subscription', {
-  //       method: 'PUT',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({ subsId, name, amount, description, deleted })
-  //     })
-  //     if (res.status == 200) {
-  //       if (openPlans) {
-  //         handlePlansClose()
-  //         setTitlePopUp('Suscripción editada!')
-  //         setPopUp(true)
-  //       }
-  //       else {
-  //         hadleCloseDeleteSubscriptionPopUp()
-  //         setTitlePopUp('Suscripción borrada!')
-  //         setPopUp(true)
-  //       }
-
-  //     }
-  //     else {
-  //       if (res.status == 409) {
-  //         console.log('error 409')
-  //       }
-  //       if (res.status == 400) {
-  //         route.replace('/404')
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
 
   return (
     <>
@@ -121,7 +104,7 @@ const RequestPopUp = (props: Props) => {
             pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleOpenPopUp()}>
+          <Button variant='contained' sx={{ mr: 2 }} onClick={() => updateSubscriptionRequest()}>
             Confirmar
           </Button>
           <Button variant='outlined' color='secondary' onClick={handleCloseRequestPopUp} >
@@ -150,7 +133,7 @@ const RequestPopUp = (props: Props) => {
           >
             <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
             <Typography variant='h4' sx={{ mb: 5 }}>Solicitud de suscripcion {title}</Typography>
-            <Typography>Refresque la pagina para ver los cambios</Typography>
+            {/* <Typography>Refresque la pagina para ver los cambios</Typography> */}
           </Box>
         </DialogContent>
         <DialogActions

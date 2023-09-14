@@ -176,7 +176,7 @@ const MyRequests = () => {
             </Card>
           ))
           }
-          <RequestPopUp requestPopUp={requestPopUp} setRequestPopUp={setRequestPopUp} type={typeAction} title={title} requestId={subsRequestId} ></RequestPopUp>
+          <RequestPopUp requestPopUp={requestPopUp} setRequestPopUp={setRequestPopUp} type={typeAction} title={title} requestId={subsRequestId} subsRequest={subsRequest} setSubsRequest={setSubsRequest}></RequestPopUp>
         </Grid >
       </>
     )

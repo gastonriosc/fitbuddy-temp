@@ -34,6 +34,7 @@ const NewSubsPopUp = (props: Props) => {
     description: string
   }
 
+  const { subs, setSubs } = props;
   const schema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
     amount: yup.string().required("Precio es un campo numérico y obligatorio"),
@@ -61,7 +62,8 @@ const NewSubsPopUp = (props: Props) => {
 
   //*state
   const [titlePopUp, setTitlePopUp] = useState<string>()
-  const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
+
+  // const [textPopUp, setTextPopUp] = useState<string>('Refresque la pagina para ver los cambios')
   const [popUp, setPopUp] = useState<boolean>(false)
 
   const handleAddSubscriptionClose = () => setAddSubscription(false)
@@ -83,6 +85,8 @@ const NewSubsPopUp = (props: Props) => {
         handleAddSubscriptionClose();
         setTitlePopUp('Suscripción creada!')
         setPopUp(true)
+        const newSubs = { name: name, amount: amount, description: description, trainerId: trainerId, deleted: deleted }
+        setSubs((prevSubs: any) => [...prevSubs, newSubs]);
       }
       else {
         if (res.status == 409) {
@@ -230,7 +234,7 @@ const NewSubsPopUp = (props: Props) => {
           >
             <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
             <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
-            <Typography>{textPopUp}</Typography>
+            {/* <Typography>{textPopUp}</Typography> */}
           </Box>
         </DialogContent>
         <DialogActions

@@ -53,7 +53,7 @@ interface Subscription {
   name: string
   amount: string
   description: string
-  trainerId: string
+  deleted: boolean
 }
 
 const data: UsersType = {
@@ -113,7 +113,7 @@ const MyProfile = () => {
   const [openSubscriptionRequest, setOpenSuscriptionRequest] = useState<boolean>(false)
   const { data: session } = useSession();
   const [users, setUsers] = useState<UsersType>([]); //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
-  const [subs, setSubs] = useState<[]>([]);
+  const [subs, setSubs] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const route = useRouter();
@@ -239,13 +239,19 @@ const MyProfile = () => {
           handlePlansClose()
           setTitlePopUp('Suscripción editada!')
           setPopUp(true)
+          if (subsId) {
+
+            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, deleted: deleted };
+            setSubs((prevSubs) => prevSubs.map((sub) => (sub._id === editedSubscription._id ? editedSubscription : sub)));
+          }
+
         }
         else {
           hadleCloseDeleteSubscriptionPopUp()
           setTitlePopUp('Suscripción borrada!')
           setPopUp(true)
+          setSubs((prevSubs) => prevSubs.filter((sub) => sub._id !== subsId));
         }
-
       }
       else {
         if (res.status == 409) {
@@ -554,7 +560,7 @@ const MyProfile = () => {
           </Grid>
 
           {/* componente que realiza la nueva suscripcion */}
-          <NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen}></NewSubsPopUp>
+          <NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen} subs={subs} setSubs={setSubs}></NewSubsPopUp>
 
           <Dialog
             open={openSubscriptionRequest}
@@ -681,7 +687,7 @@ const MyProfile = () => {
               >
                 <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
                 <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
-                <Typography>{textPopUp}</Typography>
+                {/* <Typography>{textPopUp}</Typography> */}
               </Box>
             </DialogContent>
             <DialogActions

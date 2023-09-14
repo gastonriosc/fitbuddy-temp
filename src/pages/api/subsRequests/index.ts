@@ -14,6 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json('No se puedo crear la solicitud de suscripcion')
       }
     }
+    if (req.method === 'PUT') {
+      const { requestId, status } = req.body
+      const subsRequest = await SubsRequest.findByIdAndUpdate(requestId, { status }, { new: true })
+      if (subsRequest) {
+        return res.status(200).json(subsRequest)
+      } else {
+        return res.status(404).json('no se puedo realizar el update')
+      }
+    }
     if (req.method === 'GET') {
       try {
         const { id } = req.query
