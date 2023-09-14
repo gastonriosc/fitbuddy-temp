@@ -93,7 +93,7 @@ const RequestPopUp = (props: Props) => {
             }}
           >
             <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
-            <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas {type} la solicitud de suscripcion?</Typography>
+            <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas {type} la solicitud de suscripción?</Typography>
             {/* <Typography>Una vez borrada, no podrás recuperar la suscripción.</Typography> */}
           </Box>
         </DialogContent>
@@ -132,7 +132,7 @@ const RequestPopUp = (props: Props) => {
             }}
           >
             <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
-            <Typography variant='h4' sx={{ mb: 5 }}>Solicitud de suscripcion {title}</Typography>
+            <Typography variant='h4' sx={{ mb: 5 }}>Solicitud de suscripción {title}</Typography>
             {/* <Typography>Refresque la pagina para ver los cambios</Typography> */}
           </Box>
         </DialogContent>
