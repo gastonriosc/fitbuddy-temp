@@ -205,7 +205,7 @@ const MyStudentProfile = () => {
 
 MyStudentProfile.acl = {
   action: 'manage',
-  subject: 'myStudentProfile-page'
+  subject: 'myStudentProfile2-page'
 }
 
 
