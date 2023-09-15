@@ -124,7 +124,7 @@ const MyStudentProfile = () => {
                 </CustomAvatar>
               )}
               <Typography variant='h6' sx={{ mb: 2 }}>
-                {users.fullName}
+                {users.name}
               </Typography>
               <CustomChip
                 skin='light'
