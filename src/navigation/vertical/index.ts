@@ -39,7 +39,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mi perfil',
       icon: 'mdi-account',
-      path: '/myProfile/myStudentProfile',
+      path: '/myProfile/myStudentProfile/' + session?.user._id,
       subject: 'myStudentProfile-page',
       action: 'manage'
     },
@@ -53,7 +53,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mis Solicitudes',
       icon: 'mdi:inbox',
-      path: '/myRequests',
+      path: '/myRequests/' + session?.user?._id,
       subject: 'myRequests-page',
       action: 'manage'
     },

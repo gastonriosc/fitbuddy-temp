@@ -31,6 +31,7 @@ const defineRulesFor = (role: string, subject: string) => {
         'myStudents-page',
         'myProfile-page',
         'myTrainerProfile-page',
+        'myStudentProfile2-page',
         'myRequests-page'
       ]
     )
@@ -45,9 +46,11 @@ const defineRulesFor = (role: string, subject: string) => {
         'perfilAlumno',
         'search-page',
         'myProfile-page',
-        'myStudentProfile-page'
+        'myStudentProfile-page',
+        'myStudentProfile2-page'
       ]
     )
+    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page'])
     cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page'])
   } else {
     can(['read', 'create', 'update', 'delete'], subject)
