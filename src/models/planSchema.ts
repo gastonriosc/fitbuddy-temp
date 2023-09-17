@@ -15,7 +15,7 @@ const daySchema = new mongoose.Schema({
 const planSchema = new mongoose.Schema({
   nombrePlan: String,
   plan: [daySchema],
-  trainerId: String
+  trainerId: mongoose.Schema.ObjectId
 })
 
 const PlanModel = mongoose.models.Plan || mongoose.model('Plan', planSchema)
