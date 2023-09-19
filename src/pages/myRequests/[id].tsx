@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
+
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
@@ -20,11 +20,11 @@ import RequestPopUp from './requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel } from '@mui/material';
 
 // Styled Grid component
-const StyledGrid1 = styled(Grid)<GridProps>(({ theme }) => ({
+const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
 }));
 
 // Styled Grid component
-const StyledGrid2 = styled(Grid)<GridProps>(({ theme }) => ({
+const StyledGrid2 = styled(Grid)<GridProps>(({ }) => ({
 }));
 
 // Styled component for the image
@@ -220,7 +220,7 @@ const MyRequests = () => {
                             title='Rechazar'
                             onClick={() => rechazarSubsRequest(sub)}
                           >
-                            <Icon icon='iconoir:cancel' />
+                            <Icon icon='line-md:cancel' />
                           </Button>
                         </Box>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>

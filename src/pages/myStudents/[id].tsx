@@ -14,13 +14,14 @@ import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
 import { CardHeader, Divider, FormControl, Input, InputLabel } from '@mui/material';
+import RequestPopUp from '../myRequests/requestPopUp';
 
 // Styled Grid component
-const StyledGrid1 = styled(Grid)<GridProps>(({ theme }) => ({
+const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
 }));
 
 // Styled Grid component
-const StyledGrid2 = styled(Grid)<GridProps>(({ theme }) => ({
+const StyledGrid2 = styled(Grid)<GridProps>(({ }) => ({
 }));
 
 // Styled component for the image
@@ -55,15 +56,6 @@ const MyStudents = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
 
-
-  const aceptarSubsRequest = (sub: subsRequest) => {
-    setRequestPopUp(true);
-    setTypeAction('aceptar');
-    setSubsRequestId(sub._id);
-    setTitle('aceptada');
-
-  };
-
   const rechazarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('rechazar');
@@ -78,7 +70,7 @@ const MyStudents = () => {
       try {
         // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
-          `/api/subsRequests/?id=${id}`,
+          `/api/myStudents/?id=${id}`,
           {
             method: 'GET',
             headers: {
@@ -203,10 +195,9 @@ const MyStudents = () => {
                           <Button
                             variant='contained'
                             color='success'
-                            title='Aceptar'
-                            onClick={() => aceptarSubsRequest(sub)}
+                            title='Crear plan'
                           >
-                            <Icon icon='line-md:confirm' />
+                            <Icon icon='line-md:plus' />
                           </Button>
                         </Box>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -216,7 +207,7 @@ const MyStudents = () => {
                             title='Rechazar'
                             onClick={() => rechazarSubsRequest(sub)}
                           >
-                            <Icon icon='iconoir:cancel' />
+                            <Icon icon='line-md:cancel' />
                           </Button>
                         </Box>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -239,6 +230,14 @@ const MyStudents = () => {
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
+          < RequestPopUp
+            requestPopUp={requestPopUp}
+            setRequestPopUp={setRequestPopUp}
+            type={typeAction}
+            title={title}
+            requestId={subsRequestId}
+            setSubsRequest={setSubsRequest}
+          />
         </Grid >
       </>
     );

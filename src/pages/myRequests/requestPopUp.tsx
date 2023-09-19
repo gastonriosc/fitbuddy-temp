@@ -1,6 +1,7 @@
 // ** React Imports
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -21,23 +22,8 @@ type Props = {
   type: string
   title: string
   requestId: string
-  subsRequest: subsRequest
-  studentId: string
   setSubsRequest: any
 }
-interface subsRequest {
-  _id: string;
-  description: string;
-  status: string;
-  trainerId: string;
-  studentId: string;
-  subscriptionId: string;
-  date: string;
-  studentName: string;
-  subscriptionName: string;
-}
-
-
 
 const RequestPopUp = (props: Props) => {
 
@@ -50,7 +36,7 @@ const RequestPopUp = (props: Props) => {
   const handleCloseRequestPopUp = () => setRequestPopUp(false)
 
   const route = useRouter();
-
+  const session = useSession();
 
 
   const updateSubscriptionRequest = async () => {
@@ -73,7 +59,7 @@ const RequestPopUp = (props: Props) => {
       })
       if (res.status == 200) {
         if (type === 'aceptar') {
-          route.replace('/myStudents')
+          route.replace('/myStudents/' + session.data?.user._id)
         }
         else {
           setRequestPopUp(false)
