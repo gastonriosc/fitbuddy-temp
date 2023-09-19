@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-//import { useSession } from 'next-auth/react';
-
 // ** MUI Imports
 import Pagination from '@mui/material/Pagination'
 import Box from '@mui/material/Box';
@@ -12,11 +10,9 @@ import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
-import RequestPopUp from './requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel } from '@mui/material';
 
 // Styled Grid component
@@ -44,7 +40,7 @@ interface subsRequest {
   subscriptionName: string;
 }
 
-const MyRequests = () => {
+const MyStudents = () => {
 
   const route = useRouter();
   const [subsRequest, setSubsRequest] = useState<[]>([]);
@@ -244,22 +240,6 @@ const MyRequests = () => {
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-          </Button>
-          <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-          </Button>
-        </div> */}
-        < RequestPopUp
-          requestPopUp={requestPopUp}
-          setRequestPopUp={setRequestPopUp}
-          type={typeAction}
-          title={title}
-          requestId={subsRequestId}
-          setSubsRequest={setSubsRequest}
-        />
       </>
     );
   } else {
@@ -271,9 +251,9 @@ const MyRequests = () => {
   }
 };
 
-MyRequests.acl = {
+MyStudents.acl = {
   action: 'manage',
   subject: 'myRequests-page',
 };
 
-export default MyRequests;
+export default MyStudents;

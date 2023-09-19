@@ -1,6 +1,6 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
-
+import { useState } from 'react'
+import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -14,8 +14,6 @@ import DialogActions from '@mui/material/DialogActions'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { useRouter } from 'next/router'
-import SubsRequest from 'src/models/subsRequestSchema'
 
 type Props = {
   requestPopUp: boolean
@@ -25,6 +23,7 @@ type Props = {
   requestId: string
   subsRequest: subsRequest
   studentId: string
+  setSubsRequest: any
 }
 interface subsRequest {
   _id: string;
@@ -43,9 +42,7 @@ interface subsRequest {
 const RequestPopUp = (props: Props) => {
 
   //*props
-  const { requestPopUp, setRequestPopUp, requestId, type, title, subsRequest, setSubsRequest } = props
-
-  //const [subsRequest, setSubsRequest] = useState<[]>([]);
+  const { requestPopUp, setRequestPopUp, requestId, type, title, setSubsRequest } = props
 
   //*state
   const [popUp, setPopUp] = useState<boolean>(false)
@@ -75,9 +72,14 @@ const RequestPopUp = (props: Props) => {
         body: JSON.stringify({ requestId, status })
       })
       if (res.status == 200) {
-        setRequestPopUp(false)
-        setPopUp(true)
-        setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+        if (type === 'aceptar') {
+          route.replace('/myStudents')
+        }
+        else {
+          setRequestPopUp(false)
+          setPopUp(true)
+          setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+        }
       }
       else {
         if (res.status == 409) {
