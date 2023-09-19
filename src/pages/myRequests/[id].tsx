@@ -80,13 +80,13 @@ const MyRequests = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 2; // Cantidad de elementos por página
 
-  //const session = useSession();
 
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');
     setSubsRequestId(sub._id);
     setTitle('aceptada');
+
   };
 
   const rechazarSubsRequest = (sub: subsRequest) => {
@@ -129,10 +129,6 @@ const MyRequests = () => {
   console.log(subsRequest);
 
   const totalPages = Math.ceil(subsRequest.length / itemsPerPage);
-
-  // const goToPage = (page: number) => {
-  //   setCurrentPage(page);
-  // };
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -240,6 +236,8 @@ const MyRequests = () => {
                           color='success'
                           title='Aceptar'
                           onClick={() => aceptarSubsRequest(sub)}
+
+                          href={'/plans/newPlan/?id=' + sub.studentId}
                         >
                           <Icon icon='line-md:confirm' />
                         </Button>

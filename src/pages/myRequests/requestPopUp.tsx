@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 
 // ** MUI Imports
@@ -15,6 +15,7 @@ import DialogActions from '@mui/material/DialogActions'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import { useRouter } from 'next/router'
+import SubsRequest from 'src/models/subsRequestSchema'
 
 type Props = {
   requestPopUp: boolean
@@ -22,12 +23,29 @@ type Props = {
   type: string
   title: string
   requestId: string
+  subsRequest: subsRequest
+  studentId: string
 }
+interface subsRequest {
+  _id: string;
+  description: string;
+  status: string;
+  trainerId: string;
+  studentId: string;
+  subscriptionId: string;
+  date: string;
+  studentName: string;
+  subscriptionName: string;
+}
+
+
 
 const RequestPopUp = (props: Props) => {
 
   //*props
   const { requestPopUp, setRequestPopUp, requestId, type, title, subsRequest, setSubsRequest } = props
+
+  //const [subsRequest, setSubsRequest] = useState<[]>([]);
 
   //*state
   const [popUp, setPopUp] = useState<boolean>(false)
@@ -35,6 +53,8 @@ const RequestPopUp = (props: Props) => {
   const handleCloseRequestPopUp = () => setRequestPopUp(false)
 
   const route = useRouter();
+
+
 
   const updateSubscriptionRequest = async () => {
     let status;

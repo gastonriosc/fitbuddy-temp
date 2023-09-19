@@ -19,6 +19,7 @@ import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Box, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Icon from 'src/@core/components/icon';
+import { useRouter } from 'next/router';
 
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
@@ -72,6 +73,8 @@ const NewPlan = () => {
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
+  const route = useRouter();
+
 
   const textPopUp = 'Refresque la pagina para ver los cambios'
 
@@ -161,7 +164,6 @@ const NewPlan = () => {
 
 
   const createPlanTraining: SubmitHandler<FieldValues> = async () => {
-
     const name = 'Plan de entrenamiento';
     const requestBody = {
       nombrePlan: name,
@@ -174,9 +176,11 @@ const NewPlan = () => {
           peso: row.peso,
         })),
       })),
-      trainerId: session?.user._id
+      trainerId: session?.user._id,
+      studentId: route.query.id,
     };
     console.log(requestBody)
+    console.log(route.query.id)
 
     try {
       const res = await fetch('/api/trainingPlans', {
