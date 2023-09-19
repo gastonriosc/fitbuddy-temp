@@ -194,8 +194,9 @@ const MyStudents = () => {
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                           <Button
                             variant='contained'
-                            color='success'
+                            color='secondary'
                             title='Crear plan'
+                            href={'/plans/newPlan/?id=' + sub.studentId}
                           >
                             <Icon icon='line-md:plus' />
                           </Button>
@@ -226,9 +227,11 @@ const MyStudents = () => {
                   </StyledGrid1>
                 </Grid>
               </Card >
-            ))}
+            ))
+          }
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
-            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)}
+            />
           </Box>
           < RequestPopUp
             requestPopUp={requestPopUp}
