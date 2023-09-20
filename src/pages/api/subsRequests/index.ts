@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (subsRequest) {
         return res.status(200).json(subsRequest)
       } else {
-        return res.status(400).json('No se puedo crear la solicitud de suscripcion')
+        return res.status(404).json('No se puedo crear la solicitud de suscripcion')
       }
     }
     if (req.method === 'PUT') {
@@ -28,8 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         const { id } = req.query
         const objectId = new mongoose.Types.ObjectId(id)
-
-        console.log(id)
 
         const subsRequest = await SubsRequest.aggregate([
           {
@@ -92,6 +90,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(400).json({ status: 'No se puedieron cargar las solicitudes.' })
+    res.status(404).json({ status: 'No se puedieron cargar las solicitudes.' })
   }
 }

@@ -68,11 +68,11 @@ const RequestPopUp = (props: Props) => {
         }
       }
       else {
-        if (res.status == 409) {
+        if (res.status == 404) {
           route.replace('/404')
         }
-        if (res.status == 400) {
-          route.replace('/404')
+        if (res.status == 500) {
+          route.replace('/500')
         }
       }
     } catch (error) {

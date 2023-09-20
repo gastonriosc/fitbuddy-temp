@@ -13,7 +13,7 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
-import { CardHeader, Divider, FormControl, Input, InputLabel } from '@mui/material';
+import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import RequestPopUp from '../myRequests/requestPopUp';
 
 // Styled Grid component
@@ -51,8 +51,9 @@ const MyStudents = () => {
   const [subsRequestId, setSubsRequestId] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
-  const [filterDate, setFilterDate] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
+  const [filterOption, setFilterOption] = useState('asc'); // Inicialmente ordenar ascendente
+  const [nameSubs, setNameSubs] = useState([])
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
 
@@ -81,7 +82,7 @@ const MyStudents = () => {
         if (res.status == 200) {
           const data = await res.json();
           setSubsRequest(data.subsRequest);
-          console.log(subsRequest)
+          setNameSubs(data.nameSubs);
           setIsLoading(true);
         }
 
@@ -111,25 +112,35 @@ const MyStudents = () => {
                 <Grid item sm={4} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input-plan'>Plan</InputLabel>
-                    <Input
+                    <Select
+                      label='Plan'
                       fullWidth
                       value={filterPlan}
                       id='search-input-plan'
                       onChange={(e) => setFilterPlan(e.target.value)}
-                      placeholder='Ingrese un plan para buscar'
-                    />
+                    >
+                      <MenuItem value=''>SIN FILTRO</MenuItem>
+                      {nameSubs.map((subs: any, index) => (
+                        <MenuItem key={index} value={subs.name}>
+                          {subs.name.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </FormControl>
                 </Grid>
                 <Grid item sm={4} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Fecha</InputLabel>
-                    <Input
+                    <Select
+                      label='Fecha'
                       fullWidth
-                      value={filterDate}
+                      value={filterOption}
                       id='search-input'
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
-                    />
+                      onChange={(e) => setFilterOption(e.target.value)}
+                    >
+                      <MenuItem value='asc'>ASCENDENTE</MenuItem>
+                      <MenuItem value='desc'>DESCENDENTE</MenuItem>
+                    </Select>
                   </FormControl>
                 </Grid>
                 <Grid item sm={4} xs={12}>
@@ -152,10 +163,18 @@ const MyStudents = () => {
           {subsRequest
             .filter((sub: subsRequest) =>
               sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-              sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase()) &&
-              (filterDate === '' ||
-                new Date(sub.date).toLocaleDateString().includes(filterDate))
+              sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
             )
+            .sort((a: any, b: any) => {
+              const dateA = new Date(a.date);
+              const dateB = new Date(b.date);
+
+              if (filterOption === 'asc') {
+                return dateA.getTime() - dateB.getTime();
+              } else {
+                return dateB.getTime() - dateA.getTime();
+              }
+            })
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
             .map((sub: subsRequest, index) => (
               <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
@@ -196,7 +215,7 @@ const MyStudents = () => {
                             variant='contained'
                             color='secondary'
                             title='Crear plan'
-                            href={'/plans/newPlan/?id=' + sub.studentId}
+                            href={'/plans/newPlan/?id=' + sub.studentId + '&subsReq=' + sub._id}
                           >
                             <Icon icon='line-md:plus' />
                           </Button>

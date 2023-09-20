@@ -178,10 +178,8 @@ const NewPlan = () => {
       })),
       trainerId: session?.user._id,
       studentId: route.query.id,
+      subsRequestId: route.query.subsReq
     };
-    console.log(requestBody)
-    console.log(route.query.id)
-
     try {
       const res = await fetch('/api/trainingPlans', {
         method: 'POST',

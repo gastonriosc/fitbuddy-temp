@@ -59,9 +59,6 @@ const MyRequests = () => {
   const [nameSubs, setNameSubs] = useState([])
   const itemsPerPage = 3; // Cantidad de elementos por página
 
-  console.log(filterOption)
-
-
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');
@@ -98,8 +95,12 @@ const MyRequests = () => {
           setNameSubs(data.nameSubs);
           setIsLoading(true);
         }
-
-        // ...
+        if (res.status == 404) {
+          route.replace('/404')
+        }
+        if (res.status == 500) {
+          route.replace('/500')
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
       }

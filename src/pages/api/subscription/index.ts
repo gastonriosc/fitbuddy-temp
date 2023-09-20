@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (subscription) {
         return res.status(200).json(subscription)
       } else {
-        return res.status(400).json('No se puedo crear la suscripcion')
+        return res.status(404).json('No se puedo crear la suscripcion')
       }
     }
     if (req.method === 'PUT') {
@@ -32,10 +32,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (updatedSub) {
         return res.status(200).json(updatedSub)
       } else {
-        return res.status(400).json({ message: 'No se pudo actualizar el usuario' })
+        return res.status(404).json({ message: 'No se pudo actualizar el usuario' })
       }
     }
   } catch (error) {
-    res.status(400).json({ status: 'Not able to create a new user.' })
+    res.status(404).json({ status: 'Not able to create a new user.' })
   }
 }
