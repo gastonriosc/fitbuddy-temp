@@ -20,10 +20,6 @@ const subscriptionSchema = new mongoose.Schema({
   deleted: {
     type: Boolean,
     require: true
-  },
-  deleted: {
-    type: Boolean,
-    require: true
   }
 })
 

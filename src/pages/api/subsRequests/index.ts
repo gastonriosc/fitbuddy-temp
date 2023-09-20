@@ -2,6 +2,7 @@ import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import SubsRequest from 'src/models/subsRequestSchema'
 import mongoose from 'mongoose'
+import Subscription from 'src/models/subscriptionSchema'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
@@ -73,9 +74,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
         ])
+        const nameSubs = await Subscription.find({ trainerId: id, deleted: false }, 'name')
         if (subsRequest) {
           const responseData = {
-            subsRequest: subsRequest
+            subsRequest: subsRequest,
+            nameSubs: nameSubs
           }
 
           return res.status(200).json(responseData)
