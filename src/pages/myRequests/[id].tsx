@@ -133,7 +133,7 @@ const MyRequests = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs, index) => (
+                      {nameSubs.map((subs: any, index) => (
                         <MenuItem key={index} value={subs.name}>
                           {subs.name.toUpperCase()}
                         </MenuItem>
@@ -185,14 +185,14 @@ const MyRequests = () => {
               sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
               sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
             )
-            .sort((a, b) => {
+            .sort((a: any, b: any) => {
               const dateA = new Date(a.date);
               const dateB = new Date(b.date);
 
               if (filterOption === 'asc') {
-                return dateA - dateB;
+                return dateA.getTime() - dateB.getTime();
               } else {
-                return dateB - dateA;
+                return dateB.getTime() - dateA.getTime();
               }
             })
             .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
