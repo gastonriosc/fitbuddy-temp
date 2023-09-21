@@ -52,7 +52,7 @@ const MyStudents = () => {
   const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
-  const [filterOption, setFilterOption] = useState('asc'); // Inicialmente ordenar ascendente
+  const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
@@ -138,8 +138,8 @@ const MyStudents = () => {
                       id='search-input'
                       onChange={(e) => setFilterOption(e.target.value)}
                     >
-                      <MenuItem value='asc'>ASCENDENTE</MenuItem>
-                      <MenuItem value='desc'>DESCENDENTE</MenuItem>
+                      <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
+                      <MenuItem value='desc'>MAS RECIENTES</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
