@@ -17,6 +17,7 @@ import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
 import RequestPopUp from './requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+import CustomChip from 'src/@core/components/mui/chip'
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -217,13 +218,13 @@ const MyRequests = () => {
                             </Box>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
                               </Typography>
                             </Box>
                             <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString()} />
                               </Typography>
                             </Box>
                           </Box>

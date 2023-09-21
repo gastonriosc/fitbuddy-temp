@@ -11,6 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const subsRequest = await SubsRequest.findByIdAndUpdate(subsRequestId, { status: 'conPlan' })
       const plans = await PlanSchema.create(req.body)
+      console.log(plans)
       if (plans && subsRequest) {
         return res.status(200).json(plans)
       } else {

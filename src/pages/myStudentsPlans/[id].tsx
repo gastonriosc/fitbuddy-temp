@@ -15,9 +15,11 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
+import CustomChip from 'src/@core/components/mui/chip'
 
 // import RequestPopUp from '../myRequests/requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -38,9 +40,12 @@ interface planType {
   trainerId: string;
   studentId: string;
   subsRequestId: string;
+  date: string;
+  expirationDate: string;
   studentName: string;
   trainerName: string;
   subscriptionName: string;
+
 }
 
 const MyRequests = () => {
@@ -49,17 +54,12 @@ const MyRequests = () => {
   const [plan, setPlan] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // const [requestPopUp, setRequestPopUp] = useState<boolean>(false);
-
-  // const [typeAction, setTypeAction] = useState<string>('');
-  // const [subsRequestId, setSubsRequestId] = useState<string>('');
-  // const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
-  const itemsPerPage = 3; // Cantidad de elementos por página
+  const itemsPerPage = 4; // Cantidad de elementos por página
 
   useEffect(() => {
     const fetchMyRequests = async () => {
@@ -102,8 +102,8 @@ const MyRequests = () => {
   if (isLoading) {
     return (
       <>
-        <Grid spacing={2}>
-          <Card>
+        <Grid>
+          <Card >
             <CardHeader
               title='Filtros'
               sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
@@ -165,99 +165,115 @@ const MyRequests = () => {
                 </Grid>
               </Grid>
             </CardContent>
-            <Divider />
           </Card>
+          <Divider sx={{ mt: 2 }} />
 
-          {plan.length > 0 ? (
+          <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}>
+            <Grid item container spacing={2}>
+              {plan.length > 0 ? (
 
-            plan
-              .filter((plan: planType) =>
-                plan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                plan.nombrePlan.toLowerCase().includes(filterPlan.toLowerCase())
-              )
-              .sort((a: any, b: any) => {
-                const dateA = new Date(a.date);
-                const dateB = new Date(b.date);
+                plan
+                  .filter((OPlan: planType) =>
+                    OPlan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
+                    OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+                  )
+                  .sort((a: any, b: any) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
 
-                if (filterOption === 'asc') {
-                  return dateA.getTime() - dateB.getTime();
-                } else {
-                  return dateB.getTime() - dateA.getTime();
-                }
-              })
-              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((plan: planType, index) => (
-                <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
-                  <Grid container spacing={6}>
-                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px' }} />
-                      </CardContent>
-                    </StyledGrid2>
-                    <StyledGrid1 item xs={12} md={10}>
-                      <Box sx={{ display: { md: 'flex' } }} >
-                        <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                          <Box sx={{ display: 'flex' }}>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                {plan.studentName}
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={plan.nombrePlan} />
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={plan.subscriptionName} />
-                              </Typography>
-                            </Box>
-                            {/* <Box>
+                    if (filterOption === 'asc') {
+                      return dateA.getTime() - dateB.getTime();
+                    } else {
+                      return dateB.getTime() - dateA.getTime();
+                    }
+                  })
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((OPlan: planType, index) => (
 
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={new Date(plan.date).toLocaleDateString()} />
-                              </Typography>
-                            </Box> */}
+
+                    <Grid item lg={3} xs={12} md={4} key={index} padding={2}  >
+                      <Card >
+                        <StyledGrid2 >
+                          <Box display={'flex'} justifyContent={'center'}>
+                            <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
+                              <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
+                            </CardContent>
                           </Box>
-                          {/* <Typography variant='body1' sx={{ mb: 2 }}>
+                        </StyledGrid2>
+                        <StyledGrid1  >
+                          <Box >
+                            <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                              <Box textAlign={'center'}>
+                                <Typography variant='h5' sx={{ mb: 2 }}>
+                                  {OPlan.studentName}
+                                </Typography>
+                              </Box>
+                              <Box display={'flex'} justifyContent={'center'} mb={2}>
+                                <Box>
+                                  <Typography variant='h5' >
+                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
+                                  </Typography>
+                                </Box>
+                                <Box >
+                                  <Typography variant='h5' >
+                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
+                                  </Typography>
+                                </Box>
+
+                              </Box>
+                              <Box display={'flex'} justifyContent={'center'}>
+                                <Box>
+                                  <Typography variant='h5' sx={{ mb: 2 }}>
+                                    <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString()} />
+                                  </Typography>
+                                </Box>
+                                <Box>
+                                  <Typography variant='h5' sx={{ mb: 2 }}>
+                                    <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString()} />
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              {/* <Typography variant='body1' sx={{ mb: 2 }}>
                             {plan.description}
                           </Typography> */}
-                        </CardContent>
-                        <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='primary'
-                              title='Perfil'
-                              href={'/myProfile/myStudentProfile/' + plan.studentId}
-                            >
-                              <Icon icon='mdi:file-eye-outline' />
-                            </Button>
-                          </Box>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='primary'
-                              title='Perfil'
-                              href={'/myProfile/myStudentProfile/' + plan.studentId}
-                            >
-                              <Icon icon='mdi:eye' />
-                            </Button>
-                          </Box>
-                        </CardContent>
-                      </Box>
+                            </CardContent>
+                            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                                <Button
+                                  variant='contained'
+                                  color='primary'
+                                  title='Plan'
 
-                    </StyledGrid1>
-                  </Grid>
-                </Card >
-              ))
+                                // href={'/myProfile/myStudentProfile/' + OPlan.studentId}
+                                >
+                                  <Icon icon='mdi:file-eye-outline' />
+                                </Button>
+                              </Box>
+                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                                <Button
+                                  variant='contained'
+                                  color='primary'
+                                  title='Perfil'
+                                  href={'/myProfile/myStudentProfile/' + OPlan.studentId}
+                                >
+                                  <Icon icon='mdi:eye' />
+                                </Button>
+                              </Box>
+                            </CardContent>
+                          </Box>
 
-          ) : (
-            <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-              <CardHeader title="No tenes planes asociados a alumnos por el momento." />
-            </Card>
-          )}
+                        </StyledGrid1>
+                      </Card >
+                    </Grid>
+                  ))
+
+              ) : (
+                <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
+                  <CardHeader title="No tenes planes asociados a alumnos por el momento." />
+                </Card>
+              )}
+            </Grid>
+          </Card>
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>

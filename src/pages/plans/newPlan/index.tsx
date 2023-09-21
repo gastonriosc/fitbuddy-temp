@@ -165,6 +165,11 @@ const NewPlan = () => {
 
   const createPlanTraining: SubmitHandler<FieldValues> = async () => {
     const name = 'Plan de entrenamiento';
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours())
+    const expirationDate = new Date(currentDate)
+    expirationDate.setDate(currentDate.getDate() + 30)
+
     const requestBody = {
       nombrePlan: name,
       plan: planLists.map((day, dayIndex) => ({
@@ -178,7 +183,9 @@ const NewPlan = () => {
       })),
       trainerId: session?.user._id,
       studentId: route.query.id,
-      subsRequestId: route.query.subsReq
+      subsRequestId: route.query.subsReq,
+      date: currentDate.toISOString(),
+      expirationDate: expirationDate.toISOString()
     };
     try {
       const res = await fetch('/api/trainingPlans', {

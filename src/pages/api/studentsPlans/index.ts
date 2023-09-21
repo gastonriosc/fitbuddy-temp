@@ -69,6 +69,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               trainerId: 1,
               studentId: 1,
               subsRequestId: 1,
+              date: 1,
+              expirationDate: 1,
               studentName: '$student_info.name',
               trainerName: '$trainer_info.name',
               subscriptionName: '$subscription_info.name'

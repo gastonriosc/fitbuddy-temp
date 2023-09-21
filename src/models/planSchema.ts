@@ -17,7 +17,15 @@ const planSchema = new mongoose.Schema({
   plan: [daySchema],
   trainerId: mongoose.Schema.ObjectId,
   studentId: mongoose.Schema.ObjectId,
-  subsRequestId: mongoose.Schema.ObjectId
+  subsRequestId: mongoose.Schema.ObjectId,
+  date: {
+    type: Date,
+    require: true
+  },
+  expirationDate: {
+    type: Date,
+    require: true
+  }
 })
 
 const PlanModel = mongoose.models.Plan || mongoose.model('Plan', planSchema)

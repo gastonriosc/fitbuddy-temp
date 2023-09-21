@@ -273,7 +273,7 @@ const MyProfile = () => {
     const studentId = session?.user._id
     const subscriptionId = sendSubsRequest?._id
     const currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() - 3)
+    currentDate.setHours(currentDate.getHours())
     const formattedDate = currentDate.toISOString();
     try {
       const res = await fetch('/api/subsRequests', {

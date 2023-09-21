@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
+import CustomChip from 'src/@core/components/mui/chip'
 import Icon from 'src/@core/components/icon';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import RequestPopUp from '../myRequests/requestPopUp';
@@ -196,13 +197,13 @@ const MyStudents = () => {
                             </Box>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
                               </Typography>
                             </Box>
                             <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString()} />
                               </Typography>
                             </Box>
                           </Box>
