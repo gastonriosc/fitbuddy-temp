@@ -15,9 +15,12 @@ import Button, { ButtonProps } from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { FieldValues, SubmitHandler } from 'react-hook-form';
+import { Box, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
+import { useSession } from 'next-auth/react';
+import Icon from 'src/@core/components/icon';
+import { useRouter } from 'next/router';
 
-// import jsPDF from 'jspdf';
-// import 'jspdf-autotable';
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -66,6 +69,14 @@ const NewPlan = () => {
   const [series, setSeries] = useState(0);
   const [repeticiones, setRepeticiones] = useState(0);
   const [peso, setPeso] = useState(0);
+  const [popUp, setPopUp] = useState<boolean>(false)
+  const [titlePopUp, setTitlePopUp] = useState<string>()
+  const { data: session } = useSession();
+  const closePopUp = () => setPopUp(false)
+  const route = useRouter();
+
+
+  const textPopUp = 'Refresque la pagina para ver los cambios'
 
   const handleAddRow = (dayIndex: number) => {
     const newPlanLists = [...planLists];
@@ -128,6 +139,7 @@ const NewPlan = () => {
     }
   };
 
+
   const handleCancelEditRow = (dayIndex: number) => {
     const newEditingRow = [...editingRow];
     newEditingRow[dayIndex] = -1;
@@ -148,6 +160,47 @@ const NewPlan = () => {
     const newPlanLists = [...planLists, []];
     setPlanLists(newPlanLists);
     setEditingRow([...editingRow, -1]);
+  };
+
+
+  const createPlanTraining: SubmitHandler<FieldValues> = async () => {
+    const name = 'Plan de entrenamiento';
+    const requestBody = {
+      nombrePlan: name,
+      plan: planLists.map((day, dayIndex) => ({
+        nombreDia: `Día ${dayIndex + 1}`,
+        Ejercicios: day.map((row) => ({
+          nombreEjercicio: row.nombre,
+          series: row.series,
+          repeticiones: row.repeticiones,
+          peso: row.peso,
+        })),
+      })),
+      trainerId: session?.user._id,
+      studentId: route.query.id,
+      subsRequestId: route.query.subsReq
+    };
+    try {
+      const res = await fetch('/api/trainingPlans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (res.status === 200) {
+        console.log('Plan de entrenamiento creado con éxito');
+        setTitlePopUp('Plan creado con éxito!')
+        setPopUp(true)
+      } else {
+        console.error('Error al crear el plan de entrenamiento:', res.status);
+        setTitlePopUp('Error al crear el plan')
+        setPopUp(true)
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
   };
 
   return (
@@ -268,23 +321,69 @@ const NewPlan = () => {
                   </CardContent>
                 </TableContainer>
               </CardContent>
-
             </Card>
           </Grid>
         ))}
-        <Grid item md={6} xs={12}>
-          <ButtonStyled onClick={handleAddDay}>
-            Agregar Día
-          </ButtonStyled>
-          <ButtonStyled onClick={handleDeleteDay}>
-            Eliminar Día
-          </ButtonStyled>
-          <ButtonStyled onClick={exportToPDF}>
-            Exportar a PDF
-          </ButtonStyled>
+        <Grid container justifyContent='space-between'>
+          <Grid item md={6} xs={12} >
+            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleAddDay}>
+              Agregar Día
+            </ButtonStyled>
+            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteDay}>
+              Eliminar Día
+            </ButtonStyled>
+            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF}>
+              Exportar a PDF
+            </ButtonStyled>
+          </Grid>
+
+          <Grid item md={1.2} xs={12} >
+            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={createPlanTraining}>
+              Guardar plan
+            </ButtonStyled>
+          </Grid>
         </Grid>
+        <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'success.main' }
+              }}
+            >
+              <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+              <Typography>{textPopUp}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUp}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </Grid>
-    </form>
+
+    </form >
+
   );
 };
 

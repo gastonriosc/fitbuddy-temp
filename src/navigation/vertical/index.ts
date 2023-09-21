@@ -8,13 +8,13 @@ const navigation = (): VerticalNavItemsType => {
   const { data: session } = useSession()
 
   return [
-    {
-      title: 'Nuevo Plan',
-      icon: 'mdi-plus',
-      path: '/plans/newPlan',
-      subject: 'newPlan-page',
-      action: 'manage'
-    },
+    // {
+    //   title: 'Nuevo Plan',
+    //   icon: 'mdi-plus',
+    //   path: '/plans/newPlan',
+    //   subject: 'newPlan-page',
+    //   action: 'manage'
+    // },
     {
       title: 'Mis Planes',
       icon: 'mdi-format-list-bulleted',
@@ -32,7 +32,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mis Alumnos',
       icon: 'mdi-account-multiple',
-      path: '/myStudents',
+      path: '/myStudents/' + session?.user._id,
       subject: 'myStudents-page',
       action: 'manage'
     },

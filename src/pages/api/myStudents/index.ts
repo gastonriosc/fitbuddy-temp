@@ -7,14 +7,6 @@ import Subscription from 'src/models/subscriptionSchema'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
   try {
-    if (req.method === 'POST') {
-      const subsRequest = await SubsRequest.create(req.body)
-      if (subsRequest) {
-        return res.status(200).json(subsRequest)
-      } else {
-        return res.status(404).json('No se puedo crear la solicitud de suscripcion')
-      }
-    }
     if (req.method === 'PUT') {
       const { requestId, status } = req.body
       const subsRequest = await SubsRequest.findByIdAndUpdate(requestId, { status }, { new: true })
@@ -33,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           {
             $match: {
               trainerId: objectId,
-              status: 'pendiente'
+              status: 'aceptada'
             }
           },
           {
@@ -73,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         ])
         const nameSubs = await Subscription.find({ trainerId: id, deleted: false }, 'name')
-        if (subsRequest) {
+        if (subsRequest && nameSubs) {
           const responseData = {
             subsRequest: subsRequest,
             nameSubs: nameSubs
@@ -90,6 +82,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(404).json({ status: 'No se puedieron cargar las solicitudes.' })
+    res.status(400).json({ status: 'No se puedieron cargar las solicitudes.' })
   }
 }

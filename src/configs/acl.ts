@@ -51,6 +51,7 @@ const defineRulesFor = (role: string, subject: string) => {
       ]
     )
     cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page'])
+    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page'])
   } else {
     can(['read', 'create', 'update', 'delete'], subject)
   }

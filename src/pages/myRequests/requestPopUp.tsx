@@ -1,6 +1,7 @@
 // ** React Imports
 import { useState } from 'react'
-
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -14,7 +15,6 @@ import DialogActions from '@mui/material/DialogActions'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
-import { useRouter } from 'next/router'
 
 type Props = {
   requestPopUp: boolean
@@ -22,12 +22,13 @@ type Props = {
   type: string
   title: string
   requestId: string
+  setSubsRequest: any
 }
 
 const RequestPopUp = (props: Props) => {
 
   //*props
-  const { requestPopUp, setRequestPopUp, requestId, type, title, subsRequest, setSubsRequest } = props
+  const { requestPopUp, setRequestPopUp, requestId, type, title, setSubsRequest } = props
 
   //*state
   const [popUp, setPopUp] = useState<boolean>(false)
@@ -35,6 +36,8 @@ const RequestPopUp = (props: Props) => {
   const handleCloseRequestPopUp = () => setRequestPopUp(false)
 
   const route = useRouter();
+  const session = useSession();
+
 
   const updateSubscriptionRequest = async () => {
     let status;
@@ -55,16 +58,21 @@ const RequestPopUp = (props: Props) => {
         body: JSON.stringify({ requestId, status })
       })
       if (res.status == 200) {
-        setRequestPopUp(false)
-        setPopUp(true)
-        setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+        if (type === 'aceptar') {
+          route.replace('/myStudents/' + session.data?.user._id)
+        }
+        else {
+          setRequestPopUp(false)
+          setPopUp(true)
+          setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+        }
       }
       else {
-        if (res.status == 409) {
+        if (res.status == 404) {
           route.replace('/404')
         }
-        if (res.status == 400) {
-          route.replace('/404')
+        if (res.status == 500) {
+          route.replace('/500')
         }
       }
     } catch (error) {

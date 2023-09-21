@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-//import { useSession } from 'next-auth/react';
-
 // ** MUI Imports
 import Pagination from '@mui/material/Pagination'
 import Box from '@mui/material/Box';
@@ -15,8 +13,8 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
-import RequestPopUp from './requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+import RequestPopUp from '../myRequests/requestPopUp';
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -43,7 +41,7 @@ interface subsRequest {
   subscriptionName: string;
 }
 
-const MyRequests = () => {
+const MyStudents = () => {
 
   const route = useRouter();
   const [subsRequest, setSubsRequest] = useState<[]>([]);
@@ -54,18 +52,10 @@ const MyRequests = () => {
   const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
-
-  const aceptarSubsRequest = (sub: subsRequest) => {
-    setRequestPopUp(true);
-    setTypeAction('aceptar');
-    setSubsRequestId(sub._id);
-    setTitle('aceptada');
-
-  };
 
   const rechazarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
@@ -81,7 +71,7 @@ const MyRequests = () => {
       try {
         // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
-          `/api/subsRequests/?id=${id}`,
+          `/api/myStudents/?id=${id}`,
           {
             method: 'GET',
             headers: {
@@ -95,12 +85,8 @@ const MyRequests = () => {
           setNameSubs(data.nameSubs);
           setIsLoading(true);
         }
-        if (res.status == 404) {
-          route.replace('/404')
-        }
-        if (res.status == 500) {
-          route.replace('/500')
-        }
+
+        // ...
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -155,13 +141,6 @@ const MyRequests = () => {
                       <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
                       <MenuItem value='desc'>MAS RECIENTES</MenuItem>
                     </Select>
-                    {/* <Input
-                      fullWidth
-                      value={filterDate}
-                      id='search-input'
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
-                    /> */}
                   </FormControl>
                 </Grid>
                 <Grid item sm={4} xs={12}>
@@ -234,11 +213,11 @@ const MyRequests = () => {
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                           <Button
                             variant='contained'
-                            color='success'
-                            title='Aceptar'
-                            onClick={() => aceptarSubsRequest(sub)}
+                            color='secondary'
+                            title='Crear plan'
+                            href={'/plans/newPlan/?id=' + sub.studentId + '&subsReq=' + sub._id}
                           >
-                            <Icon icon='line-md:confirm' />
+                            <Icon icon='line-md:plus' />
                           </Button>
                         </Box>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -267,27 +246,21 @@ const MyRequests = () => {
                   </StyledGrid1>
                 </Grid>
               </Card >
-            ))}
+            ))
+          }
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
-            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)}
+            />
           </Box>
+          < RequestPopUp
+            requestPopUp={requestPopUp}
+            setRequestPopUp={setRequestPopUp}
+            type={typeAction}
+            title={title}
+            requestId={subsRequestId}
+            setSubsRequest={setSubsRequest}
+          />
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-          </Button>
-          <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-          </Button>
-        </div> */}
-        < RequestPopUp
-          requestPopUp={requestPopUp}
-          setRequestPopUp={setRequestPopUp}
-          type={typeAction}
-          title={title}
-          requestId={subsRequestId}
-          setSubsRequest={setSubsRequest}
-        />
       </>
     );
   } else {
@@ -299,9 +272,9 @@ const MyRequests = () => {
   }
 };
 
-MyRequests.acl = {
+MyStudents.acl = {
   action: 'manage',
   subject: 'myRequests-page',
 };
 
-export default MyRequests;
+export default MyStudents;
