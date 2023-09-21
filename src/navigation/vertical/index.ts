@@ -18,8 +18,8 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Mis Planes',
       icon: 'mdi-format-list-bulleted',
-      path: '/plans/myPlans',
-      subject: 'myPlans-page',
+      path: '/plans/myPlans/' + session?.user?._id,
+      subject: 'myPlans-navbar',
       action: 'manage'
     },
     {

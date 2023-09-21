@@ -33,15 +33,17 @@ const defineRulesFor = (role: string, subject: string) => {
         'myTrainerProfile-page',
         'myStudentProfile2-page',
         'myRequests-page',
-        'perfilTitle'
+        'perfilTitle',
+        'myPlans-page'
       ]
     )
-    cannot('read', ['myPlans-page', 'perfilAlumno', 'search-page'])
+    cannot('read', [, /*'myPlans-page'*/ 'perfilAlumno', 'search-page'])
   } else if (role === 'Alumno') {
     can(
       ['manage'],
       [
         'acl-page',
+        'myPlans-navbar',
         'myPlans-page',
         'mySettings-page',
         'perfilAlumno',

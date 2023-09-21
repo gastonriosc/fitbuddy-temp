@@ -16,7 +16,7 @@ import TextField from '@mui/material/TextField';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import { Box, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Icon from 'src/@core/components/icon';
 import { useRouter } from 'next/router';
@@ -70,19 +70,35 @@ const NewPlan = () => {
   const [repeticiones, setRepeticiones] = useState(0);
   const [peso, setPeso] = useState(0);
   const [popUp, setPopUp] = useState<boolean>(false)
+  const [popUpError, setPopUpError] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
+  const [titlePopUpError, setTitlePopUpError] = useState<string>()
+  const [titlePopUpErrorDay, setTitlePopUpErrorDay] = useState<string>()
+  const [popUpErrorDay, setPopUpErrorDay] = useState<boolean>(false)
+  const [popUpErrorDataExercise, setPopUpErrorDataExercise] = useState<boolean>(false)
+  const [titlePopUpErrorData, setTitlePopUpErrorDataExercise] = useState<string>()
+  const [nombrePlan, setNombrePlan] = useState('');
+
+
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
+  const closePopUpError = () => setPopUpError(false)
+  const closePopUpErrorDay = () => setPopUpErrorDay(false)
+  const closePopUpErrorDataExercise = () => setPopUpErrorDataExercise(false)
+
   const route = useRouter();
 
 
-  const textPopUp = 'Refresque la pagina para ver los cambios'
+  const textPopUp = 'Refresque la pagina para ver los cambios.'
+  const textPopUpError = 'Por favor, intente nuevamente o elimine el día de entrenamiento en caso de no tener ejercicios.'
+  const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento debe tener al menos un día.'
+  const textPopUpErrorDataExercise = 'Por favor, intente nuevamente. Asegúrese de que la cantidad de series, repeticiones y peso sea un número entero.'
+
 
   const handleAddRow = (dayIndex: number) => {
     const newPlanLists = [...planLists];
     newPlanLists[dayIndex].push(createData('', 0, 0, 0));
     setPlanLists(newPlanLists);
-    setEditingRow([...editingRow, newPlanLists[dayIndex].length - 1]);
   };
 
   const exportToPDF = () => {
@@ -92,7 +108,7 @@ const NewPlan = () => {
 
     planLists.forEach((day, index) => {
       if (index > 0) {
-        doc.addPage(); // Agregar una página en blanco después de la primera página
+        doc.addPage();
       }
       doc.text(`Día ${index + 1}`, 10, 20);
       const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso]);
@@ -108,7 +124,7 @@ const NewPlan = () => {
   };
 
   const handleDeleteDay = () => {
-    if (planLists.length > 0) {
+    if (planLists.length > 1) {
       const newPlanLists = [...planLists];
       newPlanLists.pop(); // Elimina el último día
       setPlanLists(newPlanLists);
@@ -116,9 +132,19 @@ const NewPlan = () => {
       newEditingRow.pop(); // Elimina el último índice de edición
       setEditingRow(newEditingRow);
     }
+    else {
+      setTitlePopUpErrorDay('El plan debe tener al menos un día!')
+      setPopUpErrorDay(true)
+    }
   };
 
   const handleEditRow = (dayIndex: number, rowIndex: number) => {
+    const rowToEdit = planLists[dayIndex][rowIndex];
+    setNombre(rowToEdit.nombre);
+    setSeries(rowToEdit.series);
+    setRepeticiones(rowToEdit.repeticiones);
+    setPeso(rowToEdit.peso);
+
     const newEditingRow = [...editingRow];
     newEditingRow[dayIndex] = rowIndex;
     setEditingRow(newEditingRow);
@@ -137,8 +163,11 @@ const NewPlan = () => {
       setRepeticiones(0);
       setPeso(0);
     }
+    else {
+      setTitlePopUpErrorDataExercise('Datos de ejercicios incorrectos!')
+      setPopUpErrorDataExercise(true)
+    }
   };
-
 
   const handleCancelEditRow = (dayIndex: number) => {
     const newEditingRow = [...editingRow];
@@ -152,26 +181,34 @@ const NewPlan = () => {
 
   const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
     const updatedPlanLists = [...planLists];
-    updatedPlanLists[dayIndex].splice(rowIndex, 1);
-    setPlanLists(updatedPlanLists);
+    const day = updatedPlanLists[dayIndex];
+
+    if (day.length > 1) { // Verificar que haya más de una fila en el día antes de eliminar
+      day.splice(rowIndex, 1);
+      setPlanLists(updatedPlanLists);
+    }
+    else {
+      setTitlePopUpError('Un día al menos debe tener un ejercicio!')
+      setPopUpError(true)
+    }
   };
 
+
   const handleAddDay = () => {
-    const newPlanLists = [...planLists, []];
+    const newDay = [createData('Agregue aquí un ejercicio', 0, 0, 0)];
+    const newPlanLists = [...planLists, newDay];
     setPlanLists(newPlanLists);
-    setEditingRow([...editingRow, -1]);
   };
 
 
   const createPlanTraining: SubmitHandler<FieldValues> = async () => {
-    const name = 'Plan de entrenamiento';
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const expirationDate = new Date(currentDate)
     expirationDate.setDate(currentDate.getDate() + 30)
 
     const requestBody = {
-      nombrePlan: name,
+      nombrePlan: nombrePlan,
       plan: planLists.map((day, dayIndex) => ({
         nombreDia: `Día ${dayIndex + 1}`,
         Ejercicios: day.map((row) => ({
@@ -213,6 +250,31 @@ const NewPlan = () => {
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <Grid container spacing={6}>
+        <Grid item xs={12}  >
+          <Card sx={{ marginBottom: '10px' }} >
+            <CardHeader
+              title='Nombre del plan de entrenamiento'
+              sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
+            />
+            <CardContent>
+              <Grid container spacing={6}>
+                <Grid item sm={4} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Nombre</InputLabel>
+                    <Input
+                      fullWidth
+                      value={nombrePlan}
+                      id='search-input'
+                      onChange={(e) => setNombrePlan(e.target.value)}
+                      placeholder='Ingrese un nombre para buscar'
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </CardContent>
+            <Divider />
+          </Card>
+        </Grid>
         {planLists.map((day, dayIndex) => (
           <Grid item xs={12} key={dayIndex}>
             <Card>
@@ -275,13 +337,13 @@ const NewPlan = () => {
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <>
-                                <ButtonStyled onClick={() => handleSaveRow(dayIndex, rowIndex)}>Guardar</ButtonStyled>
-                                <ButtonStyled onClick={() => handleCancelEditRow(dayIndex)}>Cancelar</ButtonStyled>
+                                <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleSaveRow(dayIndex, rowIndex)}><Icon icon='line-md:confirm' style={{ color: 'lightgreen' }} /></ButtonStyled>
+                                <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleCancelEditRow(dayIndex)}><Icon icon='line-md:cancel' style={{ color: 'red' }} /></ButtonStyled>
                               </>
                             ) : (
                               <>
-                                <ButtonStyled onClick={() => handleEditRow(dayIndex, rowIndex)}>Editar</ButtonStyled>
-                                <ButtonStyled onClick={() => handleDeleteRow(dayIndex, rowIndex)}>Eliminar</ButtonStyled>
+                                <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleEditRow(dayIndex, rowIndex)}><Icon icon='mdi:pencil' /></ButtonStyled>
+                                <ButtonStyled sx={{ marginRight: '-20px', color: 'red' }} onClick={() => handleDeleteRow(dayIndex, rowIndex)}><Icon icon='mdi:trash' /></ButtonStyled>
                               </>
                             )}
                           </StyledTableCell>
@@ -314,8 +376,8 @@ const NewPlan = () => {
                             />
                           </StyledTableCell>
                           <StyledTableCell align='right'>
-                            <ButtonStyled onClick={() => handleSaveRow(dayIndex, day.length)}>Guardar</ButtonStyled>
-                            <ButtonStyled onClick={() => handleCancelEditRow(dayIndex)}>Cancelar</ButtonStyled>
+                            <ButtonStyled sx={{ color: 'black' }} onClick={() => handleSaveRow(dayIndex, day.length)}>Guardar</ButtonStyled>
+                            <ButtonStyled sx={{ color: 'black' }} onClick={() => handleCancelEditRow(dayIndex)}>Cancelar</ButtonStyled>
                           </StyledTableCell>
                         </StyledTableRow>
                       )}
@@ -350,6 +412,7 @@ const NewPlan = () => {
             </ButtonStyled>
           </Grid>
         </Grid>
+        {/* PopUp de confirmacion de creacion de plan */}
         <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
           <DialogContent
             sx={{
@@ -368,7 +431,7 @@ const NewPlan = () => {
                 '& svg': { mb: 6, color: 'success.main' }
               }}
             >
-              <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
+              <Icon icon='line-md:confirm' fontSize='5.5rem' />
               <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
               <Typography>{textPopUp}</Typography>
             </Box>
@@ -381,7 +444,118 @@ const NewPlan = () => {
             }}
           >
 
-            <Button variant='outlined' color='success' onClick={closePopUp}>
+            <Button href={'/myStudents/' + session?.user._id} variant='outlined' color='success' onClick={closePopUp}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* PopUp Error de eliminar ejercicios y dejar el dia sin ejercicios*/}
+        <Dialog fullWidth open={popUpError} onClose={closePopUpError} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:cancel' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpError}</Typography>
+              <Typography>{textPopUpError}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUpError}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* PopUp Error de eliminar todos los dias del plan sin dejar ni uno*/}
+        <Dialog fullWidth open={popUpErrorDay} onClose={closePopUpErrorDay} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:cancel' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpErrorDay}</Typography>
+              <Typography>{textPopUpErrorDay}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUpErrorDay}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* PopUp Error de datos de ejercicio*/}
+        <Dialog fullWidth open={popUpErrorDataExercise} onClose={closePopUpErrorDataExercise} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:cancel' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpErrorData}</Typography>
+              <Typography>{textPopUpErrorDataExercise}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUpErrorDataExercise}>
               OK
             </Button>
           </DialogActions>
@@ -400,3 +574,4 @@ NewPlan.acl = {
 };
 
 export default NewPlan;
+

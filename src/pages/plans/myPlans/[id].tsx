@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Divider, Pagination } from '@mui/material';
+import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Pagination } from '@mui/material';
+import { useRouter } from 'next/router';
 
 interface Plan {
   _id: string;
@@ -25,6 +26,7 @@ const MyPlans = () => {
   const [plans, setPlans] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // Estado para controlar la página actual
   const plansPerPage = 1; // Cantidad de planes por página
+  const route = useRouter();
 
   const session = useSession();
 
@@ -38,7 +40,7 @@ const MyPlans = () => {
   const plansToDisplay = plans.slice(startIndex, endIndex);
 
   useEffect(() => {
-    const studentId = session.data?.user._id;
+    const studentId = route.query.id;
 
     fetch(`/api/trainingPlans?studentId=${studentId}`)
       .then((response) => response.json())

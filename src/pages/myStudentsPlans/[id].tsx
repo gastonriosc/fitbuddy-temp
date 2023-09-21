@@ -13,7 +13,8 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
+
+//import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
 import CustomChip from 'src/@core/components/mui/chip'
 
@@ -244,7 +245,7 @@ const MyRequests = () => {
                                   color='primary'
                                   title='Plan'
 
-                                // href={'/myProfile/myStudentProfile/' + OPlan.studentId}
+                                  href={'/plans/myPlans/' + OPlan.studentId}
                                 >
                                   <Icon icon='mdi:file-eye-outline' />
                                 </Button>
