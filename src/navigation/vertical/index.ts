@@ -30,10 +30,34 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
+      sectionTitle: 'Alumnos',
+      subject: 'myTrainerProfile-page',
+      action: 'manage'
+    },
+    {
+      title: 'Mis Solicitudes',
+      icon: 'mdi:inbox',
+      path: '/myRequests/' + session?.user?._id,
+      subject: 'myRequests-page',
+      action: 'manage'
+    },
+    {
       title: 'Mis Alumnos',
       icon: 'mdi-account-multiple',
       path: '/myStudents/' + session?.user._id,
       subject: 'myStudents-page',
+      action: 'manage'
+    },
+    {
+      title: 'Planes creados',
+      icon: 'mdi-file-outline',
+      path: '/myStudentsPlans/' + session?.user._id,
+      subject: 'myStudents-page',
+      action: 'manage'
+    },
+    {
+      sectionTitle: 'Perfil',
+      subject: 'perfilTitle',
       action: 'manage'
     },
     {
@@ -48,13 +72,6 @@ const navigation = (): VerticalNavItemsType => {
       icon: 'mdi-account',
       path: '/myProfile/' + session?.user?._id,
       subject: 'myTrainerProfile-page',
-      action: 'manage'
-    },
-    {
-      title: 'Mis Solicitudes',
-      icon: 'mdi:inbox',
-      path: '/myRequests/' + session?.user?._id,
-      subject: 'myRequests-page',
       action: 'manage'
     },
     {

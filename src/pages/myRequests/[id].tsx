@@ -181,93 +181,99 @@ const MyRequests = () => {
             <Divider />
           </Card>
 
-          {subsRequest
-            .filter((sub: subsRequest) =>
-              sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-              sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
-            )
-            .sort((a: any, b: any) => {
-              const dateA = new Date(a.date);
-              const dateB = new Date(b.date);
+          {subsRequest.length > 0 ? (
+            subsRequest
+              .filter((sub: subsRequest) =>
+                sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
+                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+              )
+              .sort((a: any, b: any) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
 
-              if (filterOption === 'asc') {
-                return dateA.getTime() - dateB.getTime();
-              } else {
-                return dateB.getTime() - dateA.getTime();
-              }
-            })
-            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-            .map((sub: subsRequest, index) => (
-              <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
-                <Grid container spacing={6}>
-                  <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px' }} />
-                    </CardContent>
-                  </StyledGrid2>
-                  <StyledGrid1 item xs={12} md={10}>
-                    <Box sx={{ display: { md: 'flex' } }} >
-                      <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                        <Box sx={{ display: 'flex' }}>
-                          <Box>
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              {sub.studentName}
-                            </Typography>
-                          </Box>
-                          <Box>
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
-                            </Typography>
-                          </Box>
-                          <Box>
-
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Typography variant='body1' sx={{ mb: 2 }}>
-                          {sub.description}
-                        </Typography>
+                if (filterOption === 'asc') {
+                  return dateA.getTime() - dateB.getTime();
+                } else {
+                  return dateB.getTime() - dateA.getTime();
+                }
+              })
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              .map((sub: subsRequest, index) => (
+                <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
+                  <Grid container spacing={6}>
+                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px' }} />
                       </CardContent>
-                      <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          <Button
-                            variant='contained'
-                            color='success'
-                            title='Aceptar'
-                            onClick={() => aceptarSubsRequest(sub)}
-                          >
-                            <Icon icon='line-md:confirm' />
-                          </Button>
-                        </Box>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          <Button
-                            variant='contained'
-                            color='error'
-                            title='Rechazar'
-                            onClick={() => rechazarSubsRequest(sub)}
-                          >
-                            <Icon icon='line-md:cancel' />
-                          </Button>
-                        </Box>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          <Button
-                            variant='contained'
-                            color='primary'
-                            title='Perfil'
-                            href={'/myProfile/myStudentProfile/' + sub.studentId}
-                          >
-                            <Icon icon='mdi:eye' />
-                          </Button>
-                        </Box>
-                      </CardContent>
-                    </Box>
+                    </StyledGrid2>
+                    <StyledGrid1 item xs={12} md={10}>
+                      <Box sx={{ display: { md: 'flex' } }} >
+                        <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                          <Box sx={{ display: 'flex' }}>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                {sub.studentName}
+                              </Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
+                              </Typography>
+                            </Box>
+                            <Box>
 
-                  </StyledGrid1>
-                </Grid>
-              </Card >
-            ))}
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Typography variant='body1' sx={{ mb: 2 }}>
+                            {sub.description}
+                          </Typography>
+                        </CardContent>
+                        <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            <Button
+                              variant='contained'
+                              color='success'
+                              title='Aceptar'
+                              onClick={() => aceptarSubsRequest(sub)}
+                            >
+                              <Icon icon='line-md:confirm' />
+                            </Button>
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            <Button
+                              variant='contained'
+                              color='error'
+                              title='Rechazar'
+                              onClick={() => rechazarSubsRequest(sub)}
+                            >
+                              <Icon icon='line-md:cancel' />
+                            </Button>
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            <Button
+                              variant='contained'
+                              color='primary'
+                              title='Perfil'
+                              href={'/myProfile/myStudentProfile/' + sub.studentId}
+                            >
+                              <Icon icon='mdi:eye' />
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Box>
+
+                    </StyledGrid1>
+                  </Grid>
+                </Card >
+              ))
+          ) : (
+            <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
+              <CardHeader title="No tenes solicitudes de suscripciones por el momento." />
+            </Card>
+          )}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>

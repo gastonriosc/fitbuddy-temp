@@ -101,7 +101,9 @@ const MyPlans = () => {
                 </div>
               ))
             ) : (
-              <p>No tienes planes de entrenamiento asignados.</p>
+              <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
+                <CardHeader title="No tenes planes por el momento." />
+              </Card>
             )}
 
             {/* Paginador */}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
+//import { useSession } from 'next-auth/react';
+
 // ** MUI Imports
 import Pagination from '@mui/material/Pagination'
 import Box from '@mui/material/Box';
@@ -13,8 +15,9 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
+
+// import RequestPopUp from '../myRequests/requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
-import RequestPopUp from '../myRequests/requestPopUp';
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -29,40 +32,34 @@ const Img = styled('img')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius
 }));
 
-interface subsRequest {
+interface planType {
   _id: string;
-  description: string;
-  status: string;
+  nombrePlan: string;
   trainerId: string;
   studentId: string;
-  subscriptionId: string;
-  date: string;
+  subsRequestId: string;
   studentName: string;
+  trainerName: string;
   subscriptionName: string;
 }
 
-const MyStudents = () => {
+const MyRequests = () => {
 
   const route = useRouter();
-  const [subsRequest, setSubsRequest] = useState<[]>([]);
+  const [plan, setPlan] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [requestPopUp, setRequestPopUp] = useState<boolean>(false);
-  const [typeAction, setTypeAction] = useState<string>('');
-  const [subsRequestId, setSubsRequestId] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
+
+  // const [requestPopUp, setRequestPopUp] = useState<boolean>(false);
+
+  // const [typeAction, setTypeAction] = useState<string>('');
+  // const [subsRequestId, setSubsRequestId] = useState<string>('');
+  // const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
-
-  const rechazarSubsRequest = (sub: subsRequest) => {
-    setRequestPopUp(true);
-    setTypeAction('rechazar');
-    setSubsRequestId(sub._id);
-    setTitle('rechazada');
-  };
 
   useEffect(() => {
     const fetchMyRequests = async () => {
@@ -71,7 +68,7 @@ const MyStudents = () => {
       try {
         // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
-          `/api/myStudents/?id=${id}`,
+          `/api/studentsPlans/?id=${id}`,
           {
             method: 'GET',
             headers: {
@@ -81,12 +78,16 @@ const MyStudents = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          setSubsRequest(data.subsRequest);
+          setPlan(data.plan);
           setNameSubs(data.nameSubs);
           setIsLoading(true);
         }
-
-        // ...
+        if (res.status == 404) {
+          route.replace('/404')
+        }
+        if (res.status == 500) {
+          route.replace('/500')
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -96,7 +97,7 @@ const MyStudents = () => {
   }, []); // Actualizar cuando cambie la página actual
 
 
-  const totalPages = Math.ceil(subsRequest.length / itemsPerPage);
+  const totalPages = Math.ceil(plan.length / itemsPerPage);
 
   if (isLoading) {
     return (
@@ -141,6 +142,13 @@ const MyStudents = () => {
                       <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
                       <MenuItem value='desc'>MAS RECIENTES</MenuItem>
                     </Select>
+                    {/* <Input
+                      fullWidth
+                      value={filterDate}
+                      id='search-input'
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
+                    /> */}
                   </FormControl>
                 </Grid>
                 <Grid item sm={4} xs={12}>
@@ -160,11 +168,12 @@ const MyStudents = () => {
             <Divider />
           </Card>
 
-          {subsRequest.length > 0 ? (
-            subsRequest
-              .filter((sub: subsRequest) =>
-                sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+          {plan.length > 0 ? (
+
+            plan
+              .filter((plan: planType) =>
+                plan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
+                plan.nombrePlan.toLowerCase().includes(filterPlan.toLowerCase())
               )
               .sort((a: any, b: any) => {
                 const dateA = new Date(a.date);
@@ -177,7 +186,7 @@ const MyStudents = () => {
                 }
               })
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((sub: subsRequest, index) => (
+              .map((plan: planType, index) => (
                 <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
                   <Grid container spacing={6}>
                     <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -191,44 +200,39 @@ const MyStudents = () => {
                           <Box sx={{ display: 'flex' }}>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                {sub.studentName}
+                                {plan.studentName}
                               </Typography>
                             </Box>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={sub.subscriptionName} />
+                                <Chip sx={{ mx: 2 }} label={plan.nombrePlan} />
                               </Typography>
                             </Box>
                             <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <Chip sx={{ mx: 2 }} label={plan.subscriptionName} />
+                              </Typography>
+                            </Box>
+                            {/* <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <Chip sx={{ mx: 2 }} label={new Date(sub.date).toLocaleDateString()} />
+                                <Chip sx={{ mx: 2 }} label={new Date(plan.date).toLocaleDateString()} />
                               </Typography>
-                            </Box>
+                            </Box> */}
                           </Box>
-                          <Typography variant='body1' sx={{ mb: 2 }}>
-                            {sub.description}
-                          </Typography>
+                          {/* <Typography variant='body1' sx={{ mb: 2 }}>
+                            {plan.description}
+                          </Typography> */}
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                             <Button
                               variant='contained'
-                              color='secondary'
-                              title='Crear plan'
-                              href={'/plans/newPlan/?id=' + sub.studentId + '&subsReq=' + sub._id}
+                              color='primary'
+                              title='Perfil'
+                              href={'/myProfile/myStudentProfile/' + plan.studentId}
                             >
-                              <Icon icon='line-md:plus' />
-                            </Button>
-                          </Box>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='error'
-                              title='Rechazar'
-                              onClick={() => rechazarSubsRequest(sub)}
-                            >
-                              <Icon icon='line-md:cancel' />
+                              <Icon icon='mdi:file-eye-outline' />
                             </Button>
                           </Box>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -236,7 +240,7 @@ const MyStudents = () => {
                               variant='contained'
                               color='primary'
                               title='Perfil'
-                              href={'/myProfile/myStudentProfile/' + sub.studentId}
+                              href={'/myProfile/myStudentProfile/' + plan.studentId}
                             >
                               <Icon icon='mdi:eye' />
                             </Button>
@@ -248,24 +252,32 @@ const MyStudents = () => {
                   </Grid>
                 </Card >
               ))
+
           ) : (
             <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-              <CardHeader title="No tenes alumnos con la solicitud de creacion de plan aceptada." />
+              <CardHeader title="No tenes planes asociados a alumnos por el momento." />
             </Card>
           )}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
-            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)}
-            />
+            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
-          < RequestPopUp
-            requestPopUp={requestPopUp}
-            setRequestPopUp={setRequestPopUp}
-            type={typeAction}
-            title={title}
-            requestId={subsRequestId}
-            setSubsRequest={setSubsRequest}
-          />
         </Grid >
+        {/* <div>
+          <Button onClick={prevPage} disabled={currentPage === 1}>
+            Página Anterior
+            </Button>
+            <Button onClick={nextPage} disabled={currentPage === totalPages}>
+            Página Siguiente
+            </Button>
+        </div> */}
+        {/* < RequestPopUp
+          requestPopUp={requestPopUp}
+          setRequestPopUp={setRequestPopUp}
+          type={typeAction}
+          title={title}
+          requestId={subsRequestId}
+          setSubsRequest={setSubsRequest}
+        /> */}
       </>
     );
   } else {
@@ -277,9 +289,9 @@ const MyStudents = () => {
   }
 };
 
-MyStudents.acl = {
+MyRequests.acl = {
   action: 'manage',
   subject: 'myRequests-page',
 };
 
-export default MyStudents;
+export default MyRequests;
