@@ -646,7 +646,7 @@ const MyProfile = () => {
                   '& svg': { mb: 6, color: 'warning.main' }
                 }}
               >
-                <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
+                <Icon icon='line-md:alert' fontSize='5.5rem' />
                 <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas borrar la suscripción?</Typography>
                 <Typography>Una vez borrada, no podrás recuperar la suscripción.</Typography>
               </Box>
@@ -685,7 +685,7 @@ const MyProfile = () => {
                   '& svg': { mb: 6, color: 'success.main' }
                 }}
               >
-                <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
+                <Icon icon='line-md:confirm' fontSize='5.5rem' />
                 <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
                 {/* <Typography>{textPopUp}</Typography> */}
               </Box>
