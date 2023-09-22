@@ -1,129 +1,314 @@
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Pagination } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-interface Plan {
+//import { useSession } from 'next-auth/react';
+
+// ** MUI Imports
+import Pagination from '@mui/material/Pagination'
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import Grid, { GridProps } from '@mui/material/Grid';
+
+//import Chip from '@mui/material/Chip';
+import Icon from 'src/@core/components/icon';
+import CustomChip from 'src/@core/components/mui/chip'
+
+// import RequestPopUp from '../myRequests/requestPopUp';
+import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+
+
+// Styled Grid component
+const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
+}));
+
+// Styled Grid component
+const StyledGrid2 = styled(Grid)<GridProps>(({ }) => ({
+}));
+
+// Styled component for the image
+const Img = styled('img')(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius
+}));
+
+interface planType {
   _id: string;
   nombrePlan: string;
-  plan: Day[];
+  trainerId: string;
+  studentId: string;
+  subsRequestId: string;
+  date: string;
+  expirationDate: string;
+  studentName: string;
+  trainerName: string;
+  subscriptionName: string;
+
 }
 
-interface Day {
-  nombreDia: string;
-  Ejercicios: Exercise[];
-}
+const MyRequests = () => {
 
-interface Exercise {
-  nombreEjercicio: string;
-  series: number;
-  repeticiones: number;
-  peso: number;
-}
-
-
-const MyPlans = () => {
-  const [plans, setPlans] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Estado para controlar la página actual
-  const plansPerPage = 1; // Cantidad de planes por página
   const route = useRouter();
+  const [plan, setPlan] = useState<[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const session = useSession();
-
-  const handlePageChange = (_, page) => {
-    setCurrentPage(page);
-  };
-
-  // Calcular el índice inicial y final de los planes en la página actual
-  const startIndex = (currentPage - 1) * plansPerPage;
-  const endIndex = startIndex + plansPerPage;
-  const plansToDisplay = plans.slice(startIndex, endIndex);
+  const [filterName, setFilterName] = useState<string>('');
+  const [filterPlan, setFilterPlan] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [filterOption, setFilterOption] = useState('asc');
+  const [nameSubs, setNameSubs] = useState([])
+  const itemsPerPage = 4; // Cantidad de elementos por página
 
   useEffect(() => {
-    const studentId = route.query.id;
+    const fetchMyRequests = async () => {
+      const id = route.query.id;
 
-    fetch(`/api/trainingPlans?studentId=${studentId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPlans(data);
-        console.log('Planes obtenidos:', data);
-      })
-      .catch((error) => {
-        console.error('Error al obtener los planes:', error);
-      });
-  }, [session]);
+      try {
+        // ** Llamada a la API para obtener datos paginados
+        const res = await fetch(
+          `/api/studentsPlans/?id=${id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (res.status == 200) {
+          const data = await res.json();
+          setPlan(data.plan);
+          setNameSubs(data.nameSubs);
+          setIsLoading(true);
+        }
+        if (res.status == 404) {
+          route.replace('/404')
+        }
+        if (res.status == 500) {
+          route.replace('/500')
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
 
-  return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Mis Planes de Entrenamiento" />
-          <CardContent>
-            {plansToDisplay.length > 0 ? (
-              plansToDisplay.map((plan: Plan, planIndex) => (
-                <div key={planIndex}>
-                  <Card>
-                    <CardHeader
-                      title={
-                        <div>
-                          <span style={{ textDecoration: 'underline', textUnderlineOffset: '5px' }}>Nombre:</span> {plan.nombrePlan}
-                        </div>
-                      }
-                    />
-                    <CardContent>
-                      {plan.plan.map((day: Day, dayIndex) => (
-                        <div key={dayIndex}>
-                          <h3 style={{ textDecoration: 'underline', textUnderlineOffset: '5px' }}>{day.nombreDia}</h3>
-                          <TableContainer>
-                            <Table>
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell>Ejercicio</TableCell>
-                                  <TableCell>Series</TableCell>
-                                  <TableCell>Repeticiones</TableCell>
-                                  <TableCell>Peso</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {day.Ejercicios.map((exercise, exerciseIndex) => (
-                                  <TableRow key={exerciseIndex}>
-                                    <TableCell>{exercise.nombreEjercicio}</TableCell>
-                                    <TableCell>{exercise.series}</TableCell>
-                                    <TableCell>{exercise.repeticiones}</TableCell>
-                                    <TableCell>{exercise.peso}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
-                        </div>
+    fetchMyRequests();
+  }, []); // Actualizar cuando cambie la página actual
+
+
+  const totalPages = Math.ceil(plan.length / itemsPerPage);
+
+  if (isLoading) {
+    return (
+      <>
+        <Grid>
+          <Card >
+            <CardHeader
+              title='Filtros'
+              sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
+            />
+            <CardContent>
+              <Grid container spacing={6}>
+                {/* <Grid item sm={4} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input-plan'>Plan</InputLabel>
+                    <Select
+                      label='Plan'
+                      fullWidth
+                      value={filterPlan}
+                      id='search-input-plan'
+                      onChange={(e) => setFilterPlan(e.target.value)}
+                    >
+                      <MenuItem value=''>SIN FILTRO</MenuItem>
+                      {nameSubs.map((subs: any, index) => (
+                        <MenuItem key={index} value={subs.name}>
+                          {subs.name.toUpperCase()}
+                        </MenuItem>
                       ))}
-                    </CardContent>
-                  </Card>
-                </div>
-              ))
-            ) : (
-              <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-                <CardHeader title="No tenes planes por el momento." />
-              </Card>
-            )}
+                    </Select>
+                  </FormControl>
+                </Grid> */}
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Fecha</InputLabel>
+                    <Select
+                      label='Fecha'
+                      fullWidth
+                      value={filterOption}
+                      id='search-input'
+                      onChange={(e) => setFilterOption(e.target.value)}
+                    >
+                      <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
+                      <MenuItem value='desc'>MAS RECIENTES</MenuItem>
+                    </Select>
+                    {/* <Input
+                      fullWidth
+                      value={filterDate}
+                      id='search-input'
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
+                    /> */}
+                  </FormControl>
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Nombre</InputLabel>
+                    <Input
+                      fullWidth
+                      value={filterName}
+                      id='search-input'
+                      onChange={(e) => setFilterName(e.target.value)}
+                      placeholder='Ingrese un nombre para buscar'
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          <Divider sx={{ mt: 2 }} />
 
-            {/* Paginador */}
-            {plans.length >= plansPerPage && (
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Pagination count={Math.ceil(plans.length / plansPerPage)} color='primary' page={currentPage} onChange={handlePageChange} />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
-  );
+          <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}>
+            <Grid item container spacing={2}>
+              {plan.length > 0 ? (
+
+                plan
+                  .filter((OPlan: planType) =>
+                    OPlan.trainerName.toLowerCase().includes(filterName.toLowerCase()) &&
+                    OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+                  )
+                  .sort((a: any, b: any) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+
+                    if (filterOption === 'asc') {
+                      return dateA.getTime() - dateB.getTime();
+                    } else {
+                      return dateB.getTime() - dateA.getTime();
+                    }
+                  })
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((OPlan: planType, index) => (
+
+
+                    <Grid item lg={3} xs={12} md={4} key={index} padding={2}  >
+                      <Card >
+                        <StyledGrid2 >
+                          <Box display={'flex'} justifyContent={'center'}>
+                            <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
+                              <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
+                            </CardContent>
+                          </Box>
+                        </StyledGrid2>
+                        <StyledGrid1  >
+                          <Box >
+                            <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                              <Box textAlign={'center'}>
+                                <Typography variant='h5' sx={{ mb: 2 }}>
+                                  {OPlan.trainerName}
+                                </Typography>
+                              </Box>
+                              <Box display={'flex'} justifyContent={'center'} mb={2}>
+                                <Box>
+                                  <Typography variant='h5' >
+                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
+                                  </Typography>
+                                </Box>
+                                <Box >
+                                  <Typography variant='h5' >
+                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
+                                  </Typography>
+                                </Box>
+
+                              </Box>
+                              <Box display={'flex'} justifyContent={'center'}>
+                                <Box>
+                                  <Typography variant='h5' sx={{ mb: 2 }}>
+                                    <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString()} />
+                                  </Typography>
+                                </Box>
+                                <Box>
+                                  <Typography variant='h5' sx={{ mb: 2 }}>
+                                    <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString()} />
+                                  </Typography>
+                                </Box>
+                              </Box>
+                              {/* <Typography variant='body1' sx={{ mb: 2 }}>
+                            {plan.description}
+                          </Typography> */}
+                            </CardContent>
+                            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                                <Button
+                                  variant='contained'
+                                  color='primary'
+                                  title='Plan'
+
+                                  href={'/plans/' + OPlan._id}
+                                >
+                                  <Icon icon='mdi:file-eye-outline' />
+                                </Button>
+                              </Box>
+                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                                <Button
+                                  variant='contained'
+                                  color='primary'
+                                  title='Perfil'
+                                  href={'/myProfile/' + OPlan.trainerId}
+                                >
+                                  <Icon icon='mdi:eye' />
+                                </Button>
+                              </Box>
+                            </CardContent>
+                          </Box>
+
+                        </StyledGrid1>
+                      </Card >
+                    </Grid>
+                  ))
+
+              ) : (
+                <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center', minWidth: '100%' }}>
+                  <CardHeader title="No tenes planes por el momento." />
+                </Card>
+              )}
+            </Grid>
+          </Card>
+          <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
+            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+          </Box>
+        </Grid >
+        {/* <div>
+          <Button onClick={prevPage} disabled={currentPage === 1}>
+            Página Anterior
+            </Button>
+            <Button onClick={nextPage} disabled={currentPage === totalPages}>
+            Página Siguiente
+            </Button>
+        </div> */}
+        {/* < RequestPopUp
+          requestPopUp={requestPopUp}
+          setRequestPopUp={setRequestPopUp}
+          type={typeAction}
+          title={title}
+          requestId={subsRequestId}
+          setSubsRequest={setSubsRequest}
+        /> */}
+      </>
+    );
+  } else {
+    return (
+      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <CircularProgress size={100} thickness={6} color='primary' />
+      </Box>
+    );
+  }
 };
 
-MyPlans.acl = {
+MyRequests.acl = {
   action: 'manage',
   subject: 'myPlans-page',
 };
 
-export default MyPlans;
+export default MyRequests;

@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const plan = await PlanModel.aggregate([
           {
             $match: {
-              studentId: objectId
+              trainerId: objectId
             }
           },
           {
@@ -77,13 +77,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
         ])
-
-        // const nameSubs = await Subscription.find({ trainerId: id, deleted: false }, 'name')
+        const nameSubs = await Subscription.find({ trainerId: id, deleted: false }, 'name')
         if (plan) {
           const responseData = {
-            plan: plan
-
-            // nameSubs: nameSubs
+            plan: plan,
+            nameSubs: nameSubs
           }
 
           return res.status(200).json(responseData)

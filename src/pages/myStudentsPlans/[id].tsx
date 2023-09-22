@@ -69,7 +69,7 @@ const MyRequests = () => {
       try {
         // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
-          `/api/studentsPlans/?id=${id}`,
+          `/api/trainerPlans/?id=${id}`,
           {
             method: 'GET',
             headers: {
@@ -245,7 +245,7 @@ const MyRequests = () => {
                                   color='primary'
                                   title='Plan'
 
-                                  href={'/plans/myPlans/' + OPlan.studentId}
+                                  href={'/plans/' + OPlan._id}
                                 >
                                   <Icon icon='mdi:file-eye-outline' />
                                 </Button>
