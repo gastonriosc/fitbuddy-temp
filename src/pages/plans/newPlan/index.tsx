@@ -348,11 +348,23 @@ const NewPlan = () => {
                                 onChange={(e) => setLink(String(e.target.value))}
                               />
                             ) : (
-                              <a style={{ color: 'skyblue' }} href={row.link} target="_blank" rel="noopener noreferrer">
-                                {row.link}
+                              <a
+                                style={{
+                                  color: 'skyblue',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  maxWidth: '100%', // Ajusta el ancho máximo de la celda según sea necesario
+                                }}
+                                href={row.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {row.link.length > 30 ? `${row.link.slice(0, 30)}...` : row.link}
                               </a>
                             )}
                           </StyledTableCell>
+
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <>
