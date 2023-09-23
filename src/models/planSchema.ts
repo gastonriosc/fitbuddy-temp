@@ -4,7 +4,8 @@ const exerciseSchema = new mongoose.Schema({
   nombreEjercicio: String,
   series: Number,
   repeticiones: Number,
-  peso: Number
+  peso: Number,
+  link: String
 })
 
 const daySchema = new mongoose.Schema({

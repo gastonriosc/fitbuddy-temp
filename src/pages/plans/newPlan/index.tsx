@@ -50,16 +50,16 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   },
 }));
 
-const createData = (nombre: string, series: number, repeticiones: number, peso: number) => {
-  return { nombre, series, repeticiones, peso };
+const createData = (nombre: string, series: number, repeticiones: number, peso: number, link: string) => {
+  return { nombre, series, repeticiones, peso, link };
 };
 
 const initialRows = [
-  createData('Press de banca plano', 4, 12, 80),
-  createData('Press de banca inclinado', 3, 12, 60),
-  createData('Press de banca declinado', 3, 12, 80),
-  createData('Cruce de poleas', 3, 12, 25),
-  createData('Remo con barra', 4, 12, 70),
+  createData('Press de banca plano', 4, 12, 80, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
+  createData('Press de banca inclinado', 3, 12, 60, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
+  createData('Press de banca declinado', 3, 12, 80, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
+  createData('Cruce de poleas', 3, 12, 25, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
+  createData('Remo con barra', 4, 12, 70, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
 ];
 
 const NewPlan = () => {
@@ -69,6 +69,7 @@ const NewPlan = () => {
   const [series, setSeries] = useState(0);
   const [repeticiones, setRepeticiones] = useState(0);
   const [peso, setPeso] = useState(0);
+  const [link, setLink] = useState('');
   const [popUp, setPopUp] = useState<boolean>(false)
   const [popUpError, setPopUpError] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>()
@@ -97,7 +98,7 @@ const NewPlan = () => {
 
   const handleAddRow = (dayIndex: number) => {
     const newPlanLists = [...planLists];
-    newPlanLists[dayIndex].push(createData('', 0, 0, 0));
+    newPlanLists[dayIndex].push(createData('', 0, 0, 0, ''));
     setPlanLists(newPlanLists);
   };
 
@@ -111,11 +112,11 @@ const NewPlan = () => {
         doc.addPage();
       }
       doc.text(`Día ${index + 1}`, 10, 20);
-      const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso]);
+      const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso, row.link]);
 
       // @ts-ignore
       doc.autoTable({
-        head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso']],
+        head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
         body: tableData,
         startY: 30,
       });
@@ -144,6 +145,7 @@ const NewPlan = () => {
     setSeries(rowToEdit.series);
     setRepeticiones(rowToEdit.repeticiones);
     setPeso(rowToEdit.peso);
+    setLink(rowToEdit.link);
 
     const newEditingRow = [...editingRow];
     newEditingRow[dayIndex] = rowIndex;
@@ -153,7 +155,7 @@ const NewPlan = () => {
   const handleSaveRow = (dayIndex: number, rowIndex: number) => {
     if (nombre.trim() !== '' && series > 0 && repeticiones > 0 && peso > 0) {
       const updatedPlanLists = [...planLists];
-      updatedPlanLists[dayIndex][rowIndex] = createData(nombre, series, repeticiones, peso);
+      updatedPlanLists[dayIndex][rowIndex] = createData(nombre, series, repeticiones, peso, link);
       setPlanLists(updatedPlanLists);
       const newEditingRow = [...editingRow];
       newEditingRow[dayIndex] = -1;
@@ -162,6 +164,7 @@ const NewPlan = () => {
       setSeries(0);
       setRepeticiones(0);
       setPeso(0);
+      setLink('');
     }
     else {
       setTitlePopUpErrorDataExercise('Datos de ejercicios incorrectos!')
@@ -177,6 +180,7 @@ const NewPlan = () => {
     setSeries(0);
     setRepeticiones(0);
     setPeso(0);
+    setLink('');
   };
 
   const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
@@ -195,7 +199,7 @@ const NewPlan = () => {
 
 
   const handleAddDay = () => {
-    const newDay = [createData('Agregue aquí un ejercicio', 0, 0, 0)];
+    const newDay = [createData('Agregue aquí un ejercicio', 0, 0, 0, '')];
     const newPlanLists = [...planLists, newDay];
     setPlanLists(newPlanLists);
   };
@@ -216,6 +220,7 @@ const NewPlan = () => {
           series: row.series,
           repeticiones: row.repeticiones,
           peso: row.peso,
+          link: row.link,
         })),
       })),
       trainerId: session?.user._id,
@@ -251,7 +256,7 @@ const NewPlan = () => {
     <form onSubmit={(e) => e.preventDefault()}>
       <Grid container spacing={6}>
         <Grid item xs={12}  >
-          <Card sx={{ marginBottom: '10px' }} >
+          <Card >
             <CardHeader
               title='Nombre del plan de entrenamiento'
               sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
@@ -285,9 +290,10 @@ const NewPlan = () => {
                     <TableHead>
                       <TableRow>
                         <StyledTableCell>Ejercicio</StyledTableCell>
-                        <StyledTableCell align='right'>Series</StyledTableCell>
+                        <StyledTableCell align='right' >Series</StyledTableCell>
                         <StyledTableCell align='right'>Repeticiones</StyledTableCell>
                         <StyledTableCell align='right'>Peso</StyledTableCell>
+                        <StyledTableCell align='center'>Link </StyledTableCell>
                         <StyledTableCell align='right'>Acciones</StyledTableCell>
                       </TableRow>
                     </TableHead>
@@ -336,6 +342,19 @@ const NewPlan = () => {
                           </StyledTableCell>
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
+                              <TextField
+                                type='text'
+                                value={link}
+                                onChange={(e) => setLink(String(e.target.value))}
+                              />
+                            ) : (
+                              <a style={{ color: 'skyblue' }} href={row.link} target="_blank" rel="noopener noreferrer">
+                                {row.link}
+                              </a>
+                            )}
+                          </StyledTableCell>
+                          <StyledTableCell align='right'>
+                            {editingRow[dayIndex] === rowIndex ? (
                               <>
                                 <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleSaveRow(dayIndex, rowIndex)}><Icon icon='line-md:confirm' style={{ color: 'lightgreen' }} /></ButtonStyled>
                                 <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleCancelEditRow(dayIndex)}><Icon icon='line-md:cancel' style={{ color: 'red' }} /></ButtonStyled>
@@ -368,11 +387,18 @@ const NewPlan = () => {
                               onChange={(e) => setRepeticiones(Number(e.target.value))}
                             />
                           </StyledTableCell>
-                          <StyledTableCell align='right'>
+                          <StyledTableCell >
                             <TextField
                               type='number'
                               value={peso}
                               onChange={(e) => setPeso(Number(e.target.value))}
+                            />
+                          </StyledTableCell>
+                          <StyledTableCell align='right'>
+                            <TextField
+                              type='text'
+                              value={link}
+                              onChange={(e) => setLink(String(e.target.value))}
                             />
                           </StyledTableCell>
                           <StyledTableCell align='right'>

@@ -20,6 +20,7 @@ interface Exercise {
   series: number;
   repeticiones: number;
   peso: number;
+  link: string
 }
 
 
@@ -109,6 +110,7 @@ const MyPlans = () => {
                                 <TableCell>Series</TableCell>
                                 <TableCell>Repeticiones</TableCell>
                                 <TableCell>Peso</TableCell>
+                                <TableCell align='left' >Link</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -118,6 +120,11 @@ const MyPlans = () => {
                                   <TableCell>{exercise.series}</TableCell>
                                   <TableCell>{exercise.repeticiones}</TableCell>
                                   <TableCell>{exercise.peso}</TableCell>
+                                  <TableCell>
+                                    <a style={{ color: 'skyblue' }} href={exercise.link} target="_blank" rel="noopener noreferrer">
+                                      {exercise.link}
+                                    </a>
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
