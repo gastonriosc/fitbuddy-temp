@@ -95,7 +95,7 @@ const MyRequests = () => {
     };
 
     fetchMyRequests();
-  }, []); // Actualizar cuando cambie la página actual
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const totalPages = Math.ceil(plan.length / itemsPerPage);

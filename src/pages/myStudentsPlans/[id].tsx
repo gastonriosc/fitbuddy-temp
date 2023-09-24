@@ -191,6 +191,7 @@ const MyRequests = () => {
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map((OPlan: planType, index) => (
 
+                    //<Grid item lg={6} xs={12} md={4} key={index} padding={2}  >
 
                     <Grid item lg={3} xs={12} md={4} key={index} padding={2}  >
                       <Card >

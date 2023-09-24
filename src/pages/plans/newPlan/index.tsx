@@ -13,8 +13,9 @@ import TableRow, { TableRowProps } from '@mui/material/TableRow';
 import TableCell, { TableCellProps, tableCellClasses } from '@mui/material/TableCell';
 import Button, { ButtonProps } from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+
+//import jsPDF from 'jspdf';
+//import 'jspdf-autotable';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
@@ -56,10 +57,10 @@ const createData = (nombre: string, series: number, repeticiones: number, peso: 
 
 const initialRows = [
   createData('Press de banca plano', 4, 12, 80, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
-  createData('Press de banca inclinado', 3, 12, 60, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
-  createData('Press de banca declinado', 3, 12, 80, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
-  createData('Cruce de poleas', 3, 12, 25, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
-  createData('Remo con barra', 4, 12, 70, 'https://www.youtube.com/shorts/i14IBMNQDQQ'),
+  createData('Press de banca inclinado', 3, 12, 60, 'https://www.youtube.com/shorts/SqT0lZDPm-Y'),
+  createData('Press de banca declinado', 3, 12, 80, 'https://www.youtube.com/shorts/flTPZxfXwuw'),
+  createData('Cruce de poleas', 3, 12, 25, 'https://www.youtube.com/shorts/B_5amA7vPbA'),
+  createData('Remo con barra', 4, 12, 70, 'https://drive.google.com/drive/folders/1Ih5LM3fcFGNAQ_KNSlou-IIVjjYJT9LR'),
 ];
 
 const NewPlan = () => {
@@ -79,6 +80,9 @@ const NewPlan = () => {
   const [popUpErrorDataExercise, setPopUpErrorDataExercise] = useState<boolean>(false)
   const [titlePopUpErrorData, setTitlePopUpErrorDataExercise] = useState<string>()
   const [nombrePlan, setNombrePlan] = useState('');
+  const [popUpErrorName, setPopUpErrorName] = useState<boolean>(false)
+  const [titlePopUpErrorName, setTitlePopUpErrorName] = useState<string>()
+
 
 
   const { data: session } = useSession();
@@ -86,14 +90,16 @@ const NewPlan = () => {
   const closePopUpError = () => setPopUpError(false)
   const closePopUpErrorDay = () => setPopUpErrorDay(false)
   const closePopUpErrorDataExercise = () => setPopUpErrorDataExercise(false)
+  const closePopUpErrorName = () => setPopUpErrorName(false)
 
   const route = useRouter();
 
 
-  const textPopUp = 'Refresque la pagina para ver los cambios.'
+  const textPopUp = 'Aguade un momento, será redirigido a la seccion de Mis Alumnos.'
   const textPopUpError = 'Por favor, intente nuevamente o elimine el día de entrenamiento en caso de no tener ejercicios.'
   const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento debe tener al menos un día.'
-  const textPopUpErrorDataExercise = 'Por favor, intente nuevamente. Asegúrese de que la cantidad de series, repeticiones y peso sea un número entero.'
+  const textPopUpErrorDataExercise = 'Por favor, intente nuevamente. Asegúrese de que la cantidad de series, repeticiones y/o peso sea un número positivo.'
+  const textPopUpErrorName = 'Por favor, intente nuevamente. El nombre del plan de entrenamiento no puede estar vacío.'
 
 
   const handleAddRow = (dayIndex: number) => {
@@ -102,27 +108,27 @@ const NewPlan = () => {
     setPlanLists(newPlanLists);
   };
 
-  const exportToPDF = () => {
-    const doc = new jsPDF();
+  // const exportToPDF = () => {
+  //   const doc = new jsPDF();
 
-    doc.setFontSize(14);
+  //   doc.setFontSize(14);
 
-    planLists.forEach((day, index) => {
-      if (index > 0) {
-        doc.addPage();
-      }
-      doc.text(`Día ${index + 1}`, 10, 20);
-      const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso, row.link]);
+  //   planLists.forEach((day, index) => {
+  //     if (index > 0) {
+  //       doc.addPage();
+  //     }
+  //     doc.text(`Día ${index + 1}`, 10, 20);
+  //     const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso, row.link]);
 
-      // @ts-ignore
-      doc.autoTable({
-        head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
-        body: tableData,
-        startY: 30,
-      });
-    });
-    doc.save('PlanDeEntrenamiento.pdf');
-  };
+  //     // @ts-ignore
+  //     doc.autoTable({
+  //       head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
+  //       body: tableData,
+  //       startY: 30,
+  //     });
+  //   });
+  //   doc.save('PlanDeEntrenamiento.pdf');
+  // };
 
   const handleDeleteDay = () => {
     if (planLists.length > 1) {
@@ -153,7 +159,7 @@ const NewPlan = () => {
   };
 
   const handleSaveRow = (dayIndex: number, rowIndex: number) => {
-    if (nombre.trim() !== '' && series > 0 && repeticiones > 0 && peso > 0) {
+    if (nombre.trim() !== '' && series > 0 && repeticiones > 0 && peso >= 0) {
       const updatedPlanLists = [...planLists];
       updatedPlanLists[dayIndex][rowIndex] = createData(nombre, series, repeticiones, peso, link);
       setPlanLists(updatedPlanLists);
@@ -204,8 +210,14 @@ const NewPlan = () => {
     setPlanLists(newPlanLists);
   };
 
-
   const createPlanTraining: SubmitHandler<FieldValues> = async () => {
+    if (nombrePlan.trim() === '') {
+      setTitlePopUpErrorName('El plan debe tener asignado un nombre!')
+      setPopUpErrorName(true);
+
+      return;
+    }
+
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const expirationDate = new Date(currentDate)
@@ -270,7 +282,12 @@ const NewPlan = () => {
                       fullWidth
                       value={nombrePlan}
                       id='search-input'
-                      onChange={(e) => setNombrePlan(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 27) {
+                          setNombrePlan(value);
+                        }
+                      }}
                       placeholder='Ingrese un nombre para buscar'
                     />
                   </FormControl>
@@ -293,7 +310,7 @@ const NewPlan = () => {
                         <StyledTableCell align='right' >Series</StyledTableCell>
                         <StyledTableCell align='right'>Repeticiones</StyledTableCell>
                         <StyledTableCell align='right'>Peso</StyledTableCell>
-                        <StyledTableCell align='center'>Link </StyledTableCell>
+                        <StyledTableCell align='right'>Link </StyledTableCell>
                         <StyledTableCell align='right'>Acciones</StyledTableCell>
                       </TableRow>
                     </TableHead>
@@ -350,17 +367,26 @@ const NewPlan = () => {
                             ) : (
                               <a
                                 style={{
-                                  color: 'skyblue',
+                                  color: 'red',
                                   whiteSpace: 'nowrap',
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   maxWidth: '100%', // Ajusta el ancho máximo de la celda según sea necesario
+                                  textDecoration: 'none', // Quita la subrayado del enlace
                                 }}
                                 href={row.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {row.link.length > 30 ? `${row.link.slice(0, 30)}...` : row.link}
+                                {row.link.includes('drive.google.com') ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-google" viewBox="0 0 16 16">
+                                    <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
+                                  </svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-youtube" viewBox="0 0 16 16">
+                                    <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z" />
+                                  </svg>
+                                )}
                               </a>
                             )}
                           </StyledTableCell>
@@ -439,9 +465,9 @@ const NewPlan = () => {
             <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteDay}>
               Eliminar Día
             </ButtonStyled>
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF}>
+            {/* <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF}>
               Exportar a PDF
-            </ButtonStyled>
+            </ButtonStyled> */}
           </Grid>
 
           <Grid item md={1.2} xs={12} >
@@ -594,6 +620,43 @@ const NewPlan = () => {
           >
 
             <Button variant='outlined' color='success' onClick={closePopUpErrorDataExercise}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* PopUp Error no carga el nombre*/}
+        <Dialog fullWidth open={popUpErrorName} onClose={closePopUpErrorName} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:cancel' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpErrorName}</Typography>
+              <Typography>{textPopUpErrorName}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUpErrorName}>
               OK
             </Button>
           </DialogActions>
