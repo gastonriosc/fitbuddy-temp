@@ -158,7 +158,7 @@ const MyStudents = () => {
                 </Grid>
               </Grid>
             </CardContent>
-            <Divider />
+            {/* <Divider /> */}
           </Card>
 
           {subsRequest.length > 0 ? (
@@ -179,7 +179,7 @@ const MyStudents = () => {
               })
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((sub: subsRequest, index) => (
-                <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
+                <Card key={index} sx={{ my: 3 }}>
                   <Grid container spacing={6}>
                     <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
                       <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -250,9 +250,13 @@ const MyStudents = () => {
                 </Card >
               ))
           ) : (
-            <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-              <CardHeader title="No tenes alumnos con la solicitud de creacion de plan aceptada." />
-            </Card>
+            <Box sx={{ mt: '50px', mb: '20px' }}>
+              <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés alumnos con la solicitud de creación de plan aceptada.</Typography>
+            </Box>
+
+            // <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
+            //   <CardHeader title="No tenes alumnos con la solicitud de creacion de plan aceptada." />
+            // </Card>
           )}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)}

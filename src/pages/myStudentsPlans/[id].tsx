@@ -169,113 +169,111 @@ const MyRequests = () => {
           </Card>
           <Divider sx={{ mt: 2 }} />
 
-          <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}>
-            <Grid item container spacing={2}>
-              {plan.length > 0 ? (
+          {/* <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}> */}
+          <Grid item container spacing={2}>
+            {plan.length > 0 ? (
 
-                plan
-                  .filter((OPlan: planType) =>
-                    OPlan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                    OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
-                  )
-                  .sort((a: any, b: any) => {
-                    const dateA = new Date(a.date);
-                    const dateB = new Date(b.date);
+              plan
+                .filter((OPlan: planType) =>
+                  OPlan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
+                  OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+                )
+                .sort((a: any, b: any) => {
+                  const dateA = new Date(a.date);
+                  const dateB = new Date(b.date);
 
-                    if (filterOption === 'asc') {
-                      return dateA.getTime() - dateB.getTime();
-                    } else {
-                      return dateB.getTime() - dateA.getTime();
-                    }
-                  })
-                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                  .map((OPlan: planType, index) => (
+                  if (filterOption === 'asc') {
+                    return dateA.getTime() - dateB.getTime();
+                  } else {
+                    return dateB.getTime() - dateA.getTime();
+                  }
+                })
+                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                .map((OPlan: planType, index) => (
 
-                    //<Grid item lg={6} xs={12} md={4} key={index} padding={2}  >
+                  //<Grid item lg={6} xs={12} md={4} key={index} padding={2}  >
 
-                    <Grid item lg={3} xs={12} md={4} key={index} padding={2}  >
-                      <Card >
-                        <StyledGrid2 >
-                          <Box display={'flex'} justifyContent={'center'}>
-                            <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
-                              <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
-                            </CardContent>
-                          </Box>
-                        </StyledGrid2>
-                        <StyledGrid1  >
-                          <Box >
-                            <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                              <Box textAlign={'center'}>
-                                <Typography variant='h5' sx={{ mb: 2 }}>
-                                  {OPlan.studentName}
+                  <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
+                    <Card >
+                      <StyledGrid2 >
+                        <Box display={'flex'} justifyContent={'center'}>
+                          <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
+                            <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
+                          </CardContent>
+                        </Box>
+                      </StyledGrid2>
+                      <StyledGrid1  >
+                        <Box >
+                          <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                            <Box textAlign={'center'}>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                {OPlan.studentName}
+                              </Typography>
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'} mb={2}>
+                              <Box>
+                                <Typography variant='h5' >
+                                  <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
                                 </Typography>
                               </Box>
-                              <Box display={'flex'} justifyContent={'center'} mb={2}>
-                                <Box>
-                                  <Typography variant='h5' >
-                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
-                                  </Typography>
-                                </Box>
-                                <Box >
-                                  <Typography variant='h5' >
-                                    <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
-                                  </Typography>
-                                </Box>
+                              <Box >
+                                <Typography variant='h5' >
+                                  <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
+                                </Typography>
+                              </Box>
 
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'}>
+                              <Box>
+                                <Typography variant='h5' sx={{ mb: 2 }}>
+                                  <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString()} />
+                                </Typography>
                               </Box>
-                              <Box display={'flex'} justifyContent={'center'}>
-                                <Box>
-                                  <Typography variant='h5' sx={{ mb: 2 }}>
-                                    <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString()} />
-                                  </Typography>
-                                </Box>
-                                <Box>
-                                  <Typography variant='h5' sx={{ mb: 2 }}>
-                                    <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString()} />
-                                  </Typography>
-                                </Box>
+                              <Box>
+                                <Typography variant='h5' sx={{ mb: 2 }}>
+                                  <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString()} />
+                                </Typography>
                               </Box>
-                              {/* <Typography variant='body1' sx={{ mb: 2 }}>
+                            </Box>
+                            {/* <Typography variant='body1' sx={{ mb: 2 }}>
                             {plan.description}
                           </Typography> */}
-                            </CardContent>
-                            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                                <Button
-                                  variant='contained'
-                                  color='primary'
-                                  title='Plan'
+                          </CardContent>
+                          <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                              <Button
+                                variant='contained'
+                                color='primary'
+                                title='Ver Plan'
+                                href={'/plans/' + OPlan._id}
+                              >
+                                <Icon icon='mdi:file-eye-outline' />
+                              </Button>
+                            </Box>
+                            <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                              <Button
+                                variant='contained'
+                                color='primary'
+                                title='Ver Perfil'
+                                href={'/myProfile/myStudentProfile/' + OPlan.studentId}
+                              >
+                                <Icon icon='mdi:eye' />
+                              </Button>
+                            </Box>
+                          </CardContent>
+                        </Box>
+                      </StyledGrid1>
+                    </Card >
+                  </Grid>
+                ))
 
-                                  href={'/plans/' + OPlan._id}
-                                >
-                                  <Icon icon='mdi:file-eye-outline' />
-                                </Button>
-                              </Box>
-                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                                <Button
-                                  variant='contained'
-                                  color='primary'
-                                  title='Perfil'
-                                  href={'/myProfile/myStudentProfile/' + OPlan.studentId}
-                                >
-                                  <Icon icon='mdi:eye' />
-                                </Button>
-                              </Box>
-                            </CardContent>
-                          </Box>
-
-                        </StyledGrid1>
-                      </Card >
-                    </Grid>
-                  ))
-
-              ) : (
-                <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-                  <CardHeader title="No tenes planes asociados a alumnos por el momento." />
-                </Card>
-              )}
-            </Grid>
-          </Card>
+            ) : (
+              <Card sx={{ mt: 4, justifyContent: 'center', alignContent: 'center', minWidth: '100%' }}>
+                <CardHeader title="No tenés planes asociados a alumnos por el momento." sx={{ textAlign: 'center' }}></CardHeader>
+              </Card>
+            )}
+          </Grid>
+          {/* </Card> */}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>

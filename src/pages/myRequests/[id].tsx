@@ -178,7 +178,7 @@ const MyRequests = () => {
                 </Grid>
               </Grid>
             </CardContent>
-            <Divider />
+            {/* <Divider /> */}
           </Card>
 
           {subsRequest.length > 0 ? (
@@ -270,9 +270,9 @@ const MyRequests = () => {
                 </Card >
               ))
           ) : (
-            <Card sx={{ mt: 2, height: 70, justifyContent: 'center', alignContent: 'center' }}>
-              <CardHeader title="No tenes solicitudes de suscripciones por el momento." />
-            </Card>
+            <Box sx={{ mt: '50px', mb: '20px' }}>
+              <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
+            </Box>
           )}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />

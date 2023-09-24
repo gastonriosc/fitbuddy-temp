@@ -580,7 +580,7 @@ const MyProfile = () => {
             >
               Solicitud de suscripción
               <Typography sx={{ textAlign: 'center', fontSize: '0.9rem !important', mt: '10px' }}>
-                Indicale tus preferencias al profesor.
+                Indicale tus preferencias al profesor!
               </Typography>
             </DialogTitle>
             <DialogContent
@@ -603,7 +603,8 @@ const MyProfile = () => {
                         rows={6}
                         multiline
                         id='textarea-outlined-static'
-                        label='Descripcion'
+                        label='Descripción'
+                        placeholder='¿Qué objetivos buscás alcanzar?'
                         name='description'
                         value={value}
                         onBlur={onBlur}
