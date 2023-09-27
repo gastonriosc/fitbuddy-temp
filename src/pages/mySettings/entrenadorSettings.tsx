@@ -117,6 +117,9 @@ const EntrenadorProfile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+  const avatars = ['/images/avatars/1.png', '/images/avatars/2.png', '/images/avatars/3.png',
+    '/images/avatars/4.png', '/images/avatars/5.png', '/images/avatars/6.png',
+    '/images/avatars/7.png', '/images/avatars/8.png']
 
   // ** Hooks
   const {
@@ -381,7 +384,7 @@ const EntrenadorProfile = () => {
       </Grid >
 
       {/* Delete Account Card */}
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Card>
           <CardHeader title='Eliminar cuenta' />
           <CardContent>
@@ -420,9 +423,9 @@ const EntrenadorProfile = () => {
             </form>
           </CardContent>
         </Card>
-      </Grid>
+      </Grid> */}
 
-      <Dialog sx={{ alignItems: 'center', '& .MuiPaper-root': { width: '100%', maxWidth: 700 } }} open={open} onClose={handleClose}>
+      <Dialog sx={{ alignItems: 'center', '& .MuiPaper-root': { width: '100%', maxWidth: 715 } }} open={open} onClose={handleClose}>
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
@@ -452,8 +455,8 @@ const EntrenadorProfile = () => {
               />
             </Box>
           </Box> */}
-          <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
-            {['/images/avatars/1.png', '/images/avatars/6.png', '/images/avatars/7.png', '/images/avatars/8.png'].map((avatar, index) => (
+          <Box sx={{ display: { md: 'flex' }, flexWrap: 'wrap' }} alignItems={'center'}>
+            {avatars.map((avatar, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}

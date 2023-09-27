@@ -116,7 +116,9 @@ const AlumnoProfile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [var1, setVar1] = useState("");
-
+  const avatars = ['/images/avatars/1.png', '/images/avatars/2.png', '/images/avatars/3.png',
+    '/images/avatars/4.png', '/images/avatars/5.png', '/images/avatars/6.png',
+    '/images/avatars/7.png', '/images/avatars/8.png']
   const [selectedCheckbox, setSelectedCheckbox] = useState(null);
 
   const handleCheckboxChange = (index: any, avatar: string) => {
@@ -418,7 +420,7 @@ const AlumnoProfile = () => {
       </Grid> */}
 
       {/* Deactivate Account Dialogs */}
-      <Dialog sx={{ alignItems: 'center', '& .MuiPaper-root': { width: '100%', maxWidth: 700 } }} open={open} onClose={handleClose}>
+      <Dialog sx={{ alignItems: 'center', '& .MuiPaper-root': { width: '100%', maxWidth: 715 } }} open={open} onClose={handleClose}>
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
@@ -426,30 +428,8 @@ const AlumnoProfile = () => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          {/* <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/1.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/6.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/7.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/8.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-          </Box> */}
-          <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
-            {['/images/avatars/1.png', '/images/avatars/6.png', '/images/avatars/7.png', '/images/avatars/8.png'].map((avatar, index) => (
+          <Box sx={{ display: { md: 'flex' }, flexWrap: 'wrap' }} alignItems={'center'}>
+            {avatars.map((avatar, index) => (
               <Box
                 key={index}
                 sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}
@@ -462,6 +442,36 @@ const AlumnoProfile = () => {
               </Box>
             ))}
           </Box>
+          {/* <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {avatars.slice(0, 4).map((avatar, index) => (
+                <Box
+                  key={index}
+                  sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}
+                >
+                  <ImgStyled src={avatar} alt='Profile Pic' />
+                  <Checkbox
+                    checked={selectedCheckbox === index}
+                    onChange={() => handleCheckboxChange(index, avatar)}
+                  />
+                </Box>
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {avatars.slice(4, 8).map((avatar, index) => (
+                <Box
+                  key={index}
+                  sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}
+                >
+                  <ImgStyled src={avatar} alt='Profile Pic' />
+                  <Checkbox
+                    checked={selectedCheckbox === index + 4} // Ajusta el índice para la segunda fila
+                    onChange={() => handleCheckboxChange(index + 4, avatar)} // Ajusta el índice para la segunda fila
+                  />
+                </Box>
+              ))}
+            </Box>
+          </Box> */}
           {/* <Box
             sx={{
               display: 'flex',
