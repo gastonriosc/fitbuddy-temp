@@ -152,14 +152,21 @@ const Register = () => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
     const { email, password, phone, country, gender, role, name, discipline } = data
-    debugger
+    let avatar = '';
+    if (gender === 'Masculino') {
+      avatar = '/images/avatars/1.png'
+    }
+    else {
+      avatar = '/images/avatars/6.png'
+    }
+
     try {
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline })
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar })
       })
       if (res.status == 200) {
         await signIn('credentials', { email, password, redirect: false }).then(res => {

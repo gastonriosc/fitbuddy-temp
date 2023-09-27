@@ -34,6 +34,10 @@ const usersSchema = new mongoose.Schema({
   country: {
     type: String,
     default: null
+  },
+  avatar: {
+    type: String,
+    require: true
   }
 })
 

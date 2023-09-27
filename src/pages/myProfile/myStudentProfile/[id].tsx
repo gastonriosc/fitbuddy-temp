@@ -107,9 +107,9 @@ const MyStudentProfile = () => {
         <Grid item xs={12}>
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              {data.avatar ? (
+              {users.avatar ? (
                 <CustomAvatar
-                  src={data.avatar}
+                  src={users.avatar}
                   variant='rounded'
                   sx={{ width: 120, height: 120, fontWeight: 600, mb: 4 }}
                 />

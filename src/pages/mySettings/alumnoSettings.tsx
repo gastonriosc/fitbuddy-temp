@@ -26,6 +26,7 @@ import { useSession } from 'next-auth/react'
 import { CircularProgress, IconButton } from '@mui/material'
 import CustomChip from 'src/@core/components/mui/chip'
 import { UsersType } from 'src/types/apps/userTypes'
+import Checkbox from '@mui/material/Checkbox'
 
 
 interface Data {
@@ -35,6 +36,7 @@ interface Data {
   name: string
   password: string
   phone: number | string
+  avatar: string
 }
 
 const data: UsersType = {
@@ -49,7 +51,7 @@ const data: UsersType = {
   currentPlan: 'enterprise',
   fullName: 'Daisy Patterson',
   email: 'gslixby0@abc.net.au',
-  avatar: '/images/avatars/1.png',
+  avatar: '',
   name: '',
   phone: 0,
   gender: '',
@@ -62,7 +64,8 @@ const initialData: Data = {
   gender: '',
   country: '',
   email: '',
-  phone: ''
+  phone: '',
+  avatar: ''
 }
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -101,14 +104,25 @@ const AlumnoProfile = () => {
 
   //const [inputValue, setInputValue] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false);
-  const [userInput, setUserInput] = useState<string>('yes')
+
+  // const [userInput, setUserInput] = useState<string>('yes')
   const [formData, setFormData] = useState<Data>(initialData);
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-  const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
+
+  // const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+
+  // const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
+  // const [avatar, setAvatar] = useState<string>();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [var1, setVar1] = useState("");
+
+  const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+
+  const handleCheckboxChange = (index: any, avatar: string) => {
+    setSelectedCheckbox(index);
+    handleFormChange('avatar', avatar)
+  }
 
   // ** Hooks
   const {
@@ -119,7 +133,7 @@ const AlumnoProfile = () => {
 
   const handleClose = () => setOpen(false)
 
-  const handleSecondDialogClose = () => setSecondDialogOpen(false)
+  // const handleSecondDialogClose = () => setSecondDialogOpen(false)
 
   //field: Es el nombre del campo que se va a actualizar. Es de tipo keyof Data, lo que significa que solo se puede pasar el nombre de una propiedad válida del tipo Data.
   //value: Es el valor que se va a asignar al campo especificado por field. El tipo del valor depende del tipo de datos que tenga la propiedad en el objeto Data.
@@ -129,11 +143,11 @@ const AlumnoProfile = () => {
 
   //const onSubmit = () => setOpen(true)
 
-  const handleConfirmation = (value: string) => {
-    handleClose()
-    setUserInput(value)
-    setSecondDialogOpen(true)
-  }
+  // const handleConfirmation = (value: string) => {
+  //   handleClose()
+  //   setUserInput(value)
+  //   setSecondDialogOpen(true)
+  // }
 
   // const handleInputImageChange = (file: ChangeEvent) => {
   //   const reader = new FileReader()
@@ -161,6 +175,7 @@ const AlumnoProfile = () => {
         phone: session?.user?.phone || '',
         country: session?.user?.country || '',
         gender: session?.user?.gender || '',
+        avatar: session?.user?.avatar || '',
       });
     }
   }, [session?.user]);
@@ -203,10 +218,11 @@ const AlumnoProfile = () => {
         <Card>
           <CardHeader sx={{ textAlign: 'center', marginBottom: '-1%' }} title={` ${session?.user?.name}`} />
           <form >
-            <CardContent sx={{ pt: 0, textAlign: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <ImgStyled sx={{ margin: '0 auto' }} src={imgSrc} alt='Profile Pic' />
-                {/* <div>
+            <CardContent sx={{ pt: 0, display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ImgStyled sx={{ margin: '0 auto' }} src={formData.avatar} alt='Profile Pic' />
+                  {/* <div>
                   <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                     Subir foto
                     <input
@@ -216,32 +232,38 @@ const AlumnoProfile = () => {
                       accept='image/png, image/jpeg'
                       onChange={handleInputImageChange}
                       id='account-settings-upload-image'
-                    />
-                  </ButtonStyled>
-                  <ResetButtonStyled color='secondary' variant='outlined' onClick={handleInputImageReset}>
-                    Volver al estado inicial
-                  </ResetButtonStyled>
-                  <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
-                </div> */}
+                      />
+                      </ButtonStyled>
+                      <ResetButtonStyled color='secondary' variant='outlined' onClick={handleInputImageReset}>
+                      Volver al estado inicial
+                      </ResetButtonStyled>
+                      <Typography sx={{ mt: 5, color: 'text.disabled' }}>Formato PNG o JPEG. Tamaño máximo de 800K.</Typography>
+                    </div> */}
+                </Box>
+                <CustomChip
+                  skin='light'
+                  size='small'
+
+                  label={session?.user.role}
+
+                  color={statusColors[data.status]}
+                  sx={{
+                    alignItems: 'center',
+                    marginTop: '8px',
+                    height: 20,
+                    fontWeight: 600,
+                    borderRadius: '5px',
+                    fontSize: '0.875rem',
+                    textTransform: 'capitalize',
+                    '& .MuiChip-label': { mt: -0.25 }
+                  }}
+                />
               </Box>
-              <CustomChip
-                skin='light'
-                size='small'
-
-                label={session?.user.role}
-
-                color={statusColors[data.status]}
-                sx={{
-                  alignItems: 'center',
-                  marginTop: '8px',
-                  height: 20,
-                  fontWeight: 600,
-                  borderRadius: '5px',
-                  fontSize: '0.875rem',
-                  textTransform: 'capitalize',
-                  '& .MuiChip-label': { mt: -0.25 }
-                }}
-              />
+              <Box >
+                <Button variant='contained' onClick={() => setOpen(true)}>
+                  CAMBIAR FOTO
+                </Button>
+              </Box>
             </CardContent>
             <Divider />
             <CardContent>
@@ -349,6 +371,7 @@ const AlumnoProfile = () => {
               </Grid>
             </CardContent>
           </form>
+
         </Card>
       </Grid >
 
@@ -395,7 +418,7 @@ const AlumnoProfile = () => {
       </Grid> */}
 
       {/* Deactivate Account Dialogs */}
-      <Dialog fullWidth maxWidth='xs' open={open} onClose={handleClose}>
+      <Dialog sx={{ alignItems: 'center', '& .MuiPaper-root': { width: '100%', maxWidth: 700 } }} open={open} onClose={handleClose}>
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
@@ -403,7 +426,43 @@ const AlumnoProfile = () => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          <Box
+          {/* <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
+              <ImgStyled src={'/images/avatars/1.png'} alt='Profile Pic' />
+              <Checkbox
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
+              <ImgStyled src={'/images/avatars/6.png'} alt='Profile Pic' />
+              <Checkbox
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
+              <ImgStyled src={'/images/avatars/7.png'} alt='Profile Pic' />
+              <Checkbox
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
+              <ImgStyled src={'/images/avatars/8.png'} alt='Profile Pic' />
+              <Checkbox
+              />
+            </Box>
+          </Box> */}
+          <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
+            {['/images/avatars/1.png', '/images/avatars/6.png', '/images/avatars/7.png', '/images/avatars/8.png'].map((avatar, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}
+              >
+                <ImgStyled src={avatar} alt='Profile Pic' />
+                <Checkbox
+                  checked={selectedCheckbox === index}
+                  onChange={() => handleCheckboxChange(index, avatar)}
+                />
+              </Box>
+            ))}
+          </Box>
+          {/* <Box
             sx={{
               display: 'flex',
               textAlign: 'center',
@@ -413,9 +472,14 @@ const AlumnoProfile = () => {
               '& svg': { mb: 6, color: 'warning.main' }
             }}
           >
-            <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
-            <Typography>Está seguro de eliminar su cuenta?</Typography>
+          <Icon icon='mdi:alert-circle-outline' fontSize='5.5rem' />
+          <Typography>Está seguro de eliminar su cuenta?</Typography>
+        </Box> */}
+          <Box display={'flex'}>
+            <Icon icon={'mdi:alert-circle-outline'}> </Icon>
+            <Typography sx={{ ml: 1 }}> Guarde los cambios para cambiar su foto de perfil</Typography>
           </Box>
+
         </DialogContent>
         <DialogActions
           sx={{
@@ -424,15 +488,15 @@ const AlumnoProfile = () => {
             pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleConfirmation('yes')}>
-            Sí
+          <Button variant='contained' sx={{ mr: 2 }} onClick={() => handleClose()}>
+            Confirmar
           </Button>
-          <Button variant='outlined' color='secondary' onClick={() => handleConfirmation('cancel')}>
+          <Button variant='outlined' color='secondary' onClick={() => handleClose()}>
             No
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog fullWidth maxWidth='xs' open={secondDialogOpen} onClose={handleSecondDialogClose}>
+      {/* <Dialog fullWidth maxWidth='xs' open={secondDialogOpen} onClose={handleSecondDialogClose}>
         <DialogContent
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
@@ -474,7 +538,7 @@ const AlumnoProfile = () => {
             OK
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
 
     </Grid>
   )

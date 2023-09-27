@@ -13,6 +13,7 @@ declare module 'next-auth' {
       discipline: string
       gender: string
       country: string
+      avatar: string
     }
   }
 }

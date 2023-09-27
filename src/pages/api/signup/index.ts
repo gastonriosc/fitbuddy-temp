@@ -12,6 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(409).json('Email ya registrado')
     }
     const user = await User.create(req.body)
+
+    console.log(user)
     if (user) {
       return res.status(200).json(user)
     } else {
