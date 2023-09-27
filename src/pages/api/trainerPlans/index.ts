@@ -73,7 +73,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               expirationDate: 1,
               studentName: '$student_info.name',
               trainerName: '$trainer_info.name',
-              subscriptionName: '$subscription_info.name'
+              subscriptionName: '$subscription_info.name',
+              avatar: '$student_info.avatar'
             }
           }
         ])

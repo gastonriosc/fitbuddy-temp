@@ -41,6 +41,7 @@ interface subsRequest {
   date: string;
   studentName: string;
   subscriptionName: string;
+  avatar: string;
 }
 
 const MyRequests = () => {
@@ -203,7 +204,7 @@ const MyRequests = () => {
                   <Grid container spacing={6}>
                     <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
                       <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px' }} />
+                        <Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />
                       </CardContent>
                     </StyledGrid2>
                     <StyledGrid1 item xs={12} md={10}>

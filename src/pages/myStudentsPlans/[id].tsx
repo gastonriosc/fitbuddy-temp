@@ -20,6 +20,7 @@ import CustomChip from 'src/@core/components/mui/chip'
 
 // import RequestPopUp from '../myRequests/requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+import { sub } from 'date-fns';
 
 
 // Styled Grid component
@@ -46,7 +47,7 @@ interface planType {
   studentName: string;
   trainerName: string;
   subscriptionName: string;
-
+  avatar: string;
 }
 
 const MyRequests = () => {
@@ -198,7 +199,7 @@ const MyRequests = () => {
                       <StyledGrid2 >
                         <Box display={'flex'} justifyContent={'center'}>
                           <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
-                            <Img alt='Avatar' src='/images/avatars/1.png' sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
+                            <Img alt='Avatar' src={OPlan.avatar} sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
                           </CardContent>
                         </Box>
                       </StyledGrid2>
