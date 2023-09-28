@@ -1,7 +1,6 @@
 import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import mongoose from 'mongoose'
-import Subscription from 'src/models/subscriptionSchema'
 import PlanModel from 'src/models/planSchema'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -86,6 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // nameSubs: nameSubs
           }
+          console.log(plan)
 
           return res.status(200).json(responseData)
         } else {

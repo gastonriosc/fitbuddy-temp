@@ -2,6 +2,7 @@ import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import mongoose from 'mongoose'
 import Foro from 'src/models/foroSchema'
+import PlanModel from 'src/models/planSchema'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
@@ -35,9 +36,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'GET') {
       try {
         const { id } = req.query
+        const objectId = new mongoose.Types.ObjectId(id)
+
+        const infoPlan = await PlanModel.aggregate([
+          {
+            $match: {
+              _id: objectId
+            }
+          },
+
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'studentId',
+              foreignField: '_id',
+              as: 'student_info'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'trainerId',
+              foreignField: '_id',
+              as: 'trainer_info'
+            }
+          },
+          {
+            $unwind: '$student_info'
+          },
+          {
+            $unwind: '$trainer_info'
+          },
+          {
+            $project: {
+              studentName: '$student_info.name',
+              trainerName: '$trainer_info.name',
+              studentAvatar: '$student_info.avatar',
+              trainerAvatar: '$trainer_info.avatar'
+            }
+          }
+        ])
+        console.log(infoPlan)
         const foro = await Foro.findOne({ planId: id })
 
-        return res.status(200).json(foro)
+        if (infoPlan) {
+          const responseData = {
+            foro: foro,
+            infoPlan: infoPlan
+          }
+
+          return res.status(200).json(responseData)
+        }
       } catch (error) {
         console.error('Error finding foro:', error)
 

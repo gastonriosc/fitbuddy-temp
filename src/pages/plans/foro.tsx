@@ -11,7 +11,7 @@ import Dialog from '@mui/material/Dialog'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 
-//import Typography from '@mui/material/Typography'
+import Typography from '@mui/material/Typography'
 import DialogContent from '@mui/material/DialogContent'
 
 //import Input from '@mui/material/Input'
@@ -57,6 +57,12 @@ interface Chat {
   messages: [Message]
 }
 
+interface InfoPlan {
+  studentName: string,
+  trainerName: string,
+  studentAvatar: string,
+  trainerAvatar: string
+}
 interface Message {
   userId: string,
   message: string,
@@ -75,6 +81,8 @@ const Foro = (props: Props) => {
   // const closePopUp = () => setPopUp(false)
   const [mensaje, setMensaje] = useState('');
   const [foro, setForo] = useState<Chat>();
+  const [infoPlan, setInfoPlan] = useState<InfoPlan>()
+  console.log(infoPlan)
   const handleChangeMensaje = (event: any) => {
     setMensaje(event.target.value);
   };
@@ -100,7 +108,8 @@ const Foro = (props: Props) => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          setForo(data)
+          setForo(data.foro)
+          setInfoPlan(data.infoPlan)
         }
         if (res.status == 404) {
           route.replace('/404')
@@ -188,20 +197,23 @@ const Foro = (props: Props) => {
           }}
         >
           {/* aca estaria la logica de mostrar los mensajes */}
-          <h2> Foro de conversación  <Icon icon='line-md:telegram' /> </h2>
+          {infoPlan?.map((plan: InfoPlan, index: any) => (
+            <h2 key={index}> Chat con {session.data?.user.name == plan.studentName ? plan.trainerName : plan.studentName} <Icon icon='line-md:telegram' /> </h2>
+          ))}
           <Divider sx={{ my: '0 !important', width: '100%', backgroundColor: 'white' }} />
 
           <ul style={{ listStyleType: 'none', padding: 0 }}>
             {foro?.messages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((message: Message, index) => (
               <li
                 key={index}
+
                 style={{
                   textAlign: 'center', // Fecha centrada
-                  color: 'white',      // Color de la fecha
-                  marginBottom: '5px',
-                  boxShadow: '0 8px 8px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
-                  borderRadius: '8px',                       // Bordes redondeados
-                  padding: '10px',                           // Espaciado interno
+                  // color: 'white',      // Color de la fecha
+                  // marginBottom: '5px',
+                  // boxShadow: '0 8px 8px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
+                  // borderRadius: '8px',                       // Bordes redondeados
+                  // padding: '10px',                           // Espaciado interno
                 }}
               >
                 {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
@@ -209,7 +221,76 @@ const Foro = (props: Props) => {
                   // Mostrar fecha solo si es diferente a la fecha del mensaje anterior
                   <p>{new Date(message.date).toLocaleDateString()}</p>
                 )}
-                <div
+
+                <Box mb={5}>
+                  <Box display={'flex'}>
+                    {message.userId.toString() === String(session.data?.user._id) ? (
+                      <>
+                        <Typography
+                          sx={{
+                            boxShadow: 1,
+                            borderRadius: 1,
+                            maxWidth: '100%',
+                            width: 'fit-content',
+                            fontSize: '0.875rem',
+                            wordWrap: 'break-word',
+                            p: theme => theme.spacing(3, 4),
+                            ml: 'auto',
+                            textAlign: 'right',
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0,
+                            color: 'common.white',
+                            backgroundColor: 'primary.main'
+                          }}
+                        >
+                          {message.message}
+                        </Typography>
+                        <ImgStyled sx={{ margin: '0 auto', padding: 1 }} src={session.data?.user.avatar} alt='Profile Pic' />
+                      </>
+                    ) : (
+                      <>
+                        {infoPlan?.map((plan: InfoPlan, index: any) => (
+                          <ImgStyled
+                            key={index}
+                            sx={{ margin: '0 auto', padding: 1 }}
+                            alt='Profile Pic'
+                            src={session.data?.user.role == 'Entrenador' ? plan.studentAvatar : plan.trainerAvatar} // Establece el src con plan.studentAvatar
+                          />
+                        ))}
+                        <Typography
+                          sx={{
+                            boxShadow: 1,
+                            borderRadius: 1,
+                            maxWidth: '100%',
+                            width: 'fit-content',
+                            fontSize: '0.875rem',
+                            wordWrap: 'break-word',
+                            p: theme => theme.spacing(3, 4),
+                            ml: undefined,
+                            textAlign: 'left',
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0,
+                            color: 'text.primary',
+                            backgroundColor: 'secondary.main'
+                          }}
+                        >
+                          {message.message}
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                  <div style={{ flex: 1, textAlign: 'right' }}>
+                    {message ? (
+                      <>
+                        <Typography variant='caption' sx={{ color: 'text.disabled' }}>{new Date(message.date).toLocaleTimeString()}</Typography>
+
+                      </>
+                    ) : (
+                      <p>Mensaje nulo</p>
+                    )}
+                  </div>
+                </Box>
+                {/* <div
                   style={{
                     textAlign: String(session.data?.user?._id) === message?.userId ? 'right' : 'left',
                     color: String(session.data?.user?._id) === message?.userId ? '#ADD8E6' : 'orange',
@@ -219,21 +300,21 @@ const Foro = (props: Props) => {
                     marginBottom: '10px',
                   }}
                 >
-                  {/* Bulletpoint personalizado */}
+
                   <div style={{ marginLeft: '5px', marginRight: '5px', marginTop: '8px' }}>•</div>
                   <div style={{ flex: 1 }}>
                     {message ? (
                       <>
                         <ImgStyled sx={{ margin: '0 auto' }} src={session.data?.user.avatar} alt='Profile Pic' />
                         <p>Usuario: {message.fullName}</p>
-                        <p>Hora: {new Date(message.date).toLocaleTimeString()}</p>
+                        <p>{new Date(message.date).toLocaleTimeString()}</p>
                         <p>{message.message}</p>
                       </>
                     ) : (
                       <p>Mensaje nulo</p>
                     )}
                   </div>
-                </div>
+                </div> */}
               </li>
             ))}
           </ul>
@@ -244,16 +325,22 @@ const Foro = (props: Props) => {
               <TextField
                 fullWidth
                 size='small'
-                placeholder='Type your message here…'
+                placeholder='Mensaje'
                 value={mensaje}
                 autoComplete="off"
                 onChange={handleChangeMensaje}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitMessage();
+                  }
+                }}
                 sx={{ '& .MuiOutlinedInput-input': { pl: 0 }, '& fieldset': { border: '0 !important' } }}
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button type='button' variant='contained' onClick={submitMessage}>
-                Send
+                Enviar
               </Button>
             </Box>
           </ChatFormWrapper>

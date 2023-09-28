@@ -156,7 +156,7 @@ const MyPlans = () => {
               </Box>
               <Box display={'flex'} sx={{ justifyContent: 'flex-end' }} >
                 <Button variant='outlined' color='info' startIcon={<Icon icon='wpf:faq' />} sx={{ mx: 2, my: 2, height: 'auto' }} onClick={() => foro()}>
-                  FORO
+                  CHAT
                 </Button>
                 <Button variant='outlined' color='info' startIcon={<Icon icon='wpf:statistics' />} sx={{ mx: 2, my: 2, height: 'auto' }}>
                   SEGUIMIENTO
