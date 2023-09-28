@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, Button } from '@mui/material';
+import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
+import Icon from 'src/@core/components/icon';
+import Button from '@mui/material/Button'
+import Foro from './foro';
 
 interface Plan {
   _id: string;
@@ -37,6 +39,12 @@ const ButtonStyled = styled(Button)<ButtonProps & { component?: React.ElementTyp
 
 const MyPlans = () => {
   const [plan, setPlan] = useState<Plan>(); // Inicializa como null o con un valor de Plan si tienes uno por defecto
+  const [foroPopUp, setForoPopUp] = useState<boolean>()
+  const [planId, setPlanId] = useState<string>()
+  const foro = () => {
+    setForoPopUp(true);
+    setPlanId(route.query.id?.toString());
+  };
 
   // const [currentPage, setCurrentPage] = useState(1); // Estado para controlar la página actual
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -140,14 +148,27 @@ const MyPlans = () => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Mis Planes de Entrenamiento" />
+            <Box display={'flex'}>
+              <Box flexGrow={1} >
+
+                <CardHeader title={plan?.nombrePlan} />
+
+              </Box>
+              <Box display={'flex'} sx={{ justifyContent: 'flex-end' }} >
+                <Button variant='outlined' color='info' startIcon={<Icon icon='wpf:faq' />} sx={{ mx: 2, my: 2, height: 'auto' }} onClick={() => foro()}>
+                  FORO
+                </Button>
+                <Button variant='outlined' color='info' startIcon={<Icon icon='wpf:statistics' />} sx={{ mx: 2, my: 2, height: 'auto' }}>
+                  SEGUIMIENTO
+                </Button>
+              </Box>
+            </Box>
             <CardContent>
-              <div>
+              <Box>
                 <Card>
-                  <CardHeader title={plan?.nombrePlan} />
                   <CardContent>
                     {plan?.plan.map((day: Day, dayIndex) => (
-                      <div key={dayIndex}>
+                      <Box key={dayIndex}>
                         <h3 style={{ textDecoration: 'underline', textUnderlineOffset: '5px' }}>{day.nombreDia}</h3>
                         <TableContainer>
                           <Table>
@@ -198,16 +219,21 @@ const MyPlans = () => {
                             </TableBody>
                           </Table>
                         </TableContainer>
-                      </div>
+                      </Box>
                     ))}
                   </CardContent>
                 </Card>
-              </div>
+              </Box>
             </CardContent>
           </Card>
           <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF}>
             Exportar a PDF
           </ButtonStyled>
+          < Foro
+            foroPopUp={foroPopUp}
+            setForoPopUp={setForoPopUp}
+            planId={planId}
+          />
         </Grid>
       </Grid >
     );
