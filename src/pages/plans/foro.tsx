@@ -10,13 +10,19 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+
+//import Typography from '@mui/material/Typography'
 import DialogContent from '@mui/material/DialogContent'
-import Input from '@mui/material/Input'
-import DialogActions from '@mui/material/DialogActions'
+
+//import Input from '@mui/material/Input'
+//import DialogActions from '@mui/material/DialogActions'
+
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import Divider from '@mui/material/Divider'
+
+//import { margin } from '@mui/system'
 
 type Props = {
   foroPopUp: boolean
@@ -37,6 +43,13 @@ const ChatFormWrapper = styled(Box)<BoxProps>(({ theme }) => ({
 
 const Form = styled('form')(({ theme }) => ({
   padding: theme.spacing(0, 5, 5)
+}))
+
+const ImgStyled = styled('img')(({ theme }) => ({
+  width: 40,
+  height: 40,
+  marginRight: theme.spacing(10),
+  borderRadius: theme.shape.borderRadius
 }))
 
 interface Chat {
@@ -128,6 +141,18 @@ const Foro = (props: Props) => {
         body: JSON.stringify({ planId, messages })
       })
       if (res.status == 200) {
+        setForo(prevForo => {
+          if (prevForo) {
+            const updatedMessages = [...prevForo.messages, newMessage];
+
+            return { ...prevForo, messages: updatedMessages };
+          }
+
+          return prevForo;
+        });
+        setMensaje('');
+
+
         // hanldeSubscriptionRequest()
         // setTitlePopUp('Solicitud enviada!')
         // setTextPopUp('')
@@ -146,7 +171,7 @@ const Foro = (props: Props) => {
     <>
       <Dialog fullWidth open={foroPopUp} onClose={handleCloseForoPopUp} sx={{
         '& .MuiPaper-root': {
-          maxWidth: 650, width: 0,
+          maxWidth: 800, width: 0,
           flexGrow: 1,
           height: '100%',
           backgroundColor: '142751'
@@ -156,33 +181,64 @@ const Foro = (props: Props) => {
           sx={{
             pb: theme => `${theme.spacing(6)} !important`,
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`],
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center', // Centra los elementos horizontalmente
           }}
         >
           {/* aca estaria la logica de mostrar los mensajes */}
-          <ul>
-            {foro?.messages.map((message: Message, index) => (
+          <h2> Foro de conversación  <Icon icon='line-md:telegram' /> </h2>
+          <Divider sx={{ my: '0 !important', width: '100%', backgroundColor: 'white' }} />
+
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+            {foro?.messages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((message: Message, index) => (
               <li
                 key={index}
                 style={{
-                  textAlign: String(session.data?.user?._id) === message?.userId ? 'right' : 'left',
-                  color: String(session.data?.user?._id) === message?.userId ? '#FFA500' : '#ADD8E6'
+                  textAlign: 'center', // Fecha centrada
+                  color: 'white',      // Color de la fecha
+                  marginBottom: '5px',
+                  boxShadow: '0 8px 8px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
+                  borderRadius: '8px',                       // Bordes redondeados
+                  padding: '10px',                           // Espaciado interno
                 }}
               >
-                {message ? (
-                  <div>
-                    <p>Usuario: {message.fullName}</p>
-                    <p>Fecha: {new Date(message.date).toLocaleString()}</p>
-                    <p>Mensaje: {message.message}</p>
-                  </div>
-                ) : (
-                  <p>Mensaje nulo</p>
+                {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
+
+                  // Mostrar fecha solo si es diferente a la fecha del mensaje anterior
+                  <p>{new Date(message.date).toLocaleDateString()}</p>
                 )}
+                <div
+                  style={{
+                    textAlign: String(session.data?.user?._id) === message?.userId ? 'right' : 'left',
+                    color: String(session.data?.user?._id) === message?.userId ? '#ADD8E6' : 'orange',
+                    display: 'flex',
+                    flexDirection: String(session.data?.user?._id) === message?.userId ? 'row-reverse' : 'row',
+                    alignItems: 'flex-start',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {/* Bulletpoint personalizado */}
+                  <div style={{ marginLeft: '5px', marginRight: '5px', marginTop: '8px' }}>•</div>
+                  <div style={{ flex: 1 }}>
+                    {message ? (
+                      <>
+                        <ImgStyled sx={{ margin: '0 auto' }} src={session.data?.user.avatar} alt='Profile Pic' />
+                        <p>Usuario: {message.fullName}</p>
+                        <p>Hora: {new Date(message.date).toLocaleTimeString()}</p>
+                        <p>{message.message}</p>
+                      </>
+                    ) : (
+                      <p>Mensaje nulo</p>
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
         </DialogContent>
-        <Form onSubmit={submitMessage}>
+        <Form>
           <ChatFormWrapper>
             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
               <TextField
@@ -196,7 +252,7 @@ const Foro = (props: Props) => {
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button type='submit' variant='contained'>
+              <Button type='button' variant='contained' onClick={submitMessage}>
                 Send
               </Button>
             </Box>
@@ -224,7 +280,7 @@ const Foro = (props: Props) => {
           </Button>
 
         </DialogActions> */}
-      </Dialog>
+      </Dialog >
     </>
   )
 }
