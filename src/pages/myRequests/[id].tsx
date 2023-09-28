@@ -59,7 +59,6 @@ const MyRequests = () => {
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
   const itemsPerPage = 3; // Cantidad de elementos por página
-  console.log(subsRequest)
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');

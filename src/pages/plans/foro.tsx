@@ -82,7 +82,7 @@ const Foro = (props: Props) => {
   const [mensaje, setMensaje] = useState('');
   const [foro, setForo] = useState<Chat>();
   const [infoPlan, setInfoPlan] = useState<InfoPlan>()
-  console.log(infoPlan)
+
   const handleChangeMensaje = (event: any) => {
     setMensaje(event.target.value);
   };
@@ -139,7 +139,6 @@ const Foro = (props: Props) => {
       userId: userId,
       fullName: fullName
     }
-    console.log('New Message:', newMessage);
     const messages = [newMessage]
     try {
       const res = await fetch('/api/foro', {

@@ -76,7 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
         ])
-        console.log(infoPlan)
         const foro = await Foro.findOne({ planId: id })
 
         if (infoPlan) {

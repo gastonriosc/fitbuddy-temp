@@ -85,7 +85,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // nameSubs: nameSubs
           }
-          console.log(plan)
 
           return res.status(200).json(responseData)
         } else {
