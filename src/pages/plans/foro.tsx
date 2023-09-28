@@ -45,10 +45,10 @@ interface Chat {
 }
 
 interface Message {
-
   userId: string,
   message: string,
-  date: string
+  date: string,
+  fullName: string,
 }
 
 
@@ -108,13 +108,16 @@ const Foro = (props: Props) => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 3)
     const formattedDate = currentDate.toISOString();
-    const userId = session.data?.user._id
+    const userId = session.data?.user._id;
+    const fullName = session.data?.user.name;
     const mensajeEnviado = mensaje;
     const newMessage = {
       message: mensajeEnviado,
       date: formattedDate,
-      userId: userId
+      userId: userId,
+      fullName: fullName
     }
+    console.log('New Message:', newMessage);
     const messages = [newMessage]
     try {
       const res = await fetch('/api/foro', {
@@ -156,14 +159,19 @@ const Foro = (props: Props) => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-
           {/* aca estaria la logica de mostrar los mensajes */}
           <ul>
             {foro?.messages.map((message: Message, index) => (
-              <li key={index}>
+              <li
+                key={index}
+                style={{
+                  textAlign: String(session.data?.user?._id) === message?.userId ? 'right' : 'left',
+                  color: String(session.data?.user?._id) === message?.userId ? '#FFA500' : '#ADD8E6'
+                }}
+              >
                 {message ? (
                   <div>
-                    <p>Usuario: {message.userId}</p>
+                    <p>Usuario: {message.fullName}</p>
                     <p>Fecha: {new Date(message.date).toLocaleString()}</p>
                     <p>Mensaje: {message.message}</p>
                   </div>
@@ -173,20 +181,6 @@ const Foro = (props: Props) => {
               </li>
             ))}
           </ul>
-          {/* <Box
-            sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              '& svg': { mb: 6, color: 'warning.main' }
-            }}
-          >
-            <Icon icon='line-md:alert' fontSize='5.5rem' />
-            <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas {type} la solicitud de suscripción?</Typography>
-
-          </Box> */}
         </DialogContent>
         <Form onSubmit={submitMessage}>
           <ChatFormWrapper>
