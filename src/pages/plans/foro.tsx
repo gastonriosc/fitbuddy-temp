@@ -211,9 +211,9 @@ const Foro = (props: Props) => {
                   textAlign: 'center', // Fecha centrada
                   // color: 'white',      // Color de la fecha
                   // marginBottom: '5px',
-                  // boxShadow: '0 8px 8px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
-                  // borderRadius: '8px',                       // Bordes redondeados
-                  // padding: '10px',                           // Espaciado interno
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
+                  borderRadius: '8px',                       // Bordes redondeados
+                  padding: '6px',                           // Espaciado interno
                 }}
               >
                 {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
@@ -240,7 +240,8 @@ const Foro = (props: Props) => {
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0,
                             color: 'common.white',
-                            backgroundColor: 'primary.main'
+                            backgroundColor: 'primary.main',
+                            flexGrow: 1
                           }}
                         >
                           {message.message}
@@ -271,7 +272,9 @@ const Foro = (props: Props) => {
                             borderTopLeftRadius: 0,
                             borderTopRightRadius: 0,
                             color: 'text.primary',
-                            backgroundColor: 'secondary.main'
+                            backgroundColor: 'secondary.main',
+                            flexGrow: 1
+
                           }}
                         >
                           {message.message}
