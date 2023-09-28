@@ -9,7 +9,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'PUT') {
     try {
       const { email, ...updatedData } = req.body
-      console.log(updatedData)
       const existingUser = await User.findOne({ email })
 
       if (!existingUser) {

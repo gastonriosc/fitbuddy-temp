@@ -7,16 +7,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await connect()
   try {
     if (req.method === 'POST') {
-      const { planId, newMessage } = req.body
-      console.log(req.body)
+      const { planId, messages } = req.body
+
       let foro = await Foro.findOne({ planId })
       if (!foro) {
         foro = await Foro.create({
           planId: planId,
-          messages: [newMessage]
+          messages: messages
         })
       } else {
-        foro.messages.push(newMessage)
+        foro.messages.push(...messages)
       }
       await foro.save()
 
@@ -35,7 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'GET') {
       try {
         const { id } = req.query
-        console.log(id)
         const foro = await Foro.findOne({ planId: id })
 
         return res.status(200).json(foro)
