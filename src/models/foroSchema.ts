@@ -12,10 +12,6 @@ const messageSchema = new mongoose.Schema({
   message: {
     type: String,
     required: true
-  },
-  fullName: {
-    type: String,
-    required: true
   }
 })
 

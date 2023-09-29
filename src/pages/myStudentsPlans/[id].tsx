@@ -62,7 +62,6 @@ const MyRequests = () => {
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
   const itemsPerPage = 4; // Cantidad de elementos por página
-  console.log(plan)
   useEffect(() => {
     const fetchMyRequests = async () => {
       const id = route.query.id;

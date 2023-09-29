@@ -128,16 +128,14 @@ const Foro = (props: Props) => {
   const submitMessage = async () => {
     const planId = route.query.id;
     const currentDate = new Date();
-    currentDate.setHours(currentDate.getHours() - 3)
+    currentDate.setHours(currentDate.getHours())
     const formattedDate = currentDate.toISOString();
     const userId = session.data?.user._id;
-    const fullName = session.data?.user.name;
     const mensajeEnviado = mensaje;
     const newMessage = {
       message: mensajeEnviado,
       date: formattedDate,
       userId: userId,
-      fullName: fullName
     }
     const messages = [newMessage]
     try {
@@ -284,7 +282,9 @@ const Foro = (props: Props) => {
                   <div style={{ flex: 1, textAlign: 'right' }}>
                     {message ? (
                       <>
-                        <Typography variant='caption' sx={{ color: 'text.disabled' }}>{new Date(message.date).toLocaleTimeString()}</Typography>
+                        <Typography variant='caption' sx={{ color: 'text.disabled' }}>
+                          {new Date(message.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Typography>
 
                       </>
                     ) : (
