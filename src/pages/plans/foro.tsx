@@ -208,9 +208,10 @@ const Foro = (props: Props) => {
                   textAlign: 'center', // Fecha centrada
                   // color: 'white',      // Color de la fecha
                   // marginBottom: '5px',
-                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
+                  boxShadow: '2px 4px 4px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
                   borderRadius: '8px',                       // Bordes redondeados
-                  padding: '6px',                           // Espaciado interno
+                  padding: '6px',
+                  marginTop: '8px'                           // Espaciado interno
                 }}
               >
                 {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
@@ -225,6 +226,7 @@ const Foro = (props: Props) => {
                       <>
                         <Typography
                           sx={{
+
                             boxShadow: 1,
                             borderRadius: 1,
                             maxWidth: '100%',
@@ -238,7 +240,8 @@ const Foro = (props: Props) => {
                             borderTopRightRadius: 0,
                             color: 'common.white',
                             backgroundColor: 'primary.main',
-                            flexGrow: 1
+
+                            flex: 1
                           }}
                         >
                           {message.message}
