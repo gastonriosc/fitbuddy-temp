@@ -84,7 +84,6 @@ const NewPlan = () => {
   const [titlePopUpErrorName, setTitlePopUpErrorName] = useState<string>()
 
 
-
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
   const closePopUpError = () => setPopUpError(false)
