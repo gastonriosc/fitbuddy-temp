@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
@@ -8,6 +8,7 @@ import 'jspdf-autotable';
 import Icon from 'src/@core/components/icon';
 import Button from '@mui/material/Button';
 import Foro from './foro';
+import { useSession } from 'next-auth/react';
 
 interface Plan {
   _id: string;
@@ -47,6 +48,12 @@ const MyPlans = () => {
 
   //const [editingExerciseIndex, setEditingExerciseIndex] = useState<number | null>(null);
   const [editingExerciseIndices, setEditingExerciseIndices] = useState<{ [key: string]: number | null }>({});
+
+  const session = useSession();
+
+  // Validar si el usuario está logueado y tiene el rol de 'Entrenador'
+  const esEntrenador = session && session.data && session.data.user && session.data.user.role === 'Entrenador';
+
 
   const [foroPopUp, setForoPopUp] = useState<boolean>();
   const [planId, setPlanId] = useState<string>();
@@ -321,7 +328,10 @@ const MyPlans = () => {
                                 <TableCell>Repeticiones</TableCell>
                                 <TableCell>Peso</TableCell>
                                 <TableCell align='left'>Link</TableCell>
-                                <TableCell>Acciones</TableCell>
+                                {esEntrenador && (
+
+                                  <TableCell>Acciones</TableCell>
+                                )}
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -419,30 +429,40 @@ const MyPlans = () => {
                                   </TableCell>
 
                                   <TableCell>
-                                    {editingExerciseIndices[dayIndex] === exerciseIndex ? (
-                                      <Icon
-                                        icon='mdi:check'
-                                        onClick={() => handleExerciseUpdate(dayIndex)}
-                                        style={{ cursor: 'pointer', color: 'lightgreen' }}
-                                      />
-                                    ) : (
-                                      <Icon
-                                        icon='mdi:pencil'
-                                        onClick={() => setEditingExerciseIndexs(dayIndex, exerciseIndex)}
-                                        style={{ cursor: 'pointer', color: 'skyblue' }}
-                                      />
+                                    {esEntrenador && (
+                                      <>
+                                        {editingExerciseIndices[dayIndex] === exerciseIndex ? (
+                                          <Icon
+                                            icon='mdi:check'
+                                            onClick={() => handleExerciseUpdate(dayIndex)}
+                                            style={{ cursor: 'pointer', color: 'lightgreen' }}
+                                          />
+                                        ) : (
+                                          <Icon
+                                            icon='mdi:pencil'
+                                            onClick={() => setEditingExerciseIndexs(dayIndex, exerciseIndex)}
+                                            style={{ cursor: 'pointer', color: 'skyblue' }}
+                                          />
+                                        )}
 
+                                        <Icon
+                                          icon='mdi:trash'
+                                          onClick={() => handleDeleteRow(dayIndex, exerciseIndex)}
+                                          style={{ marginLeft: '20px', cursor: 'pointer', color: 'skyblue' }}
+                                        />
+                                      </>
                                     )}
-                                    <Icon icon='mdi:trash' onClick={() => handleDeleteRow(dayIndex, exerciseIndex)} style={{ marginLeft: '20px', cursor: 'pointer', color: 'skyblue' }}
-                                    />
                                   </TableCell>
+
                                 </TableRow>
                               ))}
                             </TableBody>
                           </Table>
-                          <ButtonStyled variant='contained' onClick={() => handleAddRow(dayIndex)} sx={{ marginTop: '15px' }}>
-                            Agregar Ejercicio
-                          </ButtonStyled>
+                          {esEntrenador && (
+                            <ButtonStyled variant='contained' onClick={() => handleAddRow(dayIndex)} sx={{ marginTop: '15px' }}>
+                              Agregar Ejercicio
+                            </ButtonStyled>
+                          )}
                         </TableContainer>
                       </Box>
 
@@ -459,21 +479,29 @@ const MyPlans = () => {
         </Grid>
         <Grid container justifyContent='space-between'>
           <Grid item md={6} xs={12} >
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleAddDay}>
-              Agregar Día
-            </ButtonStyled>
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteLastDay}>
-              Eliminar Día
-            </ButtonStyled>
+            {esEntrenador && (
+              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleAddDay}>
+                Agregar Día
+              </ButtonStyled>
+            )}
+            {esEntrenador && (
+
+              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteLastDay}>
+                Eliminar Día
+              </ButtonStyled>
+            )}
             <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF} >
               Exportar a PDF
             </ButtonStyled>
           </Grid>
 
           <Grid item md={1.4} xs={12} >
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleExerciseChange}>
-              Actualizar plan
-            </ButtonStyled>
+            {esEntrenador && (
+
+              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleExerciseChange}>
+                Actualizar plan
+              </ButtonStyled>
+            )}
           </Grid>
         </Grid>
 
