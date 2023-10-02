@@ -396,6 +396,7 @@ const NewPlan = () => {
                             )}
                           </StyledTableCell>
 
+
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <>
