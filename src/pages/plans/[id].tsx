@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/react';
 interface Plan {
   _id: string;
   nombrePlan: string;
+  trainerId: string;
   plan: Day[];
 }
 
@@ -52,8 +53,7 @@ const MyPlans = () => {
   const session = useSession();
 
   // Validar si el usuario está logueado y tiene el rol de 'Entrenador'
-  const esEntrenador = session && session.data && session.data.user && session.data.user.role === 'Entrenador';
-
+  const esEntrenador = session && session.data && session.data.user && plan && session.data.user._id.toString() === plan.trainerId;
 
   const [foroPopUp, setForoPopUp] = useState<boolean>();
   const [planId, setPlanId] = useState<string>();
@@ -225,6 +225,8 @@ const MyPlans = () => {
       return { ...prevPlan, plan: newPlanLists };
     });
   };
+
+
 
   const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
     setPlan((prevPlan: any) => {
