@@ -62,19 +62,23 @@ const MyPlans = () => {
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const [popUp, setPopUp] = useState<boolean>(false)
   const [popUpError, setPopUpError] = useState<boolean>(false)
-
   const [titlePopUpErrorDay, setTitlePopUpErrorDay] = useState<string>()
   const [popUpErrorDay, setPopUpErrorDay] = useState<boolean>(false)
   const [titlePopUpError, setTitlePopUpError] = useState<string>()
+  const [popUpErrorDelete, setPopUpErrorDelete] = useState<boolean>(false)
+  const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
+
 
   const textPopUp = 'Pulse el botón OK para continuar'
   const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento que desea modificar debe tener al menos un día.'
   const textPopUpError = 'Por favor, intente nuevamente o elimine el día de entrenamiento en caso de no tener ejercicios.'
+  const textPopUpErrorDelete = 'Por favor, intente nuevamente. El plan de entrenamiento que desea actualizar, no puede tener una cantidad menor de ejercicios que el plan original.'
 
 
   const closePopUp = () => setPopUp(false)
   const closePopUpErrorDay = () => setPopUpErrorDay(false)
   const closePopUpError = () => setPopUpError(false)
+  const closePopUpErrorDelete = () => setPopUpErrorDelete(false)
 
 
 
@@ -240,7 +244,17 @@ const MyPlans = () => {
             return day; // No permitir eliminar el último ejercicio
           }
 
-          const updatedEjercicios = day.Ejercicios.filter((_, exIndex: number) => exIndex !== rowIndex);
+          const exerciseToDelete = day.Ejercicios[rowIndex];
+
+          // Verificar si el ejercicio ya está guardado
+          if (exerciseToDelete._id) {
+            setTitlePopUpErrorDelete('No se puede eliminar un ejercicio ya guardado.');
+            setPopUpErrorDelete(true);
+
+            return day;
+          }
+
+          const updatedEjercicios = day.Ejercicios.filter((_: any, exIndex: number) => exIndex !== rowIndex);
 
           return { ...day, Ejercicios: updatedEjercicios };
         }
@@ -251,6 +265,31 @@ const MyPlans = () => {
       return { ...prevPlan, plan: updatedPlanLists };
     });
   };
+
+  // const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
+  //   setPlan((prevPlan: any) => {
+  //     const updatedPlanLists = prevPlan?.plan.map((day: any, dIndex: number) => {
+  //       if (dIndex === dayIndex) {
+  //         // Verificar si es el último ejercicio
+  //         if (day.Ejercicios.length === 1) {
+  //           setTitlePopUpError('El plan debe tener al menos un día con un ejercicio.');
+  //           setPopUpError(true);
+
+  //           return day; // No permitir eliminar el último ejercicio
+  //         }
+
+  //         const updatedEjercicios = day.Ejercicios.filter((_, exIndex: number) => exIndex !== rowIndex);
+
+  //         return { ...day, Ejercicios: updatedEjercicios };
+  //       }
+
+  //       return day;
+  //     });
+
+  //     return { ...prevPlan, plan: updatedPlanLists };
+  //   });
+  // };
+
 
 
   const handleAddDay = () => {
@@ -613,6 +652,42 @@ const MyPlans = () => {
           >
 
             <Button variant='outlined' color='success' onClick={closePopUpError}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog fullWidth open={popUpErrorDelete} onClose={closePopUpErrorDelete} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:cancel' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpErrorDelete}</Typography>
+              <Typography>{textPopUpErrorDelete}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='outlined' color='success' onClick={closePopUpErrorDelete}>
               OK
             </Button>
           </DialogActions>
