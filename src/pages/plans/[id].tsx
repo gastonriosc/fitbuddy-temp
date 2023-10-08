@@ -439,7 +439,7 @@ const MyPlans = () => {
                   startIcon={<Icon icon='wpf:statistics' />}
                   sx={{ mx: 2, my: 2, height: 'auto' }}
 
-                // href={'/plans/tracking/' + 1}
+                  href={'/plans/tracking/' + 1}
                 >
                   SEGUIMIENTO
                 </Button>
