@@ -117,15 +117,16 @@ const Tracking = () => {
         >
           Agregar un nuevo registro
         </DialogTitle>
-        <Box display='flex' justifyContent={'center'} >
+        <Box display='column' justifyContent={'center'} >
 
           <Typography sx={{ textAlign: 'center', mt: '10px' }}>
             Como estuvo el entrenamiento de hoy?
           </Typography>
           <Box
             sx={{
+              mt: 3,
               display: 'flex',
-              alignItems: 'center',
+              justifyContent: 'center',
               flexWrap: ['wrap', 'nowrap'],
               pt: theme => `${theme.spacing(2)} !important`,
               pb: theme => `${theme.spacing(8)} !important`,
@@ -149,7 +150,7 @@ const Tracking = () => {
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mr: 5, mb: 5 }}>
           <Button variant='contained' onClick={() => handlePopUpNuevoRegistro()}>
-            <Icon icon='mdi:plus' />
+            {/* <Icon icon='mdi:plus' /> */}
             Aceptar
           </Button>
 

@@ -221,64 +221,63 @@ const Foro = (props: Props) => {
                 )}
 
                 <Box mb={5}>
-                  <Box display={'flex'}>
+                  <Box >
                     {message.userId.toString() === String(session.data?.user._id) ? (
                       <>
-                        <Typography
-                          sx={{
+                        <Box display={'flex'} mr={-10} justifyContent={'right'}>
 
-                            boxShadow: 1,
-                            borderRadius: 1,
-                            maxWidth: '100%',
-                            width: 'fit-content',
-                            fontSize: '0.875rem',
-                            wordWrap: 'break-word',
-                            p: theme => theme.spacing(3, 4),
-                            ml: 'auto',
-                            textAlign: 'right',
-                            borderTopLeftRadius: 0,
-                            borderTopRightRadius: 0,
-                            color: 'common.white',
-                            backgroundColor: 'primary.main',
+                          <Typography
+                            sx={{
+                              boxShadow: 1,
+                              borderRadius: 1,
+                              maxWidth: '100%',
+                              width: 'fit-content',
+                              fontSize: '0.875rem',
+                              wordWrap: 'break-word',
+                              p: theme => theme.spacing(3, 4),
+                              mr: 0,
+                              textAlign: 'left',
+                              borderTopRightRadius: 0,
+                              color: 'common.white',
+                              backgroundColor: 'primary.main',
 
-                            flex: 1
-                          }}
-                        >
-                          {message.message}
-                        </Typography>
-                        <ImgStyled sx={{ margin: '0 auto', padding: 1 }} src={session.data?.user.avatar} alt='Profile Pic' />
+                            }}
+                          >
+                            {message.message}
+                          </Typography>
+                          <ImgStyled sx={{ padding: 1 }} src={session.data?.user.avatar} alt='Profile Pic' />
+                        </Box>
                       </>
                     ) : (
                       <>
-                        {infoPlan?.map((plan: InfoPlan, index: any) => (
-                          <ImgStyled
-                            key={index}
-                            sx={{ margin: '0 auto', padding: 1 }}
-                            alt='Profile Pic'
-                            src={session.data?.user.role == 'Entrenador' ? plan.studentAvatar : plan.trainerAvatar} // Establece el src con plan.studentAvatar
-                          />
-                        ))}
-                        <Typography
-                          sx={{
-                            boxShadow: 1,
-                            borderRadius: 1,
-                            maxWidth: '100%',
-                            width: 'fit-content',
-                            fontSize: '0.875rem',
-                            wordWrap: 'break-word',
-                            p: theme => theme.spacing(3, 4),
-                            ml: undefined,
-                            textAlign: 'left',
-                            borderTopLeftRadius: 0,
-                            borderTopRightRadius: 0,
-                            color: 'text.primary',
-                            backgroundColor: 'secondary.main',
-                            flexGrow: 1
-
-                          }}
-                        >
-                          {message.message}
-                        </Typography>
+                        <Box display={'flex'}>
+                          {infoPlan?.map((plan: InfoPlan, index: any) => (
+                            <ImgStyled
+                              key={index}
+                              sx={{ padding: 1 }}
+                              alt='Profile Pic'
+                              src={session.data?.user.role == 'Entrenador' ? plan.studentAvatar : plan.trainerAvatar} // Establece el src con plan.studentAvatar
+                            />
+                          ))}
+                          <Typography
+                            sx={{
+                              boxShadow: 1,
+                              borderRadius: 1,
+                              maxWidth: '100%',
+                              width: 'fit-content',
+                              fontSize: '0.875rem',
+                              wordWrap: 'break-word',
+                              p: theme => theme.spacing(3, 4),
+                              ml: -10,
+                              textAlign: 'left',
+                              borderTopLeftRadius: 0,
+                              color: 'text.primary',
+                              backgroundColor: 'secondary.main',
+                            }}
+                          >
+                            {message.message}
+                          </Typography>
+                        </Box>
                       </>
                     )}
                   </Box>
