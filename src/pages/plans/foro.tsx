@@ -199,7 +199,7 @@ const Foro = (props: Props) => {
           ))}
           <Divider sx={{ my: '0 !important', width: '100%', backgroundColor: 'white' }} />
 
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
+          <ul style={{ listStyleType: 'none', padding: 0, width: '100%', }}>
             {foro?.messages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((message: Message, index) => (
               <li
                 key={index}
