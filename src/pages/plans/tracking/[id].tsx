@@ -64,8 +64,6 @@ interface Tracking {
   }
 }
 
-
-
 const Tracking = () => {
 
   const session = useSession();
@@ -174,61 +172,66 @@ const Tracking = () => {
           </Button>
         ) : null}
 
-
-
-
       </Card>
 
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
-        <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
-          <CardTrackingMensual></CardTrackingMensual>
+      {tracking ? (
+        <Box>
+
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
+              <CardTrackingMensual tracking={tracking}></CardTrackingMensual>
+            </Box>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
+
+              <CardWorkoutMensual tracking={tracking}></CardWorkoutMensual>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+            <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, }}>
+              <Card  >
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                        <TableCell style={{ textAlign: 'center' }} >Acciones</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tracking?.data?.map((trackingItem: any) => (
+                        <TableRow key={trackingItem}>
+                          <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
+                          <TableCell style={{ justifyContent: 'center' }}>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                              <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
+                              <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>
+                            <Icon
+                              icon='mdi:pencil'
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+              </Card>
+            </Box>
+            <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, height: '300px' }}>
+
+            </Box>
+          </Box>
         </Box>
-        <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
-
-          <CardWorkoutMensual></CardWorkoutMensual>
+      ) : (
+        <Box sx={{ mt: '50px', mb: '20px' }}>
+          <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
         </Box>
-      </Box>
-
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
-        <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, }}>
-          <Card  >
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                    <TableCell style={{ textAlign: 'center' }} >Acciones</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tracking?.data?.map((trackingItem: any) => (
-                    <TableRow key={trackingItem}>
-                      <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
-                      <TableCell style={{ justifyContent: 'center' }}>
-                        <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                          <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
-                          <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>
-                        <Icon
-                          icon='mdi:pencil'
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-          </Card>
-        </Box>
-        <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, height: '300px' }}>
-
-        </Box>
-      </Box>
-
+      )}
 
 
       <Dialog

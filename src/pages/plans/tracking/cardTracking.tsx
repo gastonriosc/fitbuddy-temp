@@ -18,8 +18,41 @@ const donutColors = {
   series5: '#ffa1a1'
 }
 
-const cardTrackingMensual = () => {
+interface Data {
+  _id: string
+  date: Date,
+  number: number
+}
+
+interface Tracking {
+  _id: string,
+  planId: string,
+  data: [Data]
+}
+
+interface Props {
+  tracking: Tracking
+}
+
+
+const CardTrackingMensual = (props: Props) => {
   // ** Hook
+  const { tracking } = props
+
+  const counts: { [key: number]: number } = {};
+  let cont = 0;
+
+  tracking.data.forEach(item => {
+    cont += 1;
+    const number = item.number;
+    counts[number] = (counts[number] || 0) + 1;
+  });
+
+  const resultArray = [];
+  for (let i = 1; i <= 4; i++) {
+    resultArray.push(counts[i] || 0);
+  }
+
   const theme = useTheme()
 
   const options: ApexOptions = {
@@ -56,7 +89,7 @@ const cardTrackingMensual = () => {
               show: true,
               fontSize: '1.2rem',
               label: 'Registros',
-              formatter: () => '30',
+              formatter: () => '',
               color: theme.palette.text.primary
             }
           }
@@ -108,14 +141,14 @@ const cardTrackingMensual = () => {
     <Card>
       <CardHeader
         title='Seguimiento diario'
-        subheader='Total de registros'
+        subheader={`Total de ${cont} registros`}
         subheaderTypographyProps={{ sx: { color: theme => `${theme.palette.text.disabled} !important` } }}
       />
       <CardContent>
-        <ReactApexcharts type='donut' height={400} options={options} series={[5, 7, 7, 11]} />
+        <ReactApexcharts type='donut' height={400} options={options} series={resultArray} />
       </CardContent>
     </Card>
   )
 }
 
-export default cardTrackingMensual
+export default CardTrackingMensual
