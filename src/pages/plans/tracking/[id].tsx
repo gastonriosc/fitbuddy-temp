@@ -1,8 +1,8 @@
 // ** React Imports
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 
-// import { useRouter } from 'next/router'
-// import { useSession } from 'next-auth/react'
 // import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
 // import NewSubsPopUp from './newSubsPopUp'
 import CardWorkoutMensual from './cardWorkouts'
@@ -14,6 +14,7 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
 
 // import { CardHeader } from '@mui/material'
 
@@ -32,7 +33,7 @@ import Typography from '@mui/material/Typography'
 import DialogTitle from '@mui/material/DialogTitle'
 
 // import FormControl from '@mui/material/FormControl'
-import DialogContent from '@mui/material/DialogContent'
+// import DialogContent from '@mui/material/DialogContent'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -52,15 +53,57 @@ import Icon from 'src/@core/components/icon'
 // ** Utils Import
 // import { getInitials } from 'src/@core/utils/get-initials'
 
+interface Tracking {
+  _id: string,
+  planId: string,
+  data: {
+    _id: string
+    date: Date,
+    number: number
+  }
+}
+
+interface CellType {
+  row: Tracking
+}
+
+// const columns: GridColDef[] = [
+//   {
+//     flex: 0.2,
+//     minWidth: 230,
+//     field: 'fecha',
+//     headerName: 'Fecha',
+//     renderCell: ({ row }: CellType) => {
+//       const { data } = row
+
+//       return (
+//         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+//           {renderClient(row)}
+//           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+//             <LinkStyled >{row.data.date}</LinkStyled>
+//             <Typography noWrap variant='caption'>
+//               {`@${username}`}
+//             </Typography>
+//           </Box>
+//         </Box>
+//       )
+//     }
+//   },
+//   {
+//     flex: 0.1,
+//     minWidth: 90,
+//     sortable: false,
+//     field: 'actions',
+//     headerName: 'Actions',
+//     renderCell: ({ row }: CellType) => <RowOptions id={row.id} />
+//   }
+// ]
 
 
 const Tracking = () => {
 
-  const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
-
-  const handlePopUpNuevoRegistro = () => {
-    setNuevoRegistro(false)
-  }
+  const session = useSession();
+  const isTrainer = session.data?.user.role == 'Entrenador';
 
   const labels: { [index: string]: string } = {
     1: 'Malo',
@@ -70,19 +113,100 @@ const Tracking = () => {
   }
   const [hover, setHover] = useState<number>(-1)
   const [value, setValue] = useState<number | null>(2)
+  const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
+  const [titlePopUp, setTitlePopUp] = useState<string>()
+  const [popUp, setPopUp] = useState<boolean>(false)
+  const [tracking, setTracking] = useState<Tracking>()
+  const route = useRouter();
+  console.log(tracking)
+  const handlePopUpNuevoRegistro = () => {
+    setNuevoRegistro(false)
+  }
+
+  useEffect(() => {
+    const fetchMyTracking = async () => {
+      const id = route.query.id;
+
+      try {
+        const res = await fetch(
+          `/api/tracking/?id=${id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (res.status == 200) {
+          const data = await res.json();
+          setTracking(data)
+        }
+        if (res.status == 404) {
+          route.replace('/404');
+        }
+        if (res.status == 500) {
+          route.replace('/500');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchMyTracking();
+  }, []);
+
+  const newTrackingRecord = async () => {
+    const id = route.query.id;
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours())
+
+    const requestBody = {
+      id: id,
+      data: {
+        date: currentDate,
+        number: value
+      }
+    };
+    try {
+      const res = await fetch('/api/tracking', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (res.status === 200) {
+        const data = await res.json();
+        setTracking(data)
+        setTitlePopUp('Seguimiento registrado con éxito!')
+        setPopUp(true)
+      } else {
+        setTitlePopUp('Error al guardar el seguimiento')
+        setPopUp(true)
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+  };
+
+
 
   return (
     <Grid >
-      <Card sx={{ padding: '5', ml: 1, mr: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* <CardHeader
-          title='SEGUIMIENTO'
+      <Card sx={{ padding: '5', ml: 1, mr: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' }}>
+        <Box ml={5}>
+          <h2 style={{ fontSize: '24px', textTransform: 'uppercase' }}>Métricas</h2>
+        </Box>
+        {!isTrainer ? (
+          <Button sx={{ mx: 4, my: 4 }} variant='contained' startIcon={<Icon icon='mdi:plus' />} onClick={() => setNuevoRegistro(true)}>
+            Registro
+          </Button>
+        ) : null}
 
-        /> */}
-        <Typography sx={{ marginLeft: '20px' }}>SEGUIMIENTO</Typography>
-        <Button sx={{ mx: 4, my: 4 }} variant='contained' onClick={() => setNuevoRegistro(true)}>
-          <Icon icon='mdi:plus' />
-          Registro
-        </Button>
+
+
+
       </Card>
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
@@ -94,11 +218,8 @@ const Tracking = () => {
           <CardWorkoutMensual></CardWorkoutMensual>
         </Box>
       </Box>
-      <Box sx={{ display: 'flex' }}>
-        <Card >
-          Historial de registros?
-        </Card>
-      </Box>
+
+
       <Dialog
         open={nuevoRegistro}
         onClose={handlePopUpNuevoRegistro}
@@ -120,7 +241,7 @@ const Tracking = () => {
         <Box display='column' justifyContent={'center'} >
 
           <Typography sx={{ textAlign: 'center', mt: '10px' }}>
-            Como estuvo el entrenamiento de hoy?
+            ¿Cómo estuvo el entrenamiento de hoy?
           </Typography>
           <Box
             sx={{
@@ -149,8 +270,7 @@ const Tracking = () => {
 
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mr: 5, mb: 5 }}>
-          <Button variant='contained' onClick={() => handlePopUpNuevoRegistro()}>
-            {/* <Icon icon='mdi:plus' /> */}
+          <Button variant='contained' onClick={() => newTrackingRecord()}>
             Aceptar
           </Button>
 
