@@ -50,6 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               plan: 1,
               date: 1,
               expirationDate: 1,
+              trainerId: 1,
+              studentId: 1,
+              subsRequestId: 1,
               trainerName: '$trainer_info.name'
             }
           }
