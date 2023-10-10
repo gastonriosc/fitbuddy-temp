@@ -15,6 +15,7 @@ interface Plan {
   nombrePlan: string;
   trainerId: string;
   plan: Day[];
+  trainerName: string;
 }
 
 interface Day {
@@ -81,41 +82,126 @@ const MyPlans = () => {
   const closePopUpErrorDelete = () => setPopUpErrorDelete(false)
 
 
-
   const exportToPDF = () => {
     const doc = new jsPDF();
 
     doc.setFontSize(14);
 
+    const header = new Image();
+    header.src = '/images/avatars/Header.png';
+
+    const footer = new Image();
+    footer.src = '/images/avatars/Header.png';
+
+    const PAGE_HEIGHT = doc.internal.pageSize.getHeight();
+    const PAGE_WIDTH = doc.internal.pageSize.getWidth();
+
+    const headerProperties = doc.getImageProperties(header);
+    const headerAspectRatio = headerProperties.height / headerProperties.width;
+    const headerHeightDownScaled = headerAspectRatio * PAGE_WIDTH;
+
+    const footerProperties = doc.getImageProperties(footer);
+    const footerAspectRatio = footerProperties.height / footerProperties.width;
+    const footerHeightDownScaled = footerAspectRatio * PAGE_WIDTH;
+
+
+    doc.addImage(header, 'png', 0, 0, PAGE_WIDTH, headerHeightDownScaled);
+    doc.addImage(footer, 'png', 0, PAGE_HEIGHT - footerHeightDownScaled, PAGE_WIDTH, footerHeightDownScaled);
+
+    const fechaCreacion = new Date(plan.date);
+    const fechaVencimiento = new Date(plan.expirationDate);
+
+    const diaCreacion = fechaCreacion.getDate();
+    const mesCreacion = fechaCreacion.getMonth() + 1;
+    const añoCreacion = fechaCreacion.getFullYear();
+
+    const diaVencimiento = fechaVencimiento.getDate();
+    const mesVencimiento = fechaVencimiento.getMonth() + 1;
+    const añoVencimiento = fechaVencimiento.getFullYear();
+
+    const fechaFormateadaCreacion = `${diaCreacion}/${mesCreacion}/${añoCreacion}`;
+    const fechaFormateadaVencimiento = `${diaVencimiento}/${mesVencimiento}/${añoVencimiento}`;
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('PLAN DE ENTRENAMIENTO PARA', 70, 40);
+    doc.text(`${session.data?.user.name.toUpperCase()}`, 85, 50);
+    doc.setFont('helvetica', 'normal');
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+
+    doc.text(`Datos Generales:`, 10, 57);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Género: ${session.data?.user.gender}`, 10, 65);
+    doc.text(`País: ${session.data?.user.country}`, 10, 72);
+    doc.text(`Teléfono: ${session.data?.user.phone}`, 10, 79);
+    doc.text(`Email: ${session.data?.user.email}`, 10, 86);
+    doc.text(`Nombre del plan: ${plan.nombrePlan}`, 10, 93);
+    doc.text(`Fecha de creación del plan de entrenamiento: ${fechaFormateadaCreacion}`, 10, 100);
+    doc.text(`Fecha de vencimiento del plan de entrenamiento: ${fechaFormateadaVencimiento}`, 10, 107);
+    doc.text(`Profesor: ${plan.trainerName}`, 10, 114);
+
+    doc.setFontSize(14);
+
+
     if (plan && plan.plan) {
       plan.plan.forEach((day: Day, index: any) => {
         if (index > 0) {
           doc.addPage();
+          doc.addImage(header, 'png', 0, 0, PAGE_WIDTH, headerHeightDownScaled);
+          doc.addImage(footer, 'png', 0, PAGE_HEIGHT - footerHeightDownScaled, PAGE_WIDTH, footerHeightDownScaled);
+
+          doc.text(`Día ${index + 1}`, 10, 40);
+
+          const tableData = day.Ejercicios.map((exercise: Exercise) => {
+            return [exercise.nombreEjercicio, exercise.series, exercise.repeticiones, exercise.peso, exercise.link];
+          });
+
+          //@ts-ignore
+          doc.autoTable({
+            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
+            body: tableData,
+
+            startY: 47,
+            columnStyles: {
+              0: { cellWidth: 60 },
+              1: { cellWidth: 20 },
+              2: { cellWidth: 26 },
+              3: { cellWidth: 20 },
+              4: { cellWidth: 65 },
+            },
+          });
+        } else {
+          // Para el primer día
+          doc.text(`Día ${index + 1}`, 10, 121);
+
+          const tableData = day.Ejercicios.map((exercise: Exercise) => {
+            return [exercise.nombreEjercicio, exercise.series, exercise.repeticiones, exercise.peso, exercise.link];
+          });
+
+          //@ts-ignore
+          doc.autoTable({
+            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
+            body: tableData,
+
+            startY: 128,
+            columnStyles: {
+              0: { cellWidth: 60 },
+              1: { cellWidth: 20 },
+              2: { cellWidth: 26 },
+              3: { cellWidth: 20 },
+              4: { cellWidth: 65 },
+            },
+          });
         }
-        doc.text(`Día ${index + 1}`, 10, 20);
-
-        const tableData = day.Ejercicios.map((exercise: Exercise) => {
-          return [exercise.nombreEjercicio, exercise.series, exercise.repeticiones, exercise.peso, exercise.link];
-        });
-
-        //@ts-ignore
-        doc.autoTable({
-          head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
-          body: tableData,
-          startY: 30,
-          columnStyles: {
-            0: { cellWidth: 60 },
-            1: { cellWidth: 20 },
-            2: { cellWidth: 20 },
-            3: { cellWidth: 20 },
-            4: { cellWidth: 60 },
-          },
-        });
       });
     }
 
     doc.save('PlanDeEntrenamiento.pdf');
   };
+
 
   const setEditingExerciseIndexs = (dayIndex: number, exerciseIndex: number | null) => {
     setEditingExerciseIndices((prevIndices) => ({
@@ -179,7 +265,12 @@ const MyPlans = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+
+          console.log(data.trainerName)
+
           setPlan(data);
+
+          console.log(data)
           setIsLoading(true);
         }
         if (res.status == 404) {
@@ -330,6 +421,7 @@ const MyPlans = () => {
             <Box display={'flex'}>
               <Box flexGrow={1}>
                 <CardHeader title={plan?.nombrePlan} />
+
               </Box>
               <Box display={'flex'} sx={{ justifyContent: 'flex-end' }}>
                 <Button
