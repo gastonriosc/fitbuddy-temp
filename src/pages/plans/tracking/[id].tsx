@@ -16,6 +16,7 @@ import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import Pagination from '@mui/material/Pagination'
 
 // import { CardHeader } from '@mui/material'
 
@@ -81,13 +82,15 @@ const Tracking = () => {
   const [titlePopUp, setTitlePopUp] = useState<string>('')
   const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
   const [tracking, setTracking] = useState<Tracking>()
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
   console.log(tracking)
   const handlePopUpNuevoRegistro = () => {
     setNuevoRegistro(false)
   }
-
-
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(tracking?.data.length / itemsPerPage);
+  console.log(totalPages)
 
   useEffect(() => {
     const fetchMyTracking = async () => {
@@ -181,51 +184,53 @@ const Tracking = () => {
             <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
               <CardTrackingMensual tracking={tracking}></CardTrackingMensual>
             </Box>
-            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1, height: '485px' }}>
 
-              <CardWorkoutMensual tracking={tracking}></CardWorkoutMensual>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
-            <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, }}>
-              <Card  >
+              {/* <CardWorkoutMensual tracking={tracking}></CardWorkoutMensual> */}
+              <Card sx={{ height: '485px' }} >
                 <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                        <TableCell style={{ textAlign: 'center' }} >Acciones</TableCell>
+                        {/* <TableCell style={{ textAlign: 'center' }} >Acciones</TableCell> */}
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {tracking?.data?.map((trackingItem: any) => (
-                        <TableRow key={trackingItem}>
-                          <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
-                          <TableCell style={{ justifyContent: 'center' }}>
-                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                              <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
-                              <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>
-                            <Icon
-                              icon='mdi:pencil'
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {tracking?.data ?
+                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                          .map((trackingItem: any) => (
+                            <TableRow key={trackingItem}>
+                              <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
+                              <TableCell style={{ justifyContent: 'center' }}>
+                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                  <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
+                                  <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
+                                </Box>
+                              </TableCell>
+                              {/* <TableCell style={{ textAlign: 'center' }}>
+                                <Icon
+                                  icon='mdi:pencil'
+                                />
+                              </TableCell> */}
+                            </TableRow>
+                          ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
-
+                <Box className='demo-space-y' mt={2} alignItems={'center'} justifyContent='center' display={'flex'}>
+                  <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+                </Box>
               </Card>
             </Box>
+          </Box>
+
+          {/* <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
             <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, height: '300px' }}>
 
             </Box>
-          </Box>
+          </Box> */}
         </Box>
       ) : (
         <Box sx={{ mt: '50px', mb: '20px' }}>
