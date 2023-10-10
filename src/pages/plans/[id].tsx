@@ -1,5 +1,5 @@
-import { useState, useEffect, use } from 'react';
-import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -608,30 +608,30 @@ const MyPlans = () => {
 
           <Foro foroPopUp={foroPopUp} setForoPopUp={setForoPopUp} planId={planId} />
         </Grid>
-        <Grid container justifyContent='space-between'>
+        <Grid container justifyContent='space-between' mt={2}>
           <Grid item md={6} xs={12} >
             {esEntrenador && (
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleAddDay}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleAddDay}>
                 Agregar Día
-              </ButtonStyled>
+              </Button>
             )}
             {esEntrenador && (
 
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteLastDay}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleDeleteLastDay}>
                 Eliminar Día
-              </ButtonStyled>
+              </Button>
             )}
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF} >
+            <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={exportToPDF} >
               Exportar a PDF
-            </ButtonStyled>
+            </Button>
           </Grid>
 
           <Grid item md={1.4} xs={12} >
             {esEntrenador && (
 
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleExerciseChange}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleExerciseChange}>
                 Actualizar plan
-              </ButtonStyled>
+              </Button>
             )}
           </Grid>
         </Grid>
