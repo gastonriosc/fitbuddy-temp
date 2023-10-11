@@ -29,7 +29,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const plan = await PlanSchema.findOne({ _id: id })
         const trackingId = await TrackingSchema.findOne({ planId: plan._id }, { _id: 1 })
         const objectId = new mongoose.Types.ObjectId(id)
-
         const combinedInfo = await PlanModel.aggregate([
           {
             $match: {

@@ -268,7 +268,7 @@ const MyPlans = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          setPlan(data.plan);
+          setPlan(data.combinedInfo);
           setTrackingId(data.trackingId)
           setIsLoading(true);
         }
