@@ -5,9 +5,10 @@ import { useSession } from 'next-auth/react'
 
 // import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
 // import NewSubsPopUp from './newSubsPopUp'
-import CardWorkoutMensual from './cardWorkouts'
+//import CardWorkoutMensual from './cardWorkouts'
 import CardTrackingMensual from './cardTracking'
 import TrackingPopUp from './trackingPopUp'
+
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -17,6 +18,7 @@ import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Pagination from '@mui/material/Pagination'
+
 
 // import { CardHeader } from '@mui/material'
 
@@ -52,6 +54,7 @@ import Icon from 'src/@core/components/icon'
 // import { ThemeColor } from 'src/@core/layouts/types'
 // import { UsersType } from 'src/types/apps/userTypes'
 
+
 // ** Utils Import
 // import { getInitials } from 'src/@core/utils/get-initials'
 
@@ -84,6 +87,7 @@ const Tracking = () => {
   const [tracking, setTracking] = useState<Tracking>()
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
+
   console.log(tracking)
   const handlePopUpNuevoRegistro = () => {
     setNuevoRegistro(false)
@@ -169,6 +173,7 @@ const Tracking = () => {
         <Box ml={5}>
           <h2 style={{ fontSize: '24px', textTransform: 'uppercase' }}>Métricas</h2>
         </Box>
+
         {!isTrainer ? (
           <Button sx={{ mx: 4, my: 4 }} variant='contained' startIcon={<Icon icon='mdi:plus' />} onClick={() => setNuevoRegistro(true)}>
             Registro
@@ -198,24 +203,24 @@ const Tracking = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {tracking?.data ?
-                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                          .map((trackingItem: any) => (
-                            <TableRow key={trackingItem}>
-                              <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
-                              <TableCell style={{ justifyContent: 'center' }}>
-                                <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                                  <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
-                                  <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
-                                </Box>
-                              </TableCell>
-                              {/* <TableCell style={{ textAlign: 'center' }}>
-                                <Icon
-                                  icon='mdi:pencil'
-                                />
-                              </TableCell> */}
-                            </TableRow>
-                          ))}
+                      {tracking?.data
+                        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                        .map((trackingItem: any) => (
+                          <TableRow key={trackingItem}>
+                            <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
+                            <TableCell style={{ justifyContent: 'center' }}>
+                              <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
+                                <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
+                              </Box>
+                            </TableCell>
+                            {/* <TableCell style={{ textAlign: 'center' }}>
+          <Icon
+            icon='mdi:pencil'
+          />
+        </TableCell> */}
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -262,6 +267,7 @@ const Tracking = () => {
           <Typography sx={{ textAlign: 'center', mt: '10px' }}>
             ¿Cómo estuvo el entrenamiento de hoy?
           </Typography>
+
           <Box
             sx={{
               mt: 3,
