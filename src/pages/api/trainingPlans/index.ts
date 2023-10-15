@@ -68,6 +68,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         return res.status(500).json({ status: 'Error interno del servidor' })
       }
+    } else if (req.method === 'PUT') {
+      const { id } = req.query
+      const { plan } = req.body
+
+      try {
+        const updatedPlan = await PlanSchema.findByIdAndUpdate(id, { plan }, { new: true })
+
+        if (updatedPlan) {
+          return res.status(200).json(updatedPlan)
+        } else {
+          return res.status(404).json({ error: 'No se pudo actualizar el plan' })
+        }
+      } catch (error) {
+        console.error(error)
+
+        return res.status(500).json({ status: 'Error interno del servidor' })
+      }
     }
   } catch (error) {
     console.error(error)
