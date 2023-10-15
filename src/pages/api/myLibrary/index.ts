@@ -1,23 +1,23 @@
 import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
-import GeneralLibrary from 'src/models/generalLibrary'
+import MyLibrary from 'src/models/myLibrary'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
 
   try {
     if (req.method === 'POST') {
-      const exerciseLibrary = await GeneralLibrary.create(req.body)
+      const exerciseLibrary = await MyLibrary.create(req.body)
       if (exerciseLibrary) {
         return res.status(200).json(exerciseLibrary)
       } else {
         return res.status(404).json('No se pudo crear la solicitud de suscripcion')
       }
     } else if (req.method === 'GET') {
-      const exerciseLibrary = await GeneralLibrary.findOne()
+      const myExerciseLibrary = await MyLibrary.findOne()
 
       const responseData = {
-        exercisesData: exerciseLibrary
+        exercisesData: myExerciseLibrary
       }
 
       return res.status(200).json(responseData)

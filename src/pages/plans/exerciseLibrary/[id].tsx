@@ -191,9 +191,11 @@ const MyRequests = () => {
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isAddExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
+  const [addedExercises, setAddedExercises] = useState<Exercise[]>([]);
+  const [error, setError] = useState<string>('');
+
 
   const [newExercise, setNewExercise] = useState<any>({
-    _id: '',
     exerciseName: '',
     muscleGroup: '',
     avatar: '',
@@ -229,17 +231,12 @@ const MyRequests = () => {
 
 
   //Funcion para eliminar un ejercicio.
-  const handleDeleteExercise = (index: number) => {
-    // Crear una copia del estado plan
-    const updatedPlan = [...plan];
+  // const handleDeleteExercise = (index: number) => {
+  //   const updatedPlan = [...plan];
 
-    // Eliminar el ejercicio correspondiente del estado plan
-    updatedPlan.splice(index, 1);
-
-    // Actualizar el estado plan
-    setPlan(updatedPlan);
-  };
-
+  //   updatedPlan.splice(index, 1);
+  //   setPlan(updatedPlan);
+  // };
 
   //Funcion para agregar un ejercicio.
   const handleAddExercise = () => {
@@ -265,25 +262,39 @@ const MyRequests = () => {
       defaultAvatar = '/images/avatars/abs.png';
     }
 
+    const exerciseExists = plan.some((exercise) => exercise.exerciseName === newExercise.exerciseName && exercise.linkExercise === newExercise.linkExercise);
+
+    if (exerciseExists) {
+      setError('Ya existe un ejercicio con esta misma información. Por favor, modifique el mismo.');
+
+      return;
+    }
+
+    setError('');
+
     const updatedExercise = {
       ...newExercise,
       avatar: defaultAvatar,
     };
 
-    // Agregar el nuevo ejercicio al plan
+    // Agregar el nuevo ejercicio al estado plan
     setPlan([...plan, updatedExercise]);
 
     // Limpiar los valores del nuevo ejercicio después de agregarlo
     setNewExercise({
-      _id: '',
       exerciseName: '',
       muscleGroup: '',
       avatar: '',
       linkExercise: '',
       isValid: false,
     });
+
+    setAddedExercises([...addedExercises, updatedExercise]);
+    console.log(addedExercises);
+
     setAddExerciseModalOpen(false);
   };
+
 
   //Hook para deshabilitar/habilitar el boton segun si los campos estan completos o no.
   useEffect(() => {
@@ -302,6 +313,20 @@ const MyRequests = () => {
       setPlan(prevPlan => [...prevPlan, newExercise]);
     }
   }, [newExercise]);
+
+  //Como los que recien se agregan no pueden eliminarse por id, se hace por nombre y link, ya que un ejercicio no puede tener el mismo nombre y link, pero si puede tener el mismo nombre y distinto link o viceversa.
+  const handleDeleteExercise = (exerciseName: string, linkExercise: string) => {
+    const updatedPlan = plan.filter(
+      (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
+    );
+    setPlan(updatedPlan);
+
+    const updatedAddedExercises = addedExercises.filter(
+      (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
+    );
+    setAddedExercises(updatedAddedExercises);
+  };
+
 
 
   //Funcion para que cuando agrega un ejercicio, se agregue con el formato de la card.
@@ -336,7 +361,8 @@ const MyRequests = () => {
               <Button
                 variant='text'
                 title='Eliminar'
-                onClick={() => handleDeleteExercise(plan.findIndex(item => item._id === exercise._id))}
+                onClick={() => handleDeleteExercise(exercise.exerciseName, exercise.linkExercise)}
+
                 sx={{ color: 'error.main' }}
               >
                 <Icon icon='mdi:close' />
@@ -424,6 +450,7 @@ const MyRequests = () => {
         Agregar Ejercicio
       </Button>
 
+
       <Dialog open={isAddExerciseModalOpen} onClose={() => setAddExerciseModalOpen(false)}>
         <DialogTitle
           id='user-view-plans'
@@ -448,6 +475,7 @@ const MyRequests = () => {
         }}>
           <Card>
             <CardContent>
+
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel>Nombre del Ejercicio</InputLabel>
                 <Input
@@ -483,9 +511,17 @@ const MyRequests = () => {
                 <Button color='primary' variant='contained' type='submit' onClick={handleAddExercise} disabled={!newExercise.isValid}>
                   Agregar
                 </Button>
+
               </Box>
+
             </CardContent>
+            {error && (
+              <Box sx={{ color: 'skyblue', textAlign: 'center', mb: 2 }}>
+                {error}
+              </Box>
+            )}
           </Card>
+
         </DialogContent>
       </Dialog>
     </>

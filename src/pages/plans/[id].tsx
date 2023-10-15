@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions } from '@mui/material';
+import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,6 +9,7 @@ import Icon from 'src/@core/components/icon';
 import Button from '@mui/material/Button';
 import Foro from './foro';
 import { useSession } from 'next-auth/react';
+import React from 'react';
 
 interface Plan {
   _id: string;
@@ -72,6 +73,11 @@ const MyPlans = () => {
   const [popUpErrorDelete, setPopUpErrorDelete] = useState<boolean>(false)
   const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
   const [trackingId, setTrackingId] = useState<TrackingId>()
+
+  //const [plan, setPlan] = useState([]);
+  const [manualInput, setManualInput] = React.useState(false);
+  const [planes, setPlanes] = useState<[]>([]);
+
 
   const textPopUp = 'Pulse el botón OK para continuar'
   const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento que desea modificar debe tener al menos un día.'
@@ -147,7 +153,6 @@ const MyPlans = () => {
     doc.text(`Profesor: ${plan.trainerName}`, 10, 114);
 
     doc.setFontSize(14);
-
 
     if (plan && plan.plan) {
       plan.plan.forEach((day: Day, index: any) => {
@@ -320,8 +325,6 @@ const MyPlans = () => {
     });
   };
 
-
-
   const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
     setPlan((prevPlan: any) => {
       const updatedPlanLists = prevPlan?.plan.map((day: any, dIndex: number) => {
@@ -356,30 +359,6 @@ const MyPlans = () => {
     });
   };
 
-  // const handleDeleteRow = (dayIndex: number, rowIndex: number) => {
-  //   setPlan((prevPlan: any) => {
-  //     const updatedPlanLists = prevPlan?.plan.map((day: any, dIndex: number) => {
-  //       if (dIndex === dayIndex) {
-  //         // Verificar si es el último ejercicio
-  //         if (day.Ejercicios.length === 1) {
-  //           setTitlePopUpError('El plan debe tener al menos un día con un ejercicio.');
-  //           setPopUpError(true);
-
-  //           return day; // No permitir eliminar el último ejercicio
-  //         }
-
-  //         const updatedEjercicios = day.Ejercicios.filter((_, exIndex: number) => exIndex !== rowIndex);
-
-  //         return { ...day, Ejercicios: updatedEjercicios };
-  //       }
-
-  //       return day;
-  //     });
-
-  //     return { ...prevPlan, plan: updatedPlanLists };
-  //   });
-  // };
-
 
 
   const handleAddDay = () => {
@@ -411,6 +390,32 @@ const MyPlans = () => {
       return prevPlan;
     });
   };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/generalLibrary', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setPlanes(data.exercisesData?.exercises || []);
+        console.log(data.exercisesData?.exercises || []);
+      } else {
+        console.error('Error fetching data from the server');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   if (isLoading) {
     return (
@@ -469,20 +474,39 @@ const MyPlans = () => {
                               {day.Ejercicios.map((exercise, exerciseIndex) => (
                                 <TableRow key={exerciseIndex}>
                                   <TableCell>
-
                                     {editingExerciseIndices[dayIndex] === exerciseIndex ? (
-                                      <TextField
-                                        type="text"
-                                        value={exercise.nombreEjercicio}
-                                        onChange={(e) =>
-                                          handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value)
-                                        }
-
-                                      />
+                                      manualInput ? (
+                                        <FormControl fullWidth>
+                                          <InputLabel id='exercise-select-label'>Ejercicio</InputLabel>
+                                          <Select
+                                            labelId='exercise-select-label'
+                                            id='exercise-select'
+                                            value={exercise.nombreEjercicio}
+                                            onChange={(e) =>
+                                              handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value)
+                                            }
+                                          >
+                                            {planes.map((exercise: any) => (
+                                              <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                                {exercise.exerciseName}
+                                              </MenuItem>
+                                            ))}
+                                          </Select>
+                                        </FormControl>
+                                      ) : (
+                                        <TextField
+                                          type="text"
+                                          value={exercise.nombreEjercicio}
+                                          onChange={(e) =>
+                                            handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value)
+                                          }
+                                        />
+                                      )
                                     ) : (
                                       exercise.nombreEjercicio
                                     )}
                                   </TableCell>
+
                                   <TableCell>
 
                                     {editingExerciseIndices[dayIndex] === exerciseIndex ? (
@@ -561,30 +585,43 @@ const MyPlans = () => {
 
                                   <TableCell>
                                     {esEntrenador && (
-                                      <>
+                                      <div style={{ display: 'flex', alignItems: 'center' }}>
                                         {editingExerciseIndices[dayIndex] === exerciseIndex ? (
-                                          <Icon
-                                            icon='mdi:check'
-                                            onClick={() => handleExerciseUpdate(dayIndex)}
-                                            style={{ cursor: 'pointer', color: 'lightgreen' }}
-                                          />
+                                          <>
+                                            <Icon
+                                              icon='mdi:check'
+                                              onClick={() => handleExerciseUpdate(dayIndex)}
+                                              style={{ cursor: 'pointer', color: 'lightgreen' }}
+                                            />
+                                            <ButtonStyled
+                                              sx={{ color: 'skyblue' }}
+                                              onClick={() => setManualInput(!manualInput)}
+                                            >
+                                              {manualInput ? <Icon icon='bi:keyboard' /> : <Icon icon='bi:list' />}
+                                            </ButtonStyled>
+                                            <Icon
+                                              icon='mdi:trash'
+                                              onClick={() => handleDeleteRow(dayIndex, exerciseIndex)}
+                                              style={{ cursor: 'pointer', color: 'red' }}
+                                            />
+                                          </>
                                         ) : (
-                                          <Icon
-                                            icon='mdi:pencil'
-                                            onClick={() => setEditingExerciseIndexs(dayIndex, exerciseIndex)}
-                                            style={{ cursor: 'pointer', color: 'skyblue' }}
-                                          />
+                                          <>
+                                            <Icon
+                                              icon='mdi:pencil'
+                                              onClick={() => setEditingExerciseIndexs(dayIndex, exerciseIndex)}
+                                              style={{ cursor: 'pointer', color: 'skyblue' }}
+                                            />
+                                            <Icon
+                                              icon='mdi:trash'
+                                              onClick={() => handleDeleteRow(dayIndex, exerciseIndex)}
+                                              style={{ marginLeft: '10px', cursor: 'pointer', color: 'skyblue' }}
+                                            />
+                                          </>
                                         )}
-
-                                        <Icon
-                                          icon='mdi:trash'
-                                          onClick={() => handleDeleteRow(dayIndex, exerciseIndex)}
-                                          style={{ marginLeft: '20px', cursor: 'pointer', color: 'skyblue' }}
-                                        />
-                                      </>
+                                      </div>
                                     )}
                                   </TableCell>
-
                                 </TableRow>
                               ))}
                             </TableBody>
