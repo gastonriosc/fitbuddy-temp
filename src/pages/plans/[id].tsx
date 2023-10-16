@@ -69,6 +69,8 @@ const MyPlans = () => {
   const [titlePopUpError, setTitlePopUpError] = useState<string>()
   const [popUpErrorDelete, setPopUpErrorDelete] = useState<boolean>(false)
   const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
+  const [selectedExerciseLink, setSelectedExerciseLink] = useState('');
+
 
   //const [plan, setPlan] = useState([]);
   const [manualInput, setManualInput] = React.useState(false);
@@ -485,9 +487,15 @@ const MyPlans = () => {
                                             labelId='exercise-select-label'
                                             id='exercise-select'
                                             value={exercise.nombreEjercicio}
-                                            onChange={(e) =>
-                                              handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value)
-                                            }
+                                            onChange={(e) => {
+                                              handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value);
+
+                                              // Buscar el ejercicio seleccionado y obtener su linkExercise
+                                              const selectedExercise = planes.find((exercise: any) => exercise.exerciseName === e.target.value);
+                                              if (selectedExercise) {
+                                                handleExerciseDataChange(dayIndex, exerciseIndex, 'link', selectedExercise.linkExercise);
+                                              }
+                                            }}
                                           >
                                             {planes.map((exercise: any) => (
                                               <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
@@ -509,6 +517,7 @@ const MyPlans = () => {
                                       exercise.nombreEjercicio
                                     )}
                                   </TableCell>
+
 
                                   <TableCell>
 
