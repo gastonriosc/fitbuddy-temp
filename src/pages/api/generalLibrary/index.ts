@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (exerciseLibrary) {
         return res.status(200).json(exerciseLibrary)
       } else {
-        return res.status(404).json('No se pudo crear la solicitud de suscripcion')
+        return res.status(404).json('No se pudo crear la libreria de ejercicios')
       }
     } else if (req.method === 'GET') {
       const exerciseLibrary = await GeneralLibrary.findOne()
