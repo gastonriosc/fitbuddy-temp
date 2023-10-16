@@ -90,7 +90,7 @@ const NewPlan = () => {
   const [nombrePlan, setNombrePlan] = useState('');
   const [popUpErrorName, setPopUpErrorName] = useState<boolean>(false)
   const [titlePopUpErrorName, setTitlePopUpErrorName] = useState<string>()
-  const [plan, setPlan] = useState([]);
+  const [plan, setPlan] = useState<Exercise[]>([]);
   const [manualInput, setManualInput] = React.useState(false);
 
 

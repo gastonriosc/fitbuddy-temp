@@ -17,7 +17,8 @@ import Icon from 'src/@core/components/icon';
 import CustomChip from 'src/@core/components/mui/chip'
 
 // import RequestPopUp from '../myRequests/requestPopUp';
-import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem, DialogContent, Dialog, DialogTitle } from '@mui/material';
+import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem, DialogContent, Dialog, DialogTitle, DialogActions } from '@mui/material';
+import { useRouter } from 'next/router';
 
 
 // Styled component for the image
@@ -193,6 +194,14 @@ const MyRequests = () => {
   const [isAddExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
   const [addedExercises, setAddedExercises] = useState<Exercise[]>([]);
   const [error, setError] = useState<string>('');
+  const route = useRouter();
+  const [titlePopUp, setTitlePopUp] = useState<string>()
+  const [popUp, setPopUp] = useState<boolean>(false)
+
+  const textPopUp = 'Pulse el botón OK para continuar'
+  const closePopUp = () => setPopUp(false)
+
+
 
 
   const [newExercise, setNewExercise] = useState<any>({
@@ -229,14 +238,6 @@ const MyRequests = () => {
     fetchData();
   }, []);
 
-
-  //Funcion para eliminar un ejercicio.
-  // const handleDeleteExercise = (index: number) => {
-  //   const updatedPlan = [...plan];
-
-  //   updatedPlan.splice(index, 1);
-  //   setPlan(updatedPlan);
-  // };
 
   //Funcion para agregar un ejercicio.
   const handleAddExercise = () => {
@@ -276,6 +277,7 @@ const MyRequests = () => {
       ...newExercise,
       avatar: defaultAvatar,
     };
+    console.log(updatedExercise);
 
     // Agregar el nuevo ejercicio al estado plan
     setPlan([...plan, updatedExercise]);
@@ -289,10 +291,35 @@ const MyRequests = () => {
       isValid: false,
     });
 
-    setAddedExercises([...addedExercises, updatedExercise]);
-    console.log(addedExercises);
+    setAddedExercises([...addedExercises, updatedExercise]);  //Agrega solamente los ejercicios que se agregan desde el modal.
+
+    //setAddedExercises([...plan, updatedExercise]); //Agrega todos los ejercicios de la libreria general + los que agrega desde el modal.
 
     setAddExerciseModalOpen(false);
+  };
+
+  const addExerciseToMyPersonalLibrary = async (newExercise: any) => {
+    try {
+      const response = await fetch('/api/myLibrary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ exercises: newExercise, trainerId: route.query.id }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Ejercicio agregado:', data);
+        setTitlePopUp('Biblioteca actualizada con éxito!')
+        setPopUp(true)
+      } else {
+        console.error('Error al tratar de querer agregar un ejercicio:', response.statusText);
+
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
 
@@ -305,6 +332,7 @@ const MyRequests = () => {
 
     setNewExercise((prev: any) => ({ ...prev, isValid }));
   }, [newExercise.exerciseName, newExercise.muscleGroup, newExercise.linkExercise]);
+
 
 
   //Hook para validar el avatar del ejercicio y agregarlo al plan.
@@ -326,7 +354,6 @@ const MyRequests = () => {
     );
     setAddedExercises(updatedAddedExercises);
   };
-
 
 
   //Funcion para que cuando agrega un ejercicio, se agregue con el formato de la card.
@@ -442,14 +469,18 @@ const MyRequests = () => {
         {currentExercises.map((exercise) => renderExerciseCard(exercise))}
       </Grid>
 
+      <Box display="flex" justifyContent="space-between">
+        <Button variant="text" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
+          Agregar Ejercicio
+        </Button>
+        <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} disabled={addedExercises.length === 0}>
+          Guardar cambios
+        </Button>
+      </Box>
+
       <Box className="demo-space-y" mt={7} alignItems={'center'} justifyContent="center" display="flex">
         <Pagination count={totalPages} color="primary" page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
       </Box>
-
-      <Button variant="contained" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
-        Agregar Ejercicio
-      </Button>
-
 
       <Dialog open={isAddExerciseModalOpen} onClose={() => setAddExerciseModalOpen(false)}>
         <DialogTitle
@@ -523,6 +554,42 @@ const MyRequests = () => {
           </Card>
 
         </DialogContent>
+      </Dialog>
+      <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+        <DialogContent
+          sx={{
+            pb: theme => `${theme.spacing(6)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              '& svg': { mb: 6, color: 'success.main' }
+            }}
+          >
+            <Icon icon='line-md:confirm' fontSize='5.5rem' />
+            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+            <Typography>{textPopUp}</Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: 'center',
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+
+          <Button variant='outlined' color='success' onClick={closePopUp}>
+            OK
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );

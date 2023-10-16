@@ -69,12 +69,11 @@ const MyPlans = () => {
   const [titlePopUpError, setTitlePopUpError] = useState<string>()
   const [popUpErrorDelete, setPopUpErrorDelete] = useState<boolean>(false)
   const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
-  const [selectedExerciseLink, setSelectedExerciseLink] = useState('');
 
 
   //const [plan, setPlan] = useState([]);
   const [manualInput, setManualInput] = React.useState(false);
-  const [planes, setPlanes] = useState<[]>([]);
+  const [planes, setPlanes] = useState<any[]>([]);
 
 
   const textPopUp = 'Pulse el botón OK para continuar'

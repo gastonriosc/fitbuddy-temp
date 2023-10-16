@@ -20,7 +20,8 @@ const myExercisesSchema = new mongoose.Schema({
 })
 
 const myLibrarySchema = new mongoose.Schema({
-  exercises: [myExercisesSchema]
+  exercises: [myExercisesSchema],
+  trainerId: mongoose.Schema.ObjectId
 })
 
 const MyLibrary = mongoose.models.MyLibrary || mongoose.model('MyLibrary', myLibrarySchema)
