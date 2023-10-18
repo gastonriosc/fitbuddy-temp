@@ -44,7 +44,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           },
           {
+            $lookup: {
+              from: 'users',
+              localField: 'studentId',
+              foreignField: '_id',
+              as: 'student_info'
+            }
+          },
+          {
             $unwind: '$trainer_info'
+          },
+          {
+            $unwind: '$student_info'
           },
           {
             $project: {
@@ -56,7 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               trainerId: 1,
               studentId: 1,
               subsRequestId: 1,
-              trainerName: '$trainer_info.name'
+              trainerName: '$trainer_info.name',
+              studentName: '$student_info.name'
             }
           }
         ])

@@ -17,6 +17,7 @@ interface Plan {
   trainerId: string;
   plan: Day[];
   trainerName: string;
+  studentName: string;
 }
 
 interface Day {
@@ -134,7 +135,12 @@ const MyPlans = () => {
 
     doc.setFont('helvetica', 'bold');
     doc.text('PLAN DE ENTRENAMIENTO PARA', 70, 40);
-    doc.text(`${session.data?.user.name.toUpperCase()}`, 85, 50);
+    if (esEntrenador) {
+      doc.text(`${plan.studentName.toUpperCase()}`, 85, 50);
+    }
+    if (!esEntrenador) {
+      doc.text(`${session.data?.user.name.toUpperCase()}`, 85, 50);
+    }
     doc.setFont('helvetica', 'normal');
 
     doc.setFontSize(12);
@@ -403,19 +409,59 @@ const MyPlans = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setPlanes(data.exercisesData?.exercises || []);
-        console.log(data.exercisesData?.exercises || []);
+
+        return data.exercisesData?.exercises || [];
       } else {
         console.error('Error fetching data from the server');
+
+        return [];
       }
     } catch (error) {
       console.error('Error:', error);
+
+      return [];
+    }
+  };
+
+  const getExerciseFromMyPersonalLibrary = async () => {
+    const trainerId = session.data?.user._id;
+
+    try {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        return data.exercises || [];
+      } else {
+        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
+
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+      return [];
     }
   };
 
   useEffect(() => {
-    fetchData();
+    const fetchDataAndPersonal = async () => {
+      const generalLibraryData = await fetchData();
+      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+
+      // Combina los resultados de ambos GET
+      const combinedData = [...generalLibraryData, ...personalLibraryData];
+
+      setPlanes(combinedData);
+    };
+
+    fetchDataAndPersonal();
   }, []);
 
   if (isLoading) {
