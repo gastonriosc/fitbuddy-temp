@@ -94,6 +94,8 @@ const NewPlan = () => {
   const [manualInput, setManualInput] = React.useState(false);
 
 
+
+
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
   const closePopUpError = () => setPopUpError(false)
@@ -129,19 +131,59 @@ const NewPlan = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setPlan(data.exercisesData?.exercises || []);
-        console.log(data.exercisesData?.exercises || []);
+
+        return data.exercisesData?.exercises || [];
       } else {
         console.error('Error fetching data from the server');
+
+        return [];
       }
     } catch (error) {
       console.error('Error:', error);
+
+      return [];
+    }
+  };
+
+  const getExerciseFromMyPersonalLibrary = async () => {
+    const trainerId = session?.user._id;
+
+    try {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        return data.exercises || [];
+      } else {
+        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
+
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+      return [];
     }
   };
 
   useEffect(() => {
-    fetchData();
+    const fetchDataAndPersonal = async () => {
+      const generalLibraryData = await fetchData();
+      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+
+      // Combina los resultados de ambos GET
+      const combinedData = [...generalLibraryData, ...personalLibraryData];
+
+      setPlan(combinedData);
+    };
+
+    fetchDataAndPersonal();
   }, []);
 
 
@@ -279,6 +321,12 @@ const NewPlan = () => {
     }
   };
 
+  const muscleGroups = ["pecho", "piernas", /* otros grupos musculares */];
+
+  // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
+  const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
+
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <Grid container spacing={6}>
@@ -384,6 +432,8 @@ const NewPlan = () => {
                               row.nombre
                             )}
                           </StyledTableCell>
+
+
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <TextField

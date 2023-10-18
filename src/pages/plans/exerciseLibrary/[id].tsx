@@ -197,10 +197,16 @@ const MyRequests = () => {
   const route = useRouter();
   const [titlePopUp, setTitlePopUp] = useState<string>()
   const [popUp, setPopUp] = useState<boolean>(false)
+  const [titlePopUpDelete, setTitlePopUpDelete] = useState<string>()
+  const [popUpDelete, setPopUpDelete] = useState<boolean>(false)
+  const [exerciseToDelete, setExerciseToDelete] = useState<any>(null);
+
 
   const textPopUp = 'Pulse el botón OK para continuar'
-  const closePopUp = () => setPopUp(false)
+  const textPopUpDelete = 'Presione el boton Eliminar para confirmar la eliminación del ejercicio.'
 
+  const closePopUp = () => setPopUp(false)
+  const closePopUpDelete = () => setPopUpDelete(false)
 
 
 
@@ -224,18 +230,60 @@ const MyRequests = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setPlan(data.exercisesData?.exercises || []);
+
+        return data.exercisesData?.exercises || [];
       } else {
         console.error('Error fetching data from the server');
+
+        return [];
       }
     } catch (error) {
       console.error('Error:', error);
+
+      return [];
+    }
+  };
+
+  const getExerciseFromMyPersonalLibrary = async () => {
+    const trainerId = route.query.id;
+
+    try {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+
+        return data.exercises || [];
+      } else {
+        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
+
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+      return [];
     }
   };
 
   useEffect(() => {
-    fetchData();
+    const fetchDataAndPersonal = async () => {
+      const generalLibraryData = await fetchData();
+      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+
+      // Combina los resultados de ambos GET
+      const combinedData = [...generalLibraryData, ...personalLibraryData];
+
+      setPlan(combinedData);
+    };
+
+    fetchDataAndPersonal();
   }, []);
 
 
@@ -299,9 +347,14 @@ const MyRequests = () => {
   };
 
   const addExerciseToMyPersonalLibrary = async (newExercise: any) => {
+    const trainerId = route.query.id;
+
     try {
-      const response = await fetch('/api/myLibrary', {
-        method: 'POST',
+      // Actualizar el estado local antes de realizar la petición PUT
+
+      // Realizar la petición PUT al servidor
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -310,17 +363,42 @@ const MyRequests = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Ejercicio agregado:', data);
-        setTitlePopUp('Biblioteca actualizada con éxito!')
-        setPopUp(true)
+        console.log('Ejercicio modificado:', data);
+        setTitlePopUp('Biblioteca actualizada con éxito!');
+        setPopUp(true);
       } else {
-        console.error('Error al tratar de querer agregar un ejercicio:', response.statusText);
-
+        console.error('Error al tratar de querer modificar un ejercicio:', response.statusText);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
+
+  // const addExerciseToMyPersonalLibrary = async (newExercise: any) => {
+
+  //   try {
+  //     const response = await fetch('/api/myLibrary', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ exercises: newExercise, trainerId: route.query.id }),
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       console.log('Ejercicio agregado:', data);
+  //       setTitlePopUp('Biblioteca actualizada con éxito!')
+  //       setPopUp(true)
+  //     } else {
+  //       console.error('Error al tratar de querer agregar un ejercicio:', response.statusText);
+
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
 
 
   //Hook para deshabilitar/habilitar el boton segun si los campos estan completos o no.
@@ -334,7 +412,6 @@ const MyRequests = () => {
   }, [newExercise.exerciseName, newExercise.muscleGroup, newExercise.linkExercise]);
 
 
-
   //Hook para validar el avatar del ejercicio y agregarlo al plan.
   useEffect(() => {
     if (newExercise.avatar !== '') {
@@ -343,7 +420,15 @@ const MyRequests = () => {
   }, [newExercise]);
 
   //Como los que recien se agregan no pueden eliminarse por id, se hace por nombre y link, ya que un ejercicio no puede tener el mismo nombre y link, pero si puede tener el mismo nombre y distinto link o viceversa.
-  const handleDeleteExercise = (exerciseName: string, linkExercise: string) => {
+  const handleDeleteExercise = (exerciseName: any, linkExercise: any) => {
+    setExerciseToDelete({ exerciseName, linkExercise });
+    setTitlePopUpDelete('¿Está seguro que desea eliminar este ejercicio?');
+    setPopUpDelete(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const { exerciseName, linkExercise } = exerciseToDelete;
+
     const updatedPlan = plan.filter(
       (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
     );
@@ -353,6 +438,30 @@ const MyRequests = () => {
       (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
     );
     setAddedExercises(updatedAddedExercises);
+
+    const trainerId = route.query.id;
+
+    try {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ exerciseName, linkExercise, trainerId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Ejercicio eliminado:', data);
+
+      } else {
+        console.error('Error al tratar de querer eliminar un ejercicio:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    setPopUpDelete(false);
   };
 
 
@@ -473,7 +582,7 @@ const MyRequests = () => {
         <Button variant="text" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
           Agregar Ejercicio
         </Button>
-        <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} disabled={addedExercises.length === 0}>
+        <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
           Guardar cambios
         </Button>
       </Box>
@@ -588,6 +697,45 @@ const MyRequests = () => {
 
           <Button variant='outlined' color='success' onClick={closePopUp}>
             OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog fullWidth open={popUpDelete} onClose={closePopUpDelete} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+        <DialogContent
+          sx={{
+            pb: theme => `${theme.spacing(6)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              '& svg': { mb: 6, color: 'error.main' }
+            }}
+          >
+            <Icon icon='line-md:alert' fontSize='5.5rem' />
+            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpDelete}</Typography>
+            <Typography>{textPopUpDelete}</Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: 'center',
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+
+          <Button variant='contained' color='error' onClick={handleConfirmDelete}>
+            Eliminar
+          </Button>
+          <Button variant='contained' color='primary' onClick={closePopUpDelete}>
+            Volver
           </Button>
         </DialogActions>
       </Dialog>
