@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 
@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react'
 import CardTrackingMensual from './cardTracking'
 import TrackingPopUp from './trackingPopUp'
 
+import format from 'date-fns/format'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -16,8 +17,10 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import Pagination from '@mui/material/Pagination'
+import DatePicker from 'react-datepicker'
+import { DateType } from 'src/types/forms/reactDatepickerTypes'
 
 
 // import { CardHeader } from '@mui/material'
@@ -41,6 +44,15 @@ import DialogTitle from '@mui/material/DialogTitle'
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+
+interface CustomInputProps {
+  dates: Date[]
+  label: string
+  end: number | Date
+  start: number | Date
+  setDates?: (value: Date[]) => void
+}
 
 // import * as yup from 'yup'
 // import { yupResolver } from '@hookform/resolvers/yup'
@@ -68,6 +80,8 @@ interface Tracking {
   }
 }
 
+
+
 const Tracking = () => {
 
   const session = useSession();
@@ -80,13 +94,18 @@ const Tracking = () => {
     4: 'Excelente',
   }
   const [hover, setHover] = useState<number>(-1)
-  const [value, setValue] = useState<number | null>(2)
+  const [value, setValue] = useState<number | null | any>(2)
   const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>('')
   const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
   const [tracking, setTracking] = useState<Tracking>()
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
+  const [dates, setDates] = useState<Date[]>([])
+  const [endDateRange, setEndDateRange] = useState<DateType>(null)
+  const [startDateRange, setStartDateRange] = useState<DateType>(null)
+
+
 
   console.log(tracking)
   const handlePopUpNuevoRegistro = () => {
@@ -164,8 +183,44 @@ const Tracking = () => {
       console.error('Error en la solicitud:', error);
     }
   };
+  const CustomInput = forwardRef((props: CustomInputProps, ref) => {
+    const startDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : ''
+    const endDate = props.end !== null ? ` - ${format(props.end, 'dd/MM/yyyy')}` : null
 
+    const value = `${startDate}${endDate !== null ? endDate : ''}`
+    props.start === null && props.dates.length && props.setDates ? props.setDates([]) : null
+    const updatedProps = { ...props }
+    delete updatedProps.setDates
 
+    return <TextField fullWidth inputRef={ref} {...updatedProps} label={props.label || ''} value={value} />
+  })
+
+  const handleOnChangeRange = (dates: any) => {
+    const [start, end] = dates
+    if (start !== null && end !== null) {
+      setDates(dates)
+    }
+    setStartDateRange(start)
+    setEndDateRange(end)
+  }
+
+  const filterByDateRange = (item: any) => {
+    const itemDate = new Date(item.date);
+
+    let adjustedEndDate = endDateRange;
+
+    // Sumar un día a la fecha hasta si endDateRange no es nulo
+    if (adjustedEndDate !== null) {
+      adjustedEndDate = new Date(endDateRange as Date);
+      adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+    }
+
+    return (
+      startDateRange === null ||
+      adjustedEndDate === null ||
+      (itemDate >= (startDateRange as Date) && itemDate < adjustedEndDate)
+    );
+  };
 
   return (
     <Grid >
@@ -180,68 +235,84 @@ const Tracking = () => {
           </Button>
         ) : null}
 
+
       </Card>
+
 
       {tracking ? (
         <Box>
-
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
             <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
               <CardTrackingMensual tracking={tracking}></CardTrackingMensual>
             </Box>
             <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1, height: '485px' }}>
-
-              {/* <CardWorkoutMensual tracking={tracking}></CardWorkoutMensual> */}
-              <Card sx={{ height: '485px' }} >
+              <Card sx={{ height: '485px' }}>
                 <TableContainer>
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                        {/* <TableCell style={{ textAlign: 'center' }} >Acciones</TableCell> */}
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {tracking?.data
+                        .filter(filterByDateRange)
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
-                            <TableCell style={{ textAlign: 'center' }}>{new Date(trackingItem.date).toLocaleDateString()}</TableCell>
+                            <TableCell style={{ textAlign: 'center' }}>
+                              {new Date(trackingItem.date).toLocaleDateString()}
+                            </TableCell>
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
                                 <Rating readOnly value={trackingItem.number} max={4} name='read-only' />
                                 <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
                               </Box>
                             </TableCell>
-                            {/* <TableCell style={{ textAlign: 'center' }}>
-          <Icon
-            icon='mdi:pencil'
-          />
-        </TableCell> */}
                           </TableRow>
                         ))}
                     </TableBody>
+
                   </Table>
                 </TableContainer>
                 <Box className='demo-space-y' mt={2} alignItems={'center'} justifyContent='center' display={'flex'}>
                   <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
                 </Box>
+
               </Card>
             </Box>
           </Box>
-
-          {/* <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
-            <Box sx={{ width: { md: '50%', xs: '100%' }, padding: 1, height: '300px' }}>
-
-            </Box>
-          </Box> */}
         </Box>
       ) : (
         <Box sx={{ mt: '50px', mb: '20px' }}>
           <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
         </Box>
       )}
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
+          <DatePicker
+            isClearable
+            selectsRange
+            monthsShown={2}
+            endDate={endDateRange}
+            selected={startDateRange}
+            startDate={startDateRange}
+            shouldCloseOnSelect={false}
+            id='date-range-picker-months'
+            onChange={handleOnChangeRange}
+            customInput={
+              <CustomInput
+                dates={dates}
+                setDates={setDates}
+                label='DD/MM/YYYY - DD/MM/YYYY'
+                end={endDateRange as number | Date}
+                start={startDateRange as number | Date}
+              />
+            }
+          />
+        </DatePickerWrapper>
+      </Box>
 
 
       <Dialog
