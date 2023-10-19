@@ -154,10 +154,10 @@ const Register = () => {
     const { email, password, phone, country, gender, role, name, discipline } = data
     let avatar = '';
     if (gender === 'Masculino') {
-      avatar = '/images/avatars/1.png'
+      avatar = '/images/animals/4.png'
     }
     else {
-      avatar = '/images/avatars/6.png'
+      avatar = '/images/animals/12.png'
     }
 
     try {
