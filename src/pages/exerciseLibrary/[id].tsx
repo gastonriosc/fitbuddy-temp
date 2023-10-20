@@ -35,156 +35,6 @@ interface Exercise {
   linkExercise: string;
 }
 
-// const fixedCards = [
-//   {
-//     exerciseName: 'Press de Banca plano',
-//     muscleGroup: 'Pecho',
-//     avatar: '/images/avatars/pecho.png',
-//     linkExercise: 'https://www.youtube.com/shorts/i14IBMNQDQQ',
-//   },
-//   {
-//     exerciseName: 'Press de Banca inclinado',
-//     muscleGroup: 'Pecho',
-//     avatar: '/images/avatars/pecho.png',
-//     linkExercise: 'https://www.youtube.com/shorts/SqT0lZDPm-Y'
-
-//   },
-//   {
-//     exerciseName: 'Press de Banca declinado',
-//     muscleGroup: 'Pecho',
-//     avatar: '/images/avatars/pecho.png',
-//     linkExercise: 'https://www.youtube.com/shorts/i14IBMNQDQQ',
-//   },
-//   {
-//     exerciseName: 'Cruce de poleas',
-//     muscleGroup: 'Pecho',
-//     avatar: '/images/avatars/pecho.png',
-//     linkExercise: 'https://www.youtube.com/shorts/B_5amA7vPbA',
-//   },
-//   {
-//     exerciseName: 'Curl de biceps',
-//     muscleGroup: 'Brazos',
-//     avatar: '/images/avatars/biceps.png',
-//     linkExercise: 'https://www.youtube.com/shorts/YQgahl1e3oA',
-//   },
-//   {
-//     exerciseName: 'Triceps en polea',
-//     muscleGroup: 'Brazos',
-//     avatar: '/images/avatars/biceps.png',
-//     linkExercise: 'https://www.youtube.com/shorts/smLEQsRMnc8',
-//   },
-//   {
-//     exerciseName: 'Biceps alternados ',
-//     muscleGroup: 'Brazos',
-//     avatar: '/images/avatars/biceps.png',
-//     linkExercise: 'https://www.youtube.com/shorts/3AdTKHAbRns',
-//   },
-//   {
-//     exerciseName: 'Curl W 21',
-//     muscleGroup: 'Brazos',
-//     avatar: '/images/avatars/biceps.png',
-//     linkExercise: 'https://www.youtube.com/shorts/Npgq90WZ4ys',
-//   },
-//   {
-//     exerciseName: 'Sentadillas con barra',
-//     muscleGroup: 'Piernas',
-//     avatar: '/images/avatars/legs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/NHD0vH7XXgw',
-//   },
-//   {
-//     exerciseName: 'Peso muerto con barra',
-//     muscleGroup: 'Piernas',
-//     avatar: '/images/avatars/legs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/3EhkrUEEPOg',
-//   },
-//   {
-//     exerciseName: 'Hack squat',
-//     muscleGroup: 'Piernas',
-//     avatar: '/images/avatars/legs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/itmlCUc0P3k',
-//   },
-//   {
-//     exerciseName: 'Camilla Isquiotibiales',
-//     muscleGroup: 'Piernas',
-//     avatar: '/images/avatars/legs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/hYwksAJzRt8',
-//   },
-//   {
-//     exerciseName: 'Press Militar',
-//     muscleGroup: 'Hombros',
-//     avatar: '/images/avatars/hombros.png',
-//     linkExercise: 'https://www.youtube.com/shorts/PWtkHROaH3Y'
-//   },
-//   {
-//     exerciseName: 'Vuelos laterales',
-//     muscleGroup: 'Hombros',
-//     avatar: '/images/avatars/hombros.png',
-//     linkExercise: 'https://www.youtube.com/shorts/DCS8eFTiddM'
-//   },
-//   {
-//     exerciseName: 'Vuelos frontales',
-//     muscleGroup: 'Hombros',
-//     avatar: '/images/avatars/hombros.png',
-//     linkExercise: 'https://www.youtube.com/shorts/jk7YrK79ciA'
-//   },
-//   {
-//     exerciseName: 'Press frontal con barra',
-//     muscleGroup: 'Hombros',
-//     avatar: '/images/avatars/hombros.png',
-//     linkExercise: 'https://www.youtube.com/shorts/if97enQvM70'
-//   },
-//   {
-//     exerciseName: 'Remo al cuello',
-//     muscleGroup: 'Espalda',
-//     avatar: '/images/avatars/espalda.png',
-//     linkExercise: 'https://www.youtube.com/shorts/uEAclUy8sBE'
-//   },
-//   {
-//     exerciseName: 'Remo con polea',
-//     muscleGroup: 'Espalda',
-//     avatar: '/images/avatars/espalda.png',
-//     linkExercise: 'https://www.youtube.com/shorts/HJw0-W-cQog'
-//   },
-//   {
-//     exerciseName: 'Dominadas pronas',
-//     muscleGroup: 'Espalda',
-//     avatar: '/images/avatars/espalda.png',
-//     linkExercise: 'https://www.youtube.com/shorts/LerajxEGimU'
-
-//   },
-//   {
-//     exerciseName: 'Remo con barra recta',
-//     muscleGroup: 'Espalda',
-//     avatar: '/images/avatars/espalda.png',
-//     linkExercise: 'https://www.youtube.com/shorts/VNJxbFn_a6I'
-//   },
-//   {
-//     exerciseName: 'Burpees',
-//     muscleGroup: 'Abdominales',
-//     avatar: '/images/avatars/abs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/k6CIe0jDHzQ'
-//   },
-//   {
-//     exerciseName: 'Russian Twist',
-//     muscleGroup: 'Abdominales',
-//     avatar: '/images/avatars/abs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/BA-uP_-bVE8'
-//   },
-//   {
-//     exerciseName: 'Cable crunch',
-//     muscleGroup: 'Abdominales',
-//     avatar: '/images/avatars/abs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/M1HeORCwv8A'
-//   },
-//   {
-//     exerciseName: 'Rueda abdominal',
-//     muscleGroup: 'Abdominales',
-//     avatar: '/images/avatars/abs.png',
-//     linkExercise: 'https://www.youtube.com/shorts/pTOsnzYMiXc'
-//   }
-
-// ];
-
 const MyRequests = () => {
   const [plan, setPlan] = useState<Exercise[]>([]);
   const [filterOption, setFilterOption] = useState<string>('all');
@@ -218,74 +68,36 @@ const MyRequests = () => {
     isValid: false,
   });
 
-  //Hacemos un GET al endpoint de la libreria general de ejercicios, despues de haber hecho el POST en BD que ya lo saque de aca.
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/api/generalLibrary', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        return data.exercisesData?.exercises || [];
-      } else {
-        console.error('Error fetching data from the server');
-
-        return [];
-      }
-    } catch (error) {
-      console.error('Error:', error);
-
-      return [];
-    }
-  };
-
-  const getExerciseFromMyPersonalLibrary = async () => {
-    const trainerId = route.query.id;
-
-    try {
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data)
-
-        return data.exercises || [];
-      } else {
-        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
-
-        return [];
-      }
-    } catch (error) {
-      console.error('Error:', error);
-
-      return [];
-    }
-  };
-
   useEffect(() => {
-    const fetchDataAndPersonal = async () => {
-      const generalLibraryData = await fetchData();
-      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+    const fetchExercises = async () => {
+      const trainerId = route.query.id;
+      try {
+        const res = await fetch(`/api/library/?id=${trainerId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-      // Combina los resultados de ambos GET
-      const combinedData = [...generalLibraryData, ...personalLibraryData];
+        if (res.status == 200) {
+          const data = await res.json();
+          setPlan(data.exercisesData)
 
-      setPlan(combinedData);
+          // return data.exercisesData || [];
+        }
+        if (res.status == 404) {
+          route.replace('/404')
+        }
+        if (res.status == 500) {
+          route.replace('/500')
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
     };
 
-    fetchDataAndPersonal();
+    fetchExercises();
   }, []);
-
 
   //Funcion para agregar un ejercicio.
   const handleAddExercise = () => {
@@ -374,33 +186,6 @@ const MyRequests = () => {
     }
   };
 
-
-  // const addExerciseToMyPersonalLibrary = async (newExercise: any) => {
-
-  //   try {
-  //     const response = await fetch('/api/myLibrary', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ exercises: newExercise, trainerId: route.query.id }),
-  //     });
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       console.log('Ejercicio agregado:', data);
-  //       setTitlePopUp('Biblioteca actualizada con éxito!')
-  //       setPopUp(true)
-  //     } else {
-  //       console.error('Error al tratar de querer agregar un ejercicio:', response.statusText);
-
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // };
-
-
   //Hook para deshabilitar/habilitar el boton segun si los campos estan completos o no.
   useEffect(() => {
     const isValid =
@@ -420,45 +205,47 @@ const MyRequests = () => {
   }, [newExercise]);
 
   //Como los que recien se agregan no pueden eliminarse por id, se hace por nombre y link, ya que un ejercicio no puede tener el mismo nombre y link, pero si puede tener el mismo nombre y distinto link o viceversa.
-  const handleDeleteExercise = (exerciseName: any, linkExercise: any) => {
-    setExerciseToDelete({ exerciseName, linkExercise });
+  const handleDeleteExercise = (exerciseId: any) => {
+    setExerciseToDelete({ exerciseId });
     setTitlePopUpDelete('¿Está seguro que desea eliminar este ejercicio?');
     setPopUpDelete(true);
   };
 
   const handleConfirmDelete = async () => {
-    const { exerciseName, linkExercise } = exerciseToDelete;
+    const { exerciseId } = exerciseToDelete;
 
     const updatedPlan = plan.filter(
-      (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
+      (exercise) => exercise._id !== exerciseId
     );
     setPlan(updatedPlan);
 
-    const updatedAddedExercises = addedExercises.filter(
-      (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
-    );
-    setAddedExercises(updatedAddedExercises);
-
+    // const updatedAddedExercises = addedExercises.filter(
+    //   (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
+    // );
+    // setAddedExercises(updatedAddedExercises);
     const trainerId = route.query.id;
 
     try {
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
-        method: 'DELETE',
+      const res = await fetch(`/api/library/?id=${trainerId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ exerciseName, linkExercise, trainerId }),
+        body: JSON.stringify({ trainerId, exerciseId }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Ejercicio eliminado:', data);
+      if (res.status == 200) {
+        const data = await res.json();
 
-      } else {
-        console.error('Error al tratar de querer eliminar un ejercicio:', response.statusText);
+      }
+      if (res.status == 404) {
+        route.replace('/404')
+      }
+      if (res.status == 500) {
+        route.replace('/500')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching users:', error);
     }
 
     setPopUpDelete(false);
@@ -487,7 +274,7 @@ const MyRequests = () => {
               <Button
                 variant='text'
                 color='primary'
-                title='Perfil'
+                title='Link'
                 onClick={() => window.open(exercise.linkExercise, '_blank')}
               >
                 <Icon icon='mdi:eye' />
@@ -497,11 +284,11 @@ const MyRequests = () => {
               <Button
                 variant='text'
                 title='Eliminar'
-                onClick={() => handleDeleteExercise(exercise.exerciseName, exercise.linkExercise)}
+                onClick={() => handleDeleteExercise(exercise._id)}
 
                 sx={{ color: 'error.main' }}
               >
-                <Icon icon='mdi:close' />
+                <Icon icon='mdi:delete' />
               </Button>
             </Box>
           </Box>
@@ -578,13 +365,13 @@ const MyRequests = () => {
         {currentExercises.map((exercise) => renderExerciseCard(exercise))}
       </Grid>
 
-      <Box display="flex" justifyContent="space-between">
-        <Button variant="text" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
+      <Box display="flex" justifyContent="flex-end">
+        <Button variant="outlined" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
           Agregar Ejercicio
         </Button>
-        <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
+        {/* <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
           Guardar cambios
-        </Button>
+        </Button> */}
       </Box>
 
       <Box className="demo-space-y" mt={7} alignItems={'center'} justifyContent="center" display="flex">
@@ -628,6 +415,7 @@ const MyRequests = () => {
                 <InputLabel>Grupo Muscular</InputLabel>
                 <Select
                   value={newExercise.muscleGroup}
+                  label='Grupo Muscular'
                   onChange={(e) => setNewExercise({ ...newExercise, muscleGroup: e.target.value as string })}
                 >
                   <MenuItem value="pecho">Pecho</MenuItem>
@@ -720,7 +508,7 @@ const MyRequests = () => {
           >
             <Icon icon='line-md:alert' fontSize='5.5rem' />
             <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpDelete}</Typography>
-            <Typography>{textPopUpDelete}</Typography>
+            {/* <Typography>{textPopUpDelete}</Typography> */}
           </Box>
         </DialogContent>
         <DialogActions
