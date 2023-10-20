@@ -28,22 +28,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { id } = req.query
       const generalLibrary = await GeneralLibrary.findOne({}, { exercises: 1 })
       const myLibrary = await MyLibrary.findOne({ trainerId: id }, { exercises: 1, exercisesDeleted: 1 })
-      console.log(myLibrary)
       const exerciseGeralLibrary = generalLibrary.exercises
       let response
       if (myLibrary) {
         const exerciseMyLibrary = myLibrary.exercises
         const combinedLibrary = exerciseGeralLibrary.concat(exerciseMyLibrary)
         const excludedExerciseIds = myLibrary.exercisesDeleted
-        console.log(excludedExerciseIds)
         response = combinedLibrary.filter((exercise: Exercise) => {
           return !excludedExerciseIds.includes(exercise._id.toString())
         })
-        console.log(response)
       } else {
         response = exerciseGeralLibrary
       }
-
       const responseData = {
         exercisesData: response
       }
