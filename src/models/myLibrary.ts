@@ -21,7 +21,8 @@ const myExercisesSchema = new mongoose.Schema({
 
 const myLibrarySchema = new mongoose.Schema({
   exercises: [myExercisesSchema],
-  trainerId: mongoose.Schema.ObjectId
+  trainerId: mongoose.Schema.ObjectId,
+  exercisesDeleted: [mongoose.Schema.ObjectId]
 })
 
 const MyLibrary = mongoose.models.MyLibrary || mongoose.model('MyLibrary', myLibrarySchema)
