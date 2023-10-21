@@ -117,9 +117,10 @@ const EntrenadorProfile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [selectedCheckbox, setSelectedCheckbox] = useState(null);
-  const avatars = ['/images/avatars/1.png', '/images/avatars/2.png', '/images/avatars/3.png',
-    '/images/avatars/4.png', '/images/avatars/5.png', '/images/avatars/6.png',
-    '/images/avatars/7.png', '/images/avatars/8.png']
+  const avatars = ['/images/animals/1.png', '/images/animals/2.png', '/images/animals/3.png',
+    '/images/animals/4.png', '/images/animals/5.png', '/images/animals/6.png',
+    '/images/animals/7.png', '/images/animals/8.png', '/images/animals/9.png', '/images/animals/10.png',
+    '/images/animals/11.png', '/images/animals/12.png']
 
   // ** Hooks
   const {
@@ -433,28 +434,6 @@ const EntrenadorProfile = () => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          {/* <Box sx={{ display: { md: 'flex' } }} alignItems={'center'}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/1.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/6.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/7.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, alignItems: 'center' }}>
-              <ImgStyled src={'/images/avatars/8.png'} alt='Profile Pic' />
-              <Checkbox
-              />
-            </Box>
-          </Box> */}
           <Box sx={{ display: { md: 'flex' }, flexWrap: 'wrap' }} alignItems={'center'}>
             {avatars.map((avatar, index) => (
               <Box

@@ -68,7 +68,7 @@ const data: UsersType = {
   currentPlan: 'enterprise',
   fullName: 'Daisy Patterson',
   email: 'gslixby0@abc.net.au',
-  avatar: '/images/avatars/1.png',
+  avatar: '/images/animals/1.png',
   name: '',
   phone: 0,
   gender: '',
