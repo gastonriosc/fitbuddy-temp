@@ -1,7 +1,4 @@
 // ** React Imports
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -28,8 +25,11 @@ const TrackingPopUp = (props: Props) => {
   const { trackingPopUp, setTrackingPopUp, title } = props
 
   //*state
-  const handleCloseTrackingPopUp = () => setTrackingPopUp(false)
+  const handleCloseTrackingPopUp = () => {
+    setTrackingPopUp(false);
 
+    window.location.reload();
+  };
 
   return (
     <>

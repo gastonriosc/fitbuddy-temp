@@ -17,7 +17,7 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
@@ -78,8 +78,9 @@ interface Tracking {
     date: Date,
     number: number
   }
+  date: Date,
+  expirationDate: Date,
 }
-
 
 
 const Tracking = () => {
@@ -98,20 +99,24 @@ const Tracking = () => {
   const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>('')
   const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
-  const [tracking, setTracking] = useState<Tracking>()
+  const [tracking, setTracking] = useState<Tracking | any>()
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
   const [dates, setDates] = useState<Date[]>([])
   const [endDateRange, setEndDateRange] = useState<DateType>(null)
   const [startDateRange, setStartDateRange] = useState<DateType>(null)
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isDuplicateDate, setIsDuplicateDate] = useState(false);
 
 
 
-  console.log(tracking)
+
+  console.log('trackingInfo:', tracking)
   const handlePopUpNuevoRegistro = () => {
     setNuevoRegistro(false)
   }
   const itemsPerPage = 6;
+
   const totalPages = Math.ceil(tracking?.data.length / itemsPerPage);
   console.log(totalPages)
 
@@ -145,6 +150,7 @@ const Tracking = () => {
     };
 
     fetchMyTracking();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const newTrackingRecord = async () => {
@@ -155,7 +161,7 @@ const Tracking = () => {
     const requestBody = {
       id: id,
       data: {
-        date: currentDate,
+        date: startDateRange,
         number: value
       }
     };
@@ -183,6 +189,7 @@ const Tracking = () => {
       console.error('Error en la solicitud:', error);
     }
   };
+
   const CustomInput = forwardRef((props: CustomInputProps, ref) => {
     const startDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : ''
     const endDate = props.end !== null ? ` - ${format(props.end, 'dd/MM/yyyy')}` : null
@@ -194,6 +201,20 @@ const Tracking = () => {
 
     return <TextField fullWidth inputRef={ref} {...updatedProps} label={props.label || ''} value={value} />
   })
+  const CustomInputForDialog = forwardRef((props: CustomInputProps, ref) => {
+    const selectedDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : '';
+
+    return (
+      <TextField
+        fullWidth
+        inputRef={ref}
+        {...props}
+        label={props.label || ''}
+        value={selectedDate}
+      />
+    );
+  });
+
 
   const handleOnChangeRange = (dates: any) => {
     const [start, end] = dates
@@ -204,12 +225,19 @@ const Tracking = () => {
     setEndDateRange(end)
   }
 
+  const handleOnChangeRangeForDialog = (date: any) => {
+    setStartDateRange(date);
+    setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
+    const isDuplicate = isDateAlreadyRecorded(date);
+    setIsDuplicateDate(isDuplicate);
+
+  };
+
   const filterByDateRange = (item: any) => {
     const itemDate = new Date(item.date);
 
     let adjustedEndDate = endDateRange;
 
-    // Sumar un día a la fecha hasta si endDateRange no es nulo
     if (adjustedEndDate !== null) {
       adjustedEndDate = new Date(endDateRange as Date);
       adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
@@ -221,6 +249,37 @@ const Tracking = () => {
       (itemDate >= (startDateRange as Date) && itemDate < adjustedEndDate)
     );
   };
+
+  function getIncludedDates(tracking: Tracking) {
+    if (tracking) {
+      const trackingDate = new Date(tracking.date);
+      const expirationDate = new Date(tracking.expirationDate);
+      const includedDates = [];
+
+      const currentDate = new Date(trackingDate);
+      while (currentDate <= expirationDate) {
+        includedDates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return includedDates;
+    }
+
+    return [];
+  }
+
+  const isDateAlreadyRecorded = (selectedDate: any) => {
+    if (!tracking) {
+      return false;
+    }
+
+    const selectedDateString = selectedDate.toISOString();
+
+    return tracking.data.some((record: any) => record.date === selectedDateString);
+  };
+
+
+
 
   return (
     <Grid >
@@ -288,16 +347,17 @@ const Tracking = () => {
         <Box sx={{ mt: '50px', mb: '20px' }}>
           <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
         </Box>
-      )}
+      )
+      }
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
+        {/* Para filtrar por fechas en los resultados se usaria este */}
+        {/* <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
           <DatePicker
             isClearable
             selectsRange
             monthsShown={2}
-            endDate={endDateRange}
-            selected={startDateRange}
             startDate={startDateRange}
+            endDate={endDateRange}
             shouldCloseOnSelect={false}
             id='date-range-picker-months'
             onChange={handleOnChangeRange}
@@ -310,8 +370,12 @@ const Tracking = () => {
                 start={startDateRange as number | Date}
               />
             }
+            minDate={tracking?.date}
+            maxDate={tracking?.expirationDate}
+            includeDates={getIncludedDates(tracking)}
           />
-        </DatePickerWrapper>
+
+        </DatePickerWrapper> */}
       </Box>
 
 
@@ -320,7 +384,8 @@ const Tracking = () => {
         onClose={handlePopUpNuevoRegistro}
         aria-labelledby='user-view-plans'
         aria-describedby='user-view-plans-description'
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, height: '520px' } }}
+
       >
         <DialogTitle
           id='user-view-plans'
@@ -333,9 +398,11 @@ const Tracking = () => {
         >
           Agregar un nuevo registro
         </DialogTitle>
+        <Divider sx={{ my: '0 !important' }} />
+
         <Box display='column' justifyContent={'center'} >
 
-          <Typography sx={{ textAlign: 'center', mt: '10px' }}>
+          <Typography sx={{ textAlign: 'center', mt: '25px' }}>
             ¿Cómo estuvo el entrenamiento de hoy?
           </Typography>
 
@@ -363,13 +430,66 @@ const Tracking = () => {
               {value !== null && <Typography>{labels[hover !== -1 ? hover : value]}</Typography>}
             </Box>
           </Box>
+          <Typography sx={{ textAlign: 'center', mb: 2 }}>
+            Indique un día válido para el registro de entrenamiento.
+          </Typography>
+          <Typography sx={{ textAlign: 'center', mb: 5, fontSize: '11px' }}>
+            {tracking?.date && tracking?.expirationDate
+              ? (
+                <>
+                  Las fechas correspondientes al plan van del{' '}
+                  <strong>{format(new Date(tracking.date), 'dd/MM/yyyy')}</strong>{' '}
+                  al{' '}
+                  <strong>{format(new Date(tracking.expirationDate), 'dd/MM/yyyy')}</strong>
+                </>
+              )
+              : 'Fechas no disponibles'}
+          </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <div>
+              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
+                  <DatePicker
+                    selected={startDateRange}
+                    onChange={handleOnChangeRangeForDialog}
+                    customInput={
+                      <CustomInputForDialog
+                        start={startDateRange as Date}
+                        label='Día de entrenamiento'
+                        dates={[]}
+                        end={0}
+                      />
+                    }
+                    minDate={tracking?.date}
+                    maxDate={tracking?.expirationDate}
+                    includeDates={getIncludedDates(tracking)}
+                  />
+                </DatePickerWrapper>
+              </Box>
+              {isDuplicateDate && (
+                <Typography sx={{ textAlign: 'center', mt: 3, color: 'red', fontSize: '12px' }}  >
+                  Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
+                </Typography>
+              )}
+            </div>
+          </Box>
 
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mr: 5, mb: 5 }}>
-          <Button variant='contained' onClick={() => newTrackingRecord()}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 4 }}>
+          <Button
+            variant='contained'
+            sx={{ '&:hover': { backgroundColor: 'success.main' } }}
+            onClick={() => newTrackingRecord()}
+            disabled={isButtonDisabled}
+          >
             Aceptar
           </Button>
 
+        </Box>
+        <Box display={'flex'}>
+          <Icon icon={'mdi:alert-circle-outline'} style={{ marginLeft: 8, fontSize: '18px' }} > </Icon>
+          <Typography sx={{ ml: 1, fontSize: '12px' }}> Nota: Recuerde que <strong>no</strong> puede registrar un dia  de entrenamiento mas de una vez. </Typography>
         </Box>
       </Dialog>
       <TrackingPopUp trackingPopUp={trackingPopUp} setTrackingPopUp={setTrackingPopUp} title={titlePopUp}></TrackingPopUp>
