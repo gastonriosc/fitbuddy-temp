@@ -18,11 +18,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (req.method === 'POST') {
-      const exerciseLibrary = await GeneralLibrary.create(req.body)
-      if (exerciseLibrary) {
-        return res.status(200).json(exerciseLibrary)
+      const { exercise, trainerId } = req.body
+      let existingLibrary = await MyLibrary.findOne({ trainerId })
+      let newExercise
+
+      if (existingLibrary) {
+        // Si ya existe la librería para el entrenador, agregar o modificar ejercicios
+        existingLibrary.exercises.push(exercise)
+        await existingLibrary.save()
+        newExercise = existingLibrary.exercises[existingLibrary.exercises.length - 1]
       } else {
-        return res.status(404).json('No se pudo crear la libreria de ejercicios')
+        // Si no existe la librería, crearla con los nuevos ejercicios
+        existingLibrary = await MyLibrary.create({ exercise: [exercise], trainerId })
+        newExercise = existingLibrary.exercise
+      }
+      if (newExercise) {
+        console.log(newExercise)
+
+        return res.status(200).json(newExercise)
+      } else {
+        return res.status(404).json('No se pudo agregar el ejercicio')
       }
     } else if (req.method === 'GET') {
       const { id } = req.query
@@ -43,8 +58,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const responseData = {
         exercisesData: response
       }
-
-      return res.status(200).json(responseData)
+      if (responseData) {
+        return res.status(200).json(responseData)
+      } else {
+        return res.status(404).json('No se pudo eliminar el ejercicio')
+      }
     } else if (req.method === 'PUT') {
       const { trainerId, exerciseId } = req.body
       const objectId = new mongoose.Types.ObjectId(exerciseId)
