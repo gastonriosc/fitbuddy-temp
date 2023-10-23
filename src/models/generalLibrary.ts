@@ -13,7 +13,7 @@ const exercisesSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  linkExercise: {
+  exerciseLink: {
     type: String,
     required: true
   }

@@ -11,6 +11,12 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import FormHelperText from '@mui/material/FormHelperText'
+import TextField from '@mui/material/TextField'
+import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
+import { SelectChangeEvent } from '@mui/material'
 
 //import Chip from '@mui/material/Chip';
 import Icon from 'src/@core/components/icon';
@@ -32,17 +38,26 @@ interface Exercise {
   exerciseName: string;
   muscleGroup: string;
   avatar: string;
-  linkExercise: string;
+  exerciseLink: string;
 }
 
-const MyRequests = () => {
+interface FormData {
+  _id: number | string
+  exerciseName: string
+  muscleGroup: string
+  exerciseLink: string
+  avatar: string;
+}
+
+
+
+const MyLibrary = () => {
   const [plan, setPlan] = useState<Exercise[]>([]);
   const [filterOption, setFilterOption] = useState<string>('all');
   const [filterName, setFilterName] = useState<string>('');
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isAddExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
-  const [addedExercises, setAddedExercises] = useState<Exercise[]>([]);
   const [error, setError] = useState<string>('');
   const route = useRouter();
   const [titlePopUp, setTitlePopUp] = useState<string>()
@@ -50,7 +65,7 @@ const MyRequests = () => {
   const [titlePopUpDelete, setTitlePopUpDelete] = useState<string>()
   const [popUpDelete, setPopUpDelete] = useState<boolean>(false)
   const [exerciseToDelete, setExerciseToDelete] = useState<any>(null);
-
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('')
 
   const textPopUp = 'Pulse el botón OK para continuar'
   const textPopUpDelete = 'Presione el boton Eliminar para confirmar la eliminación del ejercicio.'
@@ -58,15 +73,37 @@ const MyRequests = () => {
   const closePopUp = () => setPopUp(false)
   const closePopUpDelete = () => setPopUpDelete(false)
 
+  const schema = yup.object().shape({
+    exerciseName: yup.string().required("Nombre del ejercicio es un campo obligatorio"),
+    muscleGroup: yup.string().required("Seleccione un grupo muscular"),
+    exerciseLink: yup.string().required("El link del ejercicio es un campo obligatorio")
+  })
 
 
-  const [newExercise, setNewExercise] = useState<any>({
-    exerciseName: '',
-    muscleGroup: '',
-    avatar: '',
-    linkExercise: '',
-    isValid: false,
-  });
+  const addExerciseToPlan = (exercise: Exercise) => {
+    const updatedPlan = [...plan, exercise];
+    setPlan(updatedPlan);
+  }
+
+  // ** Events
+  const handleMuscleGroupChange = (event: SelectChangeEvent<string>) => {
+    setSelectedMuscleGroup(event.target.value)
+  }
+
+  // ** React-Hook-Form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      exerciseName: '',
+      muscleGroup: '',
+      exerciseLink: '',
+    },
+    mode: 'onBlur', //onBlur hace que los errores se muestren cuando el campo pierde focus.
+    resolver: yupResolver(schema)
+  })
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -100,30 +137,25 @@ const MyRequests = () => {
   }, []);
 
   //Funcion para agregar un ejercicio.
-  const handleAddExercise = () => {
-    if (!newExercise.isValid) {
-      console.error('Por favor complete todos los campos.');
-
-      return;
-    }
+  const handleExercise: SubmitHandler<FormData> = async (data) => {
 
     let defaultAvatar = 'URL de la imagen';
 
-    if (newExercise.muscleGroup.toLowerCase() === 'pecho') {
+    if (data.muscleGroup.toLowerCase() === 'pecho') {
       defaultAvatar = '/images/avatars/pecho.png';
-    } else if (newExercise.muscleGroup.toLowerCase() === 'piernas') {
+    } else if (data.muscleGroup.toLowerCase() === 'piernas') {
       defaultAvatar = '/images/avatars/legs.png';
-    } else if (newExercise.muscleGroup.toLowerCase() === 'espalda') {
+    } else if (data.muscleGroup.toLowerCase() === 'espalda') {
       defaultAvatar = '/images/avatars/espalda.png';
-    } else if (newExercise.muscleGroup.toLowerCase() === 'hombros') {
+    } else if (data.muscleGroup.toLowerCase() === 'hombros') {
       defaultAvatar = '/images/avatars/hombros.png';
-    } else if (newExercise.muscleGroup.toLowerCase() === 'brazos') {
+    } else if (data.muscleGroup.toLowerCase() === 'brazos') {
       defaultAvatar = '/images/avatars/biceps.png';
-    } else if (newExercise.muscleGroup.toLowerCase() === 'abdominales') {
+    } else if (data.muscleGroup.toLowerCase() === 'abdominales') {
       defaultAvatar = '/images/avatars/abs.png';
     }
 
-    const exerciseExists = plan.some((exercise) => exercise.exerciseName === newExercise.exerciseName && exercise.linkExercise === newExercise.linkExercise);
+    const exerciseExists = plan.some((exercise) => exercise.exerciseName === data.exerciseName && exercise.exerciseLink === data.exerciseLink);
 
     if (exerciseExists) {
       setError('Ya existe un ejercicio con esta misma información. Por favor, modifique el mismo.');
@@ -134,75 +166,47 @@ const MyRequests = () => {
     setError('');
 
     const updatedExercise = {
-      ...newExercise,
+      ...data,
       avatar: defaultAvatar,
     };
-    console.log(updatedExercise);
-
-    // Agregar el nuevo ejercicio al estado plan
-    setPlan([...plan, updatedExercise]);
-
-    // Limpiar los valores del nuevo ejercicio después de agregarlo
-    setNewExercise({
-      exerciseName: '',
-      muscleGroup: '',
-      avatar: '',
-      linkExercise: '',
-      isValid: false,
-    });
-
-    setAddedExercises([...addedExercises, updatedExercise]);  //Agrega solamente los ejercicios que se agregan desde el modal.
-
-    //setAddedExercises([...plan, updatedExercise]); //Agrega todos los ejercicios de la libreria general + los que agrega desde el modal.
 
     setAddExerciseModalOpen(false);
+    addExerciseToMyPersonalLibrary(updatedExercise)
   };
 
-  const addExerciseToMyPersonalLibrary = async (newExercise: any) => {
+  const addExerciseToMyPersonalLibrary: SubmitHandler<FieldValues> = async (data) => {
+    const exercise = data;
     const trainerId = route.query.id;
-
     try {
       // Actualizar el estado local antes de realizar la petición PUT
 
-      // Realizar la petición PUT al servidor
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
-        method: 'PUT',
+      // Realizar la petición POST al servidor
+      const res = await fetch(`/api/library/`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ exercises: newExercise, trainerId: route.query.id }),
+        body: JSON.stringify({ exercise, trainerId: trainerId }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Ejercicio modificado:', data);
-        setTitlePopUp('Biblioteca actualizada con éxito!');
+      if (res.status == 200) {
+        const data = await res.json()
+        console.log(data)
+        addExerciseToPlan(data)
+        setTitlePopUp('Ejercicio agregado con éxito!');
         setPopUp(true);
-      } else {
-        console.error('Error al tratar de querer modificar un ejercicio:', response.statusText);
+
+      }
+      if (res.status == 404) {
+        route.replace('/404')
+      }
+      if (res.status == 500) {
+        route.replace('/500')
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
-  //Hook para deshabilitar/habilitar el boton segun si los campos estan completos o no.
-  useEffect(() => {
-    const isValid =
-      newExercise.exerciseName.trim() !== '' &&
-      newExercise.muscleGroup.trim() !== '' &&
-      newExercise.linkExercise.trim() !== '';
-
-    setNewExercise((prev: any) => ({ ...prev, isValid }));
-  }, [newExercise.exerciseName, newExercise.muscleGroup, newExercise.linkExercise]);
-
-
-  //Hook para validar el avatar del ejercicio y agregarlo al plan.
-  useEffect(() => {
-    if (newExercise.avatar !== '') {
-      setPlan(prevPlan => [...prevPlan, newExercise]);
-    }
-  }, [newExercise]);
 
   //Como los que recien se agregan no pueden eliminarse por id, se hace por nombre y link, ya que un ejercicio no puede tener el mismo nombre y link, pero si puede tener el mismo nombre y distinto link o viceversa.
   const handleDeleteExercise = (exerciseId: any) => {
@@ -218,11 +222,6 @@ const MyRequests = () => {
       (exercise) => exercise._id !== exerciseId
     );
     setPlan(updatedPlan);
-
-    // const updatedAddedExercises = addedExercises.filter(
-    //   (exercise) => exercise.exerciseName !== exerciseName || exercise.linkExercise !== linkExercise
-    // );
-    // setAddedExercises(updatedAddedExercises);
     const trainerId = route.query.id;
 
     try {
@@ -235,7 +234,8 @@ const MyRequests = () => {
       });
 
       if (res.status == 200) {
-        const data = await res.json();
+        setTitlePopUp('Ejercicio eliminado con éxito!');
+        setPopUp(true);
 
       }
       if (res.status == 404) {
@@ -275,7 +275,7 @@ const MyRequests = () => {
                 variant='text'
                 color='primary'
                 title='Link'
-                onClick={() => window.open(exercise.linkExercise, '_blank')}
+                onClick={() => window.open(exercise.exerciseLink, '_blank')}
               >
                 <Icon icon='mdi:eye' />
               </Button>
@@ -402,46 +402,96 @@ const MyRequests = () => {
         }}>
           <Card>
             <CardContent>
+              <form noValidate autoComplete='off' onSubmit={handleSubmit(addExerciseToMyPersonalLibrary)}>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='exerciseName'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        autoFocus
+                        label='Nombre del ejercicio'
+                        name='exerciseName'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.exerciseName)}
+                      />
+                    )}
+                  />
+                  {errors.exerciseName && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.exerciseName.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <InputLabel>Grupo Muscular</InputLabel>
+                  <Controller
+                    name='muscleGroup'
+                    control={control}
+                    rules={{
+                      required: 'Selecciona un grupo muscular',
+                      validate: (value) => value !== ''
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Select
+                        value={value}
+                        onBlur={onBlur}
+                        label='Grupo Muscular'
+                        onChange={(e) => {
+                          onChange(e);
+                          handleMuscleGroupChange(e);
+                        }}
+                        error={Boolean(errors.muscleGroup)}
+                      >
+                        <MenuItem value="pecho">Pecho</MenuItem>
+                        <MenuItem value="piernas">Piernas</MenuItem>
+                        <MenuItem value="espalda">Espalda</MenuItem>
+                        <MenuItem value="brazos">Brazos</MenuItem>
+                        <MenuItem value="abdominales">Abdominales</MenuItem>
+                        <MenuItem value="hombros">Hombros</MenuItem>
+                      </Select>
+                    )}
+                  />
+                  {errors.muscleGroup && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.muscleGroup.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
 
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <InputLabel>Nombre del Ejercicio</InputLabel>
-                <Input
-                  value={newExercise.exerciseName}
-                  onChange={(e) => setNewExercise({ ...newExercise, exerciseName: e.target.value })}
-                />
-              </FormControl>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='exerciseLink'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        label='Link del ejercicio'
+                        name='exerciseLink'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.exerciseLink)}
+                      />
+                    )}
+                  />
+                  {errors.exerciseLink && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.exerciseLink.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
 
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <InputLabel>Grupo Muscular</InputLabel>
-                <Select
-                  value={newExercise.muscleGroup}
-                  label='Grupo Muscular'
-                  onChange={(e) => setNewExercise({ ...newExercise, muscleGroup: e.target.value as string })}
-                >
-                  <MenuItem value="pecho">Pecho</MenuItem>
-                  <MenuItem value="piernas">Piernas</MenuItem>
-                  <MenuItem value="espalda">Espalda</MenuItem>
-                  <MenuItem value="brazos">Brazos</MenuItem>
-                  <MenuItem value="abdominales">Abdominales</MenuItem>
-                  <MenuItem value="hombros">Hombros</MenuItem>
-                </Select>
-              </FormControl>
+                <Box sx={{ marginTop: '4px', display: 'flex', justifyContent: 'center' }}>
+                  <Button color='primary' variant='contained' type='submit' onClick={handleSubmit(handleExercise)} >
+                    Agregar
+                  </Button>
 
-              <FormControl fullWidth sx={{ mb: 4 }}>
-                <InputLabel>Link del Ejercicio</InputLabel>
-                <Input
-                  value={newExercise.linkExercise}
-                  onChange={(e) => setNewExercise({ ...newExercise, linkExercise: e.target.value })}
-                />
-              </FormControl>
-
-              <Box sx={{ marginTop: '4px', display: 'flex', justifyContent: 'center' }}>
-                <Button color='primary' variant='contained' type='submit' onClick={handleAddExercise} disabled={!newExercise.isValid}>
-                  Agregar
-                </Button>
-
-              </Box>
-
+                </Box>
+              </form>
             </CardContent>
             {error && (
               <Box sx={{ color: 'skyblue', textAlign: 'center', mb: 2 }}>
@@ -451,7 +501,7 @@ const MyRequests = () => {
           </Card>
 
         </DialogContent>
-      </Dialog>
+      </Dialog >
       <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
         <DialogContent
           sx={{
@@ -531,10 +581,10 @@ const MyRequests = () => {
   );
 };
 
-MyRequests.acl = {
+MyLibrary.acl = {
   action: 'manage',
   subject: 'myLibrary-page',
 };
 
-export default MyRequests;
+export default MyLibrary;
 

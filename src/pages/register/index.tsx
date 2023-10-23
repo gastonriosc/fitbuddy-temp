@@ -91,11 +91,6 @@ const phoneRegExp = /^(\+?549?|0)(11|[2368]\d)(\d{4})(\d{4})$/;
 const schema = yup.object().shape({
   name: yup.string().required("Nombre es un campo obligatorio"),
   phone: yup.string().required("Teléfono es un campo obligatorio").matches(phoneRegExp, 'No es un teléfono válido'),
-
-  // country:
-  // gender:
-  // role:
-  // discipline: yup.string().required("Disciplina es un campo obligatorio"),
   email: yup.string().email("Debe ser un email válido").required("Email es un campo obligatorio"),
   password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo"),
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden')
