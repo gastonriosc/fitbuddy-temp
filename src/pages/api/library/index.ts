@@ -11,7 +11,7 @@ interface Exercise {
   exerciseName: string
   muscleGroup: string
   avatar: string
-  linkExercise: string
+  exerciseLink: string
 }
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()

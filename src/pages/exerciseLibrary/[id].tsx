@@ -94,7 +94,8 @@ const MyLibrary = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<FormData>({
     defaultValues: {
       exerciseName: '',
@@ -118,6 +119,7 @@ const MyLibrary = () => {
 
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data.exercisesData)
           setPlan(data.exercisesData)
 
           // return data.exercisesData || [];
@@ -171,12 +173,18 @@ const MyLibrary = () => {
     };
 
     setAddExerciseModalOpen(false);
+
     addExerciseToMyPersonalLibrary(updatedExercise)
   };
 
   const addExerciseToMyPersonalLibrary: SubmitHandler<FieldValues> = async (data) => {
     const exercise = data;
     const trainerId = route.query.id;
+    reset({
+      exerciseName: '',
+      muscleGroup: '',
+      exerciseLink: '',
+    });
     try {
       // Actualizar el estado local antes de realizar la petición PUT
 
