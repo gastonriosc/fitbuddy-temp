@@ -403,36 +403,65 @@ const Tracking = () => {
         <Box display='column' justifyContent={'center'} >
 
           <Typography sx={{ textAlign: 'center', mt: '25px' }}>
-            ¿Cómo estuvo el entrenamiento de hoy?
+            ¿Cómo estuvo el entrenamiento?
           </Typography>
 
-          <Box
-            sx={{
-              mt: 3,
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: ['wrap', 'nowrap'],
-              pt: theme => `${theme.spacing(2)} !important`,
-              pb: theme => `${theme.spacing(8)} !important`,
-              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Rating
-                value={value}
-                precision={1}
-                name='hover-feedback'
-                max={4}
-                sx={{ mr: 4 }}
-                onChange={(event, newValue) => setValue(newValue)}
-                onChangeActive={(event, newHover) => setHover(newHover)}
-              />
-              {value !== null && <Typography>{labels[hover !== -1 ? hover : value]}</Typography>}
+          <Box display={'flex'} justifyContent={'center'} paddingTop={2}>
+
+
+            <Box
+              sx={{
+                mt: 3,
+                display: 'flex',
+                justifyContent: 'center',
+                flexWrap: ['wrap', 'nowrap'],
+                pt: theme => `${theme.spacing(2)} !important`,
+                pb: theme => `${theme.spacing(8)} !important`,
+                px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Rating
+                  value={value}
+                  precision={1}
+                  name='hover-feedback'
+                  max={4}
+                  sx={{ mr: 4 }}
+                  onChange={(event, newValue) => setValue(newValue)}
+                  onChangeActive={(event, newHover) => setHover(newHover)}
+                />
+                {value !== null && <Typography>{labels[hover !== -1 ? hover : value]}</Typography>}
+              </Box>
+            </Box>
+            {/* <Typography sx={{ textAlign: 'center', mb: 2 }}>
+            Indique un día válido para el registro de entrenamiento.
+          </Typography> */}
+
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+              <div>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                  <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
+                    <DatePicker
+                      selected={startDateRange}
+                      onChange={handleOnChangeRangeForDialog}
+                      customInput={
+                        <CustomInputForDialog
+                          start={startDateRange as Date}
+                          label='Día de entrenamiento'
+                          dates={[]}
+                          end={0}
+                        />
+                      }
+                      minDate={tracking?.date}
+                      maxDate={tracking?.expirationDate}
+                      includeDates={getIncludedDates(tracking)}
+                    />
+                  </DatePickerWrapper>
+                </Box>
+
+              </div>
             </Box>
           </Box>
-          <Typography sx={{ textAlign: 'center', mb: 2 }}>
-            Indique un día válido para el registro de entrenamiento.
-          </Typography>
           <Typography sx={{ textAlign: 'center', mb: 5, fontSize: '11px' }}>
             {tracking?.date && tracking?.expirationDate
               ? (
@@ -446,35 +475,11 @@ const Tracking = () => {
               : 'Fechas no disponibles'}
           </Typography>
 
-          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-            <div>
-              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
-                  <DatePicker
-                    selected={startDateRange}
-                    onChange={handleOnChangeRangeForDialog}
-                    customInput={
-                      <CustomInputForDialog
-                        start={startDateRange as Date}
-                        label='Día de entrenamiento'
-                        dates={[]}
-                        end={0}
-                      />
-                    }
-                    minDate={tracking?.date}
-                    maxDate={tracking?.expirationDate}
-                    includeDates={getIncludedDates(tracking)}
-                  />
-                </DatePickerWrapper>
-              </Box>
-              {isDuplicateDate && (
-                <Typography sx={{ textAlign: 'center', mt: 3, color: 'red', fontSize: '12px' }}  >
-                  Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
-                </Typography>
-              )}
-            </div>
-          </Box>
-
+          {isDuplicateDate && (
+            <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}  >
+              Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
+            </Typography>
+          )}
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 4 }}>
           <Button
@@ -487,10 +492,10 @@ const Tracking = () => {
           </Button>
 
         </Box>
-        <Box display={'flex'}>
+        {/* <Box display={'flex'}>
           <Icon icon={'mdi:alert-circle-outline'} style={{ marginLeft: 8, fontSize: '18px' }} > </Icon>
           <Typography sx={{ ml: 1, fontSize: '12px' }}> Nota: Recuerde que <strong>no</strong> puede registrar un dia  de entrenamiento mas de una vez. </Typography>
-        </Box>
+        </Box> */}
       </Dialog>
       <TrackingPopUp trackingPopUp={trackingPopUp} setTrackingPopUp={setTrackingPopUp} title={titlePopUp}></TrackingPopUp>
     </Grid >
