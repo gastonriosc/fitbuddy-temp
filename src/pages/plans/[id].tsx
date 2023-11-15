@@ -398,50 +398,28 @@ const MyPlans = () => {
     });
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/api/generalLibrary', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        return data.exercisesData?.exercises || [];
-      } else {
-        console.error('Error fetching data from the server');
-
-        return [];
-      }
-    } catch (error) {
-      console.error('Error:', error);
-
-      return [];
-    }
-  };
-
   const getExerciseFromMyPersonalLibrary = async () => {
     const trainerId = session.data?.user._id;
 
     try {
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+      const res = await fetch(`/api/library/?id=${trainerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (res.status == 200) {
+        const data = await res.json();
+        console.log(data.exercisesData)
 
-        return data.exercises || [];
-      } else {
-        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
-
-        return [];
+        return data.exercisesData || [];
+      }
+      if (res.status == 404) {
+        route.replace('/404')
+      }
+      if (res.status == 500) {
+        route.replace('/500')
       }
     } catch (error) {
       console.error('Error:', error);
@@ -452,13 +430,11 @@ const MyPlans = () => {
 
   useEffect(() => {
     const fetchDataAndPersonal = async () => {
-      const generalLibraryData = await fetchData();
-      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+      const libraryData = await getExerciseFromMyPersonalLibrary();
 
-      // Combina los resultados de ambos GET
-      const combinedData = [...generalLibraryData, ...personalLibraryData];
-
-      setPlanes(combinedData);
+      console.log(libraryData)
+      setPlanes(libraryData);
+      console.log(planes)
     };
 
     fetchDataAndPersonal();
@@ -531,6 +507,7 @@ const MyPlans = () => {
                                           <Select
                                             labelId='exercise-select-label'
                                             id='exercise-select'
+                                            label='Ejercicio'
                                             value={exercise.nombreEjercicio}
                                             onChange={(e) => {
                                               handleExerciseDataChange(dayIndex, exerciseIndex, 'nombreEjercicio', e.target.value);

@@ -340,9 +340,6 @@ const MyLibrary = () => {
                     value={filterOption}
                     onChange={(e) => setFilterOption(e.target.value)}
                   >
-                    <MenuItem value="">
-                      Selecciona un grupo muscular
-                    </MenuItem>
                     <MenuItem value="all">Todos los ejercicios</MenuItem>
                     <MenuItem value="pecho">Pecho</MenuItem>
                     <MenuItem value="piernas">Piernas</MenuItem>
