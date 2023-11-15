@@ -28,10 +28,43 @@ interface PickerProps {
   end: Date | number
 }
 
-const ApexBarChart = () => {
+interface Data {
+  _id: string
+  date: Date,
+  number: number,
+  difficult: number
+}
+
+interface Tracking {
+  _id: string,
+  planId: string,
+  data: [Data]
+}
+
+interface Props {
+  tracking: Tracking
+}
+
+const ApexBarChart = (props: Props) => {
   // ** States
   const [endDate, setEndDate] = useState<DateType>(null)
   const [startDate, setStartDate] = useState<DateType>(null)
+
+  const { tracking } = props
+
+  const counts: { [key: number]: number } = {};
+  let cont = 0;
+
+  tracking.data.forEach(item => {
+    cont += 1;
+    const number = item.difficult;
+    counts[number] = (counts[number] || 0) + 1;
+  });
+
+  const resultArray = [];
+  for (let i = 1; i <= 4; i++) {
+    resultArray.push(counts[i] || 0);
+  }
 
   // ** Hook
   const theme = useTheme()
@@ -68,7 +101,7 @@ const ApexBarChart = () => {
     xaxis: {
       axisBorder: { show: false },
       axisTicks: { color: theme.palette.divider },
-      categories: ['MON, 11', 'THU, 14', 'FRI, 15', 'MON, 18', 'WED, 20', 'FRI, 21', 'MON, 23'],
+      categories: ['Facil', 'Moderado', 'Intenso', 'Muy intenso'],
       labels: {
         style: { colors: theme.palette.text.disabled }
       }
