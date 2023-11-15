@@ -37,7 +37,7 @@ interface Props {
 }
 
 
-const CardTrackingMensual = (props: Props) => {
+const CardTrackingFatigue = (props: Props) => {
   // ** Hook
   const { tracking } = props
 
@@ -46,7 +46,7 @@ const CardTrackingMensual = (props: Props) => {
 
   tracking.data.forEach(item => {
     cont += 1;
-    const number = item.number;
+    const number = item.fatigue;
     counts[number] = (counts[number] || 0) + 1;
   });
 
@@ -59,7 +59,7 @@ const CardTrackingMensual = (props: Props) => {
 
   const options: ApexOptions = {
     stroke: { width: 0 },
-    labels: ['Mala', 'Buena', 'Muy Buena', 'Excelente'],
+    labels: ['Poco', 'Moderado', 'Considerable', 'Extremo'],
     colors: [donutColors.series1, donutColors.series5, donutColors.series3, donutColors.series2],
     dataLabels: {
       enabled: true,
@@ -144,7 +144,7 @@ const CardTrackingMensual = (props: Props) => {
   return (
     <Card>
       <CardHeader
-        title='¿Cómo estuvo el entrenamiento?'
+        title='¿Qué tan cansador le pareció el entrenamiento?'
         subheader={`Total de ${cont} registros`}
         subheaderTypographyProps={{ sx: { color: theme => `${theme.palette.text.disabled} !important` } }}
       />
@@ -155,4 +155,4 @@ const CardTrackingMensual = (props: Props) => {
   )
 }
 
-export default CardTrackingMensual
+export default CardTrackingFatigue

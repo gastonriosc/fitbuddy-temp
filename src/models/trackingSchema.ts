@@ -8,6 +8,14 @@ const dataTrackingSchema = new mongoose.Schema({
   number: {
     type: Number,
     required: true
+  },
+  difficult: {
+    type: Number,
+    required: true
+  },
+  fatigue: {
+    type: Number,
+    required: true
   }
 })
 

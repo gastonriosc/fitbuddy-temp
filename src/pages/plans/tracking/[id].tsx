@@ -8,6 +8,8 @@ import { useSession } from 'next-auth/react'
 //import CardWorkoutMensual from './cardWorkouts'
 import CardTrackingMensual from './cardTracking'
 import TrackingPopUp from './trackingPopUp'
+import CardTrackingDifficult from './cardTrackingDifficult'
+import CardTrackingFatigue from './cardTrackingFatigue'
 
 import format from 'date-fns/format'
 
@@ -77,6 +79,8 @@ interface Tracking {
     _id: string
     date: Date,
     number: number
+    difficult: number,
+    fatigue: number,
   }
   date: Date,
   expirationDate: Date,
@@ -95,20 +99,36 @@ const Tracking = () => {
     4: 'Excelente',
   }
   const [hover, setHover] = useState<number>(-1)
+  const [hoverDifficult, setHoverDifficult] = useState<number>(-1)
+  const [hoverFatigue, setHoverFatigue] = useState<number>(-1)
+
   const [value, setValue] = useState<number | null | any>(2)
+  const [valueDifficult, setValueDifficult] = useState<number | null | any>(2)
+  const [valueFatigue, setValueFatigue] = useState<number | null | any>(2)
+
   const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>('')
   const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
   const [tracking, setTracking] = useState<Tracking | any>()
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
-  const [dates, setDates] = useState<Date[]>([])
   const [endDateRange, setEndDateRange] = useState<DateType>(null)
   const [startDateRange, setStartDateRange] = useState<DateType>(null)
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
 
-
+  const labelsDifficult: { [index: string]: string } = {
+    1: 'Fácil',
+    2: 'Moderado',
+    3: 'Intenso',
+    4: 'Muy intenso',
+  }
+  const labelsFatigue: { [index: string]: string } = {
+    1: 'Poco',
+    2: 'Moderado',
+    3: 'Considerable',
+    4: 'Extremo',
+  }
 
 
   console.log('trackingInfo:', tracking)
@@ -162,7 +182,9 @@ const Tracking = () => {
       id: id,
       data: {
         date: startDateRange,
-        number: value
+        number: value,
+        difficult: valueDifficult,
+        fatigue: valueFatigue,
       }
     };
     try {
@@ -190,17 +212,7 @@ const Tracking = () => {
     }
   };
 
-  const CustomInput = forwardRef((props: CustomInputProps, ref) => {
-    const startDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : ''
-    const endDate = props.end !== null ? ` - ${format(props.end, 'dd/MM/yyyy')}` : null
 
-    const value = `${startDate}${endDate !== null ? endDate : ''}`
-    props.start === null && props.dates.length && props.setDates ? props.setDates([]) : null
-    const updatedProps = { ...props }
-    delete updatedProps.setDates
-
-    return <TextField fullWidth inputRef={ref} {...updatedProps} label={props.label || ''} value={value} />
-  })
   const CustomInputForDialog = forwardRef((props: CustomInputProps, ref) => {
     const selectedDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : '';
 
@@ -216,14 +228,7 @@ const Tracking = () => {
   });
 
 
-  const handleOnChangeRange = (dates: any) => {
-    const [start, end] = dates
-    if (start !== null && end !== null) {
-      setDates(dates)
-    }
-    setStartDateRange(start)
-    setEndDateRange(end)
-  }
+
 
   const handleOnChangeRangeForDialog = (date: any) => {
     setStartDateRange(date);
@@ -301,6 +306,7 @@ const Tracking = () => {
       {tracking ? (
         <Box>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+            {/* Que le parecio el entrenamiento? */}
             <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
               <CardTrackingMensual tracking={tracking}></CardTrackingMensual>
             </Box>
@@ -341,6 +347,95 @@ const Tracking = () => {
 
               </Card>
             </Box>
+
+          </Box>
+          {/* Dificultad del entrenamiento */}
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, marginTop: { xs: '8px' } }}>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
+              <CardTrackingDifficult tracking={tracking}></CardTrackingDifficult>
+            </Box>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1, height: '485px' }}>
+              <Card sx={{ height: '485px' }}>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tracking?.data
+                        .filter(filterByDateRange)
+                        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                        .map((trackingItem: any) => (
+                          <TableRow key={trackingItem}>
+                            <TableCell style={{ textAlign: 'center' }}>
+                              {new Date(trackingItem.date).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell style={{ justifyContent: 'center' }}>
+                              <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                <Rating readOnly value={trackingItem.difficult} max={4} name='read-only' />
+                                <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.difficult]}</Typography>
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+
+                  </Table>
+                </TableContainer>
+                <Box className='demo-space-y' mt={2} alignItems={'center'} justifyContent='center' display={'flex'}>
+                  <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+                </Box>
+
+              </Card>
+            </Box>
+
+          </Box>
+          {/* Cansancio del entrenamiento */}
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, marginTop: { xs: '8px' } }}>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1 }}>
+              <CardTrackingFatigue tracking={tracking}></CardTrackingFatigue>
+            </Box>
+            <Box sx={{ width: { xs: '100%', md: '50%' }, padding: 1, height: '485px' }}>
+              <Card sx={{ height: '485px' }}>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {tracking?.data
+                        .filter(filterByDateRange)
+                        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                        .map((trackingItem: any) => (
+                          <TableRow key={trackingItem}>
+                            <TableCell style={{ textAlign: 'center' }}>
+                              {new Date(trackingItem.date).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell style={{ justifyContent: 'center' }}>
+                              <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                <Rating readOnly value={trackingItem.fatigue} max={4} name='read-only' />
+                                <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.fatigue]}</Typography>
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+
+                  </Table>
+                </TableContainer>
+                <Box className='demo-space-y' mt={2} alignItems={'center'} justifyContent='center' display={'flex'}>
+                  <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+                </Box>
+
+              </Card>
+            </Box>
+
           </Box>
         </Box>
       ) : (
@@ -349,34 +444,7 @@ const Tracking = () => {
         </Box>
       )
       }
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-        {/* Para filtrar por fechas en los resultados se usaria este */}
-        {/* <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
-          <DatePicker
-            isClearable
-            selectsRange
-            monthsShown={2}
-            startDate={startDateRange}
-            endDate={endDateRange}
-            shouldCloseOnSelect={false}
-            id='date-range-picker-months'
-            onChange={handleOnChangeRange}
-            customInput={
-              <CustomInput
-                dates={dates}
-                setDates={setDates}
-                label='DD/MM/YYYY - DD/MM/YYYY'
-                end={endDateRange as number | Date}
-                start={startDateRange as number | Date}
-              />
-            }
-            minDate={tracking?.date}
-            maxDate={tracking?.expirationDate}
-            includeDates={getIncludedDates(tracking)}
-          />
 
-        </DatePickerWrapper> */}
-      </Box>
 
 
       <Dialog
@@ -384,7 +452,7 @@ const Tracking = () => {
         onClose={handlePopUpNuevoRegistro}
         aria-labelledby='user-view-plans'
         aria-describedby='user-view-plans-description'
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650, height: '520px' } }}
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '620px' } }}
 
       >
         <DialogTitle
@@ -405,6 +473,7 @@ const Tracking = () => {
           <Typography sx={{ textAlign: 'center', mt: '25px' }}>
             ¿Cómo estuvo el entrenamiento?
           </Typography>
+
 
           <Box display={'flex'} justifyContent={'center'} paddingTop={2}>
 
@@ -480,6 +549,62 @@ const Tracking = () => {
               Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
             </Typography>
           )}
+        </Box>
+        <Typography sx={{ textAlign: 'center', mt: '15px' }}>
+          ¿Qué tan difícil le pareció el entrenamiento?
+        </Typography>
+        <Box
+          sx={{
+            mt: 3,
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: ['wrap', 'nowrap'],
+            pt: theme => `${theme.spacing(2)} !important`,
+            pb: theme => `${theme.spacing(8)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+            <Rating
+              value={valueDifficult}
+              precision={1}
+              name='hover-feedback'
+              max={4}
+              sx={{ mr: 4 }}
+              onChange={(event, newValues) => setValueDifficult(newValues)}
+              onChangeActive={(event, newHovers) => setHoverDifficult(newHovers)}
+            />
+            {valueDifficult !== null && <Typography>{labelsDifficult[hoverDifficult !== -1 ? hoverDifficult : valueDifficult]}</Typography>}
+          </Box>
+        </Box>
+        <Typography sx={{ textAlign: 'center', mt: '15px' }}>
+          ¿Qué tan cansador le pareció el entrenamiento?
+        </Typography>
+        <Box
+          sx={{
+            mt: 3,
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: ['wrap', 'nowrap'],
+            pt: theme => `${theme.spacing(2)} !important`,
+            pb: theme => `${theme.spacing(8)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
+            <Rating
+              value={valueFatigue}
+              precision={1}
+              name='hover-feedback'
+              max={4}
+              sx={{ mr: 4 }}
+              onChange={(event, newValues) => setValueFatigue(newValues)}
+              onChangeActive={(event, newHovers) => setHoverFatigue(newHovers)}
+            />
+            {valueFatigue !== null && <Typography>{labelsFatigue[hoverFatigue !== -1 ? hoverFatigue : valueFatigue]}</Typography>}
+          </Box>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 4 }}>
           <Button
