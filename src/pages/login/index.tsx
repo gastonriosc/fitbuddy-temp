@@ -1,6 +1,6 @@
 // ** React Imports
 // import { useState, ReactNode, MouseEvent } from 'react'
-import React, { useState, ReactNode } from 'react'
+import React, { useState, ReactNode, useEffect } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -116,6 +116,38 @@ const LoginPage = () => {
   const [showAlumnosFeatures, setShowAlumnosFeatures] = useState(false);
   const [showEntrenadoresFeatures, setShowEntrenadoresFeatures] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [title, setTitle] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const fullTitle = 'FitBuddy';
+  const fullSubtitle = 'Entrene y sea entrenado cuando quiera, donde quiera.';
+
+  useEffect(() => {
+    // Efecto para el título
+    let titleIndex = 0;
+    const titleIntervalId = setInterval(() => {
+      setTitle(fullTitle.slice(0, titleIndex));
+      titleIndex++;
+
+      if (titleIndex > fullTitle.length) {
+        clearInterval(titleIntervalId);
+
+        // Una vez que termina el título, comienza el efecto para el subtítulo
+        let subtitleIndex = 0;
+        const subtitleIntervalId = setInterval(() => {
+          setSubtitle(fullSubtitle.slice(0, subtitleIndex));
+          subtitleIndex++;
+
+          if (subtitleIndex > fullSubtitle.length) {
+            clearInterval(subtitleIntervalId);
+          }
+        }, 70);
+      }
+    }, 100);
+
+    return () => {
+      clearInterval(titleIntervalId);
+    };
+  }, []);
 
   // ** Hooks
   const router = useRouter()
@@ -166,6 +198,7 @@ const LoginPage = () => {
   };
 
 
+
   return (
     <Box className='content-right'>
       {!hidden ? (
@@ -186,12 +219,12 @@ const LoginPage = () => {
           }}
         >
           <Box sx={{ textAlign: 'center', alignItems: 'center', marginTop: '15%' }}>
-            <Typography variant='h2' >
-              FitBuddy
+            <Typography variant='h2'>
+              {title}
             </Typography>
-            <Box >
+            <Box>
               <Typography variant='h5' sx={{ mb: '6px' }}>
-                Entrene y sea entrenado cuando quiera, donde quiera.
+                {subtitle}
               </Typography>
             </Box>
           </Box>

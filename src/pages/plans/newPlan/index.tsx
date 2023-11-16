@@ -149,21 +149,24 @@ const NewPlan = () => {
     const trainerId = session?.user._id;
 
     try {
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+      const res = await fetch(`/api/library/?id=${trainerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (res.status == 200) {
+        const data = await res.json();
+        console.log(data.exercisesData)
 
-        return data.exercises || [];
-      } else {
-        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
-
-        return [];
+        return data.exercisesData || [];
+      }
+      if (res.status == 404) {
+        route.replace('/404')
+      }
+      if (res.status == 500) {
+        route.replace('/500')
       }
     } catch (error) {
       console.error('Error:', error);
@@ -326,6 +329,18 @@ const NewPlan = () => {
   // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
   const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
 
+  useEffect(() => {
+    const fetchDataAndPersonal = async () => {
+      const libraryData = await getExerciseFromMyPersonalLibrary();
+
+      console.log(libraryData)
+      setPlan(libraryData);
+      console.log(plan)
+    };
+
+    fetchDataAndPersonal();
+  }, []);
+
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
@@ -420,6 +435,7 @@ const NewPlan = () => {
                                     }}
                                     input={<Input />}
                                   >
+                                    {/* Dynamically render MenuItem for each exercise in the plan array */}
                                     {plan.map((exercise: Exercise) => (
                                       <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
                                         {exercise.exerciseName}
@@ -432,6 +448,7 @@ const NewPlan = () => {
                               row.nombre
                             )}
                           </StyledTableCell>
+
 
 
                           <StyledTableCell align='right'>
