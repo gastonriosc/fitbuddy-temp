@@ -420,7 +420,7 @@ const Tracking = () => {
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
                                 <Rating readOnly value={trackingItem.fatigue} max={4} name='read-only' />
-                                <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.fatigue]}</Typography>
+                                <Typography sx={{ ml: 1 }}>{labelsFatigue[trackingItem.fatigue]}</Typography>
                               </Box>
                             </TableCell>
                           </TableRow>

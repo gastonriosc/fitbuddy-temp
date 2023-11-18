@@ -1,22 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ** MUI Imports
+import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import { useTheme } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'
+import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
+
+// ** Icon Imports
+import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
-// ** Component Import
+// ** Custom Components Imports
+import CustomChip from 'src/@core/components/mui/chip'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
-const donutColors = {
-  series1: '#fdd835',
-  series2: '#00d4bd',
-  series3: '#826bf8',
-  series4: '#40CDFA',
-  series5: '#ffa1a1'
-}
 
 interface Data {
   _id: string
@@ -36,9 +36,10 @@ interface Props {
   tracking: Tracking
 }
 
-
 const CardTrackingFatigue = (props: Props) => {
   // ** Hook
+  const theme = useTheme()
+
   const { tracking } = props
 
   const counts: { [key: number]: number } = {};
@@ -46,8 +47,8 @@ const CardTrackingFatigue = (props: Props) => {
 
   tracking.data.forEach(item => {
     cont += 1;
-    const number = item.fatigue;
-    counts[number] = (counts[number] || 0) + 1;
+    const fatigue = item.fatigue;
+    counts[fatigue] = (counts[fatigue] || 0) + 1;
   });
 
   const resultArray = [];
@@ -55,101 +56,73 @@ const CardTrackingFatigue = (props: Props) => {
     resultArray.push(counts[i] || 0);
   }
 
-  const theme = useTheme()
+  const seriesData = [{ data: resultArray }];
 
   const options: ApexOptions = {
-    stroke: { width: 0 },
-    labels: ['Poco', 'Moderado', 'Considerable', 'Extremo'],
-    colors: [donutColors.series1, donutColors.series5, donutColors.series3, donutColors.series2],
-    dataLabels: {
-      enabled: true,
-      formatter: (val: string) => `${parseInt(val, 10)}%`
+    chart: {
+      parentHeightOffset: 0,
+      zoom: { enabled: false },
+      toolbar: { show: false }
     },
-    legend: {
-      position: 'bottom',
-      markers: { offsetX: -3 },
-      labels: { colors: theme.palette.text.secondary },
-      itemMargin: {
-        vertical: 3,
-        horizontal: 10
+    colors: ['#ff9f43'],
+    stroke: { curve: 'straight' },
+    dataLabels: { enabled: false },
+    markers: {
+      strokeWidth: 7,
+      strokeOpacity: 1,
+      colors: ['#ff9f43'],
+      strokeColors: ['#fff']
+    },
+    grid: {
+      padding: { top: -10 },
+      borderColor: theme.palette.divider,
+      xaxis: {
+        lines: { show: true }
       }
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          labels: {
-            show: true,
-            name: {
-              fontSize: '1.2rem'
-            },
-            value: {
-              fontSize: '1.2rem',
-              color: theme.palette.text.secondary,
-              formatter: (val: string) => `${parseInt(val, 10)}`
-            },
-            total: {
-              show: true,
-              fontSize: '1.2rem',
-              label: 'Registros',
-              formatter: () => '',
-              color: theme.palette.text.primary
-            }
-          }
-        }
+    tooltip: {
+      custom(data: any) {
+        return `<div class='bar-chart'>
+          <span>${data.series[data.seriesIndex][data.dataPointIndex]}%</span>
+        </div>`
       }
     },
-    responsive: [
-      {
-        breakpoint: 992,
-        options: {
-          chart: {
-            height: 380
-          },
-          legend: {
-            position: 'bottom'
-          }
-        }
+    yaxis: {
+      labels: {
+        style: { colors: theme.palette.text.disabled }
       },
-      {
-        breakpoint: 576,
-        options: {
-          chart: {
-            height: 320
-          },
-          plotOptions: {
-            pie: {
-              donut: {
-                labels: {
-                  show: true,
-                  name: {
-                    fontSize: '1rem'
-                  },
-                  value: {
-                    fontSize: '1rem'
-                  },
-                  total: {
-                    fontSize: '1rem'
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    ]
+
+    },
+    xaxis: {
+      axisBorder: { show: false },
+      axisTicks: { color: theme.palette.divider },
+      crosshairs: {
+        stroke: { color: theme.palette.divider }
+      },
+      labels: {
+        style: { colors: theme.palette.text.disabled }
+      },
+      categories: [
+        'Facil', 'Moderado', 'Intenso', 'Muy intenso'
+      ]
+    }
   }
-
-
 
   return (
     <Card>
       <CardHeader
-        title='¿Qué tan cansador le pareció el entrenamiento?'
-        subheader={`Total de ${cont} registros`}
-        subheaderTypographyProps={{ sx: { color: theme => `${theme.palette.text.disabled} !important` } }}
+        title='Cansancio del entrenamiento'
+        subheader='¿Qué tan cansador le pareció el entrenamiento?'
+        sx={{
+          flexDirection: ['column', 'row'],
+          alignItems: ['flex-start', 'center'],
+          '& .MuiCardHeader-action': { mb: 0 },
+          '& .MuiCardHeader-content': { mb: [2, 0] }
+        }}
+
       />
       <CardContent>
-        <ReactApexcharts type='donut' height={400} options={options} series={resultArray} />
+        <ReactApexcharts type='line' height={373} options={options} series={seriesData} />
       </CardContent>
     </Card>
   )
