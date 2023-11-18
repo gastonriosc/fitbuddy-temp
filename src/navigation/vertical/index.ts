@@ -75,6 +75,13 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
+      title: 'Mi Biblioteca',
+      icon: 'mdi-library',
+      path: '/exerciseLibrary/' + session?.user?._id,
+      subject: 'myLibrary-page',
+      action: 'manage'
+    },
+    {
       title: 'Configuración',
       icon: 'mdi-settings',
       path: '/mySettings',

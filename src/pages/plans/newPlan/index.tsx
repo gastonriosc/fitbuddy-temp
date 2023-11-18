@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -17,7 +17,7 @@ import TextField from '@mui/material/TextField';
 //import jsPDF from 'jspdf';
 //import 'jspdf-autotable';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Icon from 'src/@core/components/icon';
 import { useRouter } from 'next/router';
@@ -51,6 +51,14 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   },
 }));
 
+interface Exercise {
+  _id: string;
+  exerciseName: string;
+  muscleGroup: string;
+  avatar: string;
+  linkExercise: string;
+}
+
 const createData = (nombre: string, series: number, repeticiones: number, peso: number, link: string) => {
   return { nombre, series, repeticiones, peso, link };
 };
@@ -82,6 +90,10 @@ const NewPlan = () => {
   const [nombrePlan, setNombrePlan] = useState('');
   const [popUpErrorName, setPopUpErrorName] = useState<boolean>(false)
   const [titlePopUpErrorName, setTitlePopUpErrorName] = useState<string>()
+  const [plan, setPlan] = useState<Exercise[]>([]);
+  const [manualInput, setManualInput] = React.useState(false);
+
+
 
 
   const { data: session } = useSession();
@@ -107,27 +119,73 @@ const NewPlan = () => {
     setPlanLists(newPlanLists);
   };
 
-  // const exportToPDF = () => {
-  //   const doc = new jsPDF();
 
-  //   doc.setFontSize(14);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/generalLibrary', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-  //   planLists.forEach((day, index) => {
-  //     if (index > 0) {
-  //       doc.addPage();
-  //     }
-  //     doc.text(`Día ${index + 1}`, 10, 20);
-  //     const tableData = day.map((row) => [row.nombre, row.series, row.repeticiones, row.peso, row.link]);
+      if (response.ok) {
+        const data = await response.json();
 
-  //     // @ts-ignore
-  //     doc.autoTable({
-  //       head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
-  //       body: tableData,
-  //       startY: 30,
-  //     });
-  //   });
-  //   doc.save('PlanDeEntrenamiento.pdf');
-  // };
+        return data.exercisesData?.exercises || [];
+      } else {
+        console.error('Error fetching data from the server');
+
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+      return [];
+    }
+  };
+
+  const getExerciseFromMyPersonalLibrary = async () => {
+    const trainerId = session?.user._id;
+
+    try {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        return data.exercises || [];
+      } else {
+        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
+
+        return [];
+      }
+    } catch (error) {
+      console.error('Error:', error);
+
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchDataAndPersonal = async () => {
+      const generalLibraryData = await fetchData();
+      const personalLibraryData = await getExerciseFromMyPersonalLibrary();
+
+      // Combina los resultados de ambos GET
+      const combinedData = [...generalLibraryData, ...personalLibraryData];
+
+      setPlan(combinedData);
+    };
+
+    fetchDataAndPersonal();
+  }, []);
+
 
   const handleDeleteDay = () => {
     if (planLists.length > 1) {
@@ -263,6 +321,12 @@ const NewPlan = () => {
     }
   };
 
+  const muscleGroups = ["pecho", "piernas", /* otros grupos musculares */];
+
+  // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
+  const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
+
+
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <Grid container spacing={6}>
@@ -318,11 +382,58 @@ const NewPlan = () => {
                         <StyledTableRow key={rowIndex}>
                           <StyledTableCell component='th' scope='row'>
                             {editingRow[dayIndex] === rowIndex ? (
-                              <TextField value={nombre} onChange={(e) => setNombre(e.target.value)} />
+                              <FormControl fullWidth>
+                                <InputLabel id={`exercise-select-label-${dayIndex}-${rowIndex}`}>
+                                  Ejercicio
+                                </InputLabel>
+                                {manualInput ? (
+                                  <Input
+                                    id={`exercise-input-${dayIndex}-${rowIndex}`}
+                                    value={nombre}
+                                    onChange={(e) => {
+                                      setNombre(e.target.value);
+
+                                      // Buscar el ejercicio seleccionado y obtener su linkExercise
+                                      const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === e.target.value);
+                                      if (selectedExercise) {
+                                        setLink(selectedExercise.linkExercise);
+                                      } else {
+                                        setLink('');
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <Select
+                                    labelId={`exercise-select-label-${dayIndex}-${rowIndex}`}
+                                    id={`exercise-select-${dayIndex}-${rowIndex}`}
+                                    value={nombre}
+                                    onChange={(e) => {
+                                      setNombre(e.target.value);
+
+                                      // Buscar el ejercicio seleccionado y obtener su linkExercise
+                                      const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === e.target.value);
+                                      if (selectedExercise) {
+                                        setLink(selectedExercise.linkExercise);
+                                      } else {
+                                        setLink('');
+                                      }
+                                    }}
+                                    input={<Input />}
+                                  >
+                                    {plan.map((exercise: Exercise) => (
+                                      <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                        {exercise.exerciseName}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                )}
+                              </FormControl>
                             ) : (
                               row.nombre
                             )}
                           </StyledTableCell>
+
+
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <TextField
@@ -402,6 +513,12 @@ const NewPlan = () => {
                               <>
                                 <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleSaveRow(dayIndex, rowIndex)}><Icon icon='line-md:confirm' style={{ color: 'lightgreen' }} /></ButtonStyled>
                                 <ButtonStyled sx={{ marginRight: '-20px' }} onClick={() => handleCancelEditRow(dayIndex)}><Icon icon='line-md:cancel' style={{ color: 'red' }} /></ButtonStyled>
+                                <ButtonStyled
+                                  sx={{ marginRight: '-20px' }}
+                                  onClick={() => setManualInput(!manualInput)}
+                                >
+                                  {manualInput ? <Icon icon='bi:list' /> : <Icon icon='bi:keyboard' />}
+                                </ButtonStyled>
                               </>
                             ) : (
                               <>
