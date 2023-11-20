@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Pagination from '@mui/material/Pagination'
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -55,6 +56,7 @@ const MyLibrary = () => {
   const [plan, setPlan] = useState<Exercise[]>([]);
   const [filterOption, setFilterOption] = useState<string>('all');
   const [filterName, setFilterName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isAddExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
@@ -119,8 +121,9 @@ const MyLibrary = () => {
 
         if (res.status == 200) {
           const data = await res.json();
-          console.log(data.exercisesData)
-          setPlan(data.exercisesData)
+          console.log(data.exercisesData);
+          setPlan(data.exercisesData);
+          setIsLoading(true);
 
           // return data.exercisesData || [];
         }
@@ -321,269 +324,277 @@ const MyLibrary = () => {
   const indexOfFirstExercise = indexOfLastExercise - itemsPerPage;
   const currentExercises = filteredPlan.slice(indexOfFirstExercise, indexOfLastExercise);
 
-  return (
-    <>
-      <Grid>
-        <Card>
-          <CardHeader
-            title="Filtros"
-            sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
-          />
-          <CardContent>
-            <Grid container spacing={6}>
-              <Grid item sm={6} xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="search-input">Grupo Muscular</InputLabel>
-                  <Select
-                    label="Grupo Muscular"
-                    fullWidth
-                    value={filterOption}
-                    onChange={(e) => setFilterOption(e.target.value)}
-                  >
-                    <MenuItem value="all">Todos los ejercicios</MenuItem>
-                    <MenuItem value="pecho">Pecho</MenuItem>
-                    <MenuItem value="piernas">Piernas</MenuItem>
-                    <MenuItem value="brazos">Brazos</MenuItem>
-                    <MenuItem value="espalda">Espalda</MenuItem>
-                    <MenuItem value="hombros">Hombros</MenuItem>
-                    <MenuItem value="abdominales">Abdominales</MenuItem>
-                  </Select>
-                </FormControl>
+  if (isLoading) {
+    return (
+      <>
+        <Grid>
+          <Card>
+            <CardHeader
+              title="Filtros"
+              sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
+            />
+            <CardContent>
+              <Grid container spacing={6}>
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="search-input">Grupo Muscular</InputLabel>
+                    <Select
+                      label="Grupo Muscular"
+                      fullWidth
+                      value={filterOption}
+                      onChange={(e) => setFilterOption(e.target.value)}
+                    >
+                      <MenuItem value="all">Todos los ejercicios</MenuItem>
+                      <MenuItem value="pecho">Pecho</MenuItem>
+                      <MenuItem value="piernas">Piernas</MenuItem>
+                      <MenuItem value="brazos">Brazos</MenuItem>
+                      <MenuItem value="espalda">Espalda</MenuItem>
+                      <MenuItem value="hombros">Hombros</MenuItem>
+                      <MenuItem value="abdominales">Abdominales</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item sm={6} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="search-input">Nombre</InputLabel>
+                    <Input
+                      fullWidth
+                      value={filterName}
+                      onChange={(e) => setFilterName(e.target.value)}
+                      placeholder="Ingrese un nombre para buscar"
+                    />
+                  </FormControl>
+                </Grid>
               </Grid>
-              <Grid item sm={6} xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="search-input">Nombre</InputLabel>
-                  <Input
-                    fullWidth
-                    value={filterName}
-                    onChange={(e) => setFilterName(e.target.value)}
-                    placeholder="Ingrese un nombre para buscar"
-                  />
-                </FormControl>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-        <Divider sx={{ mt: 2 }} />
-      </Grid>
-      <Grid container spacing={3}>
-        {currentExercises.map((exercise) => renderExerciseCard(exercise))}
-      </Grid>
+            </CardContent>
+          </Card>
+          <Divider sx={{ mt: 2 }} />
+        </Grid>
+        <Grid container spacing={3}>
+          {currentExercises.map((exercise) => renderExerciseCard(exercise))}
+        </Grid>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button variant="outlined" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
-          Agregar Ejercicio
-        </Button>
-        {/* <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
+        <Box display="flex" justifyContent="flex-end">
+          <Button variant="outlined" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
+            Agregar Ejercicio
+          </Button>
+          {/* <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
           Guardar cambios
         </Button> */}
-      </Box>
+        </Box>
 
-      <Box className="demo-space-y" mt={7} alignItems={'center'} justifyContent="center" display="flex">
-        <Pagination count={totalPages} color="primary" page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
-      </Box>
+        <Box className="demo-space-y" mt={7} alignItems={'center'} justifyContent="center" display="flex">
+          <Pagination count={totalPages} color="primary" page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+        </Box>
 
-      <Dialog open={isAddExerciseModalOpen} onClose={() => setAddExerciseModalOpen(false)}>
-        <DialogTitle
-          id='user-view-plans'
-          sx={{
-            textAlign: 'center',
-            fontSize: '1.5rem !important',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          AGREGUE SU PROPIO EJERCICIO
-        </DialogTitle>
-        <Divider sx={{ mt: 2 }} />
+        <Dialog open={isAddExerciseModalOpen} onClose={() => setAddExerciseModalOpen(false)}>
+          <DialogTitle
+            id='user-view-plans'
+            sx={{
+              textAlign: 'center',
+              fontSize: '1.5rem !important',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            AGREGUE SU PROPIO EJERCICIO
+          </DialogTitle>
+          <Divider sx={{ mt: 2 }} />
 
-        <DialogContent sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexWrap: ['wrap', 'nowrap'],
-          pt: theme => `${theme.spacing(2)} !important`,
-          pb: theme => `${theme.spacing(8)} !important`,
-          px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
-        }}>
-          <Card>
-            <CardContent>
-              <form noValidate autoComplete='off' onSubmit={handleSubmit(addExerciseToMyPersonalLibrary)}>
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='exerciseName'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        autoFocus
-                        label='Nombre del ejercicio'
-                        name='exerciseName'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.exerciseName)}
-                      />
+          <DialogContent sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: ['wrap', 'nowrap'],
+            pt: theme => `${theme.spacing(2)} !important`,
+            pb: theme => `${theme.spacing(8)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+          }}>
+            <Card>
+              <CardContent>
+                <form noValidate autoComplete='off' onSubmit={handleSubmit(addExerciseToMyPersonalLibrary)}>
+                  <FormControl fullWidth sx={{ mb: 4 }}>
+                    <Controller
+                      name='exerciseName'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <TextField
+                          autoFocus
+                          label='Nombre del ejercicio'
+                          name='exerciseName'
+                          value={value}
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          error={Boolean(errors.exerciseName)}
+                        />
+                      )}
+                    />
+                    {errors.exerciseName && (
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errors.exerciseName.message}
+                      </FormHelperText>
                     )}
-                  />
-                  {errors.exerciseName && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.exerciseName.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <InputLabel>Grupo Muscular</InputLabel>
-                  <Controller
-                    name='muscleGroup'
-                    control={control}
-                    rules={{
-                      required: 'Selecciona un grupo muscular',
-                      validate: (value) => value !== ''
-                    }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <Select
-                        value={value}
-                        onBlur={onBlur}
-                        label='Grupo Muscular'
-                        onChange={(e) => {
-                          onChange(e);
-                          handleMuscleGroupChange(e);
-                        }}
-                        error={Boolean(errors.muscleGroup)}
-                      >
-                        <MenuItem value="pecho">Pecho</MenuItem>
-                        <MenuItem value="piernas">Piernas</MenuItem>
-                        <MenuItem value="espalda">Espalda</MenuItem>
-                        <MenuItem value="brazos">Brazos</MenuItem>
-                        <MenuItem value="abdominales">Abdominales</MenuItem>
-                        <MenuItem value="hombros">Hombros</MenuItem>
-                      </Select>
+                  </FormControl>
+                  <FormControl fullWidth sx={{ mb: 4 }}>
+                    <InputLabel>Grupo Muscular</InputLabel>
+                    <Controller
+                      name='muscleGroup'
+                      control={control}
+                      rules={{
+                        required: 'Selecciona un grupo muscular',
+                        validate: (value) => value !== ''
+                      }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <Select
+                          value={value}
+                          onBlur={onBlur}
+                          label='Grupo Muscular'
+                          onChange={(e) => {
+                            onChange(e);
+                            handleMuscleGroupChange(e);
+                          }}
+                          error={Boolean(errors.muscleGroup)}
+                        >
+                          <MenuItem value="pecho">Pecho</MenuItem>
+                          <MenuItem value="piernas">Piernas</MenuItem>
+                          <MenuItem value="espalda">Espalda</MenuItem>
+                          <MenuItem value="brazos">Brazos</MenuItem>
+                          <MenuItem value="abdominales">Abdominales</MenuItem>
+                          <MenuItem value="hombros">Hombros</MenuItem>
+                        </Select>
+                      )}
+                    />
+                    {errors.muscleGroup && (
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errors.muscleGroup.message}
+                      </FormHelperText>
                     )}
-                  />
-                  {errors.muscleGroup && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.muscleGroup.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
+                  </FormControl>
 
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='exerciseLink'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange, onBlur } }) => (
-                      <TextField
-                        label='Link del ejercicio'
-                        name='exerciseLink'
-                        value={value}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.exerciseLink)}
-                      />
+                  <FormControl fullWidth sx={{ mb: 4 }}>
+                    <Controller
+                      name='exerciseLink'
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange, onBlur } }) => (
+                        <TextField
+                          label='Link del ejercicio'
+                          name='exerciseLink'
+                          value={value}
+                          onBlur={onBlur}
+                          onChange={onChange}
+                          error={Boolean(errors.exerciseLink)}
+                        />
+                      )}
+                    />
+                    {errors.exerciseLink && (
+                      <FormHelperText sx={{ color: 'error.main' }}>
+                        {errors.exerciseLink.message}
+                      </FormHelperText>
                     )}
-                  />
-                  {errors.exerciseLink && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.exerciseLink.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
+                  </FormControl>
 
-                <Box sx={{ marginTop: '4px', display: 'flex', justifyContent: 'center' }}>
-                  <Button color='primary' variant='contained' type='submit' onClick={handleSubmit(handleExercise)} >
-                    Agregar
-                  </Button>
+                  <Box sx={{ marginTop: '4px', display: 'flex', justifyContent: 'center' }}>
+                    <Button color='primary' variant='contained' type='submit' onClick={handleSubmit(handleExercise)} >
+                      Agregar
+                    </Button>
 
+                  </Box>
+                </form>
+              </CardContent>
+              {error && (
+                <Box sx={{ color: 'skyblue', textAlign: 'center', mb: 2 }}>
+                  {error}
                 </Box>
-              </form>
-            </CardContent>
-            {error && (
-              <Box sx={{ color: 'skyblue', textAlign: 'center', mb: 2 }}>
-                {error}
-              </Box>
-            )}
-          </Card>
+              )}
+            </Card>
 
-        </DialogContent>
-      </Dialog >
-      <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
+          </DialogContent>
+        </Dialog >
+        <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
             sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              '& svg': { mb: 6, color: 'success.main' }
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-            <Icon icon='line-md:confirm' fontSize='5.5rem' />
-            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
-            <Typography>{textPopUp}</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-
-          <Button variant='outlined' color='success' onClick={closePopUp}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog fullWidth open={popUpDelete} onClose={closePopUpDelete} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'success.main' }
+              }}
+            >
+              <Icon icon='line-md:confirm' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+              <Typography>{textPopUp}</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions
             sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
               justifyContent: 'center',
-              '& svg': { mb: 6, color: 'error.main' }
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-            <Icon icon='line-md:alert' fontSize='5.5rem' />
-            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpDelete}</Typography>
-            {/* <Typography>{textPopUpDelete}</Typography> */}
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
 
-          <Button variant='contained' color='error' onClick={handleConfirmDelete}>
-            Eliminar
-          </Button>
-          <Button variant='contained' color='primary' onClick={closePopUpDelete}>
-            Volver
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  );
+            <Button variant='outlined' color='success' onClick={closePopUp}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog fullWidth open={popUpDelete} onClose={closePopUpDelete} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+          <DialogContent
+            sx={{
+              pb: theme => `${theme.spacing(6)} !important`,
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                '& svg': { mb: 6, color: 'error.main' }
+              }}
+            >
+              <Icon icon='line-md:alert' fontSize='5.5rem' />
+              <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpDelete}</Typography>
+              {/* <Typography>{textPopUpDelete}</Typography> */}
+            </Box>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              justifyContent: 'center',
+              px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+              pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+            }}
+          >
+
+            <Button variant='contained' color='error' onClick={handleConfirmDelete}>
+              Eliminar
+            </Button>
+            <Button variant='contained' color='primary' onClick={closePopUpDelete}>
+              Volver
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  } else {
+    return (
+      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <CircularProgress size={100} thickness={6} color='primary' />
+      </Box>
+    );
+  }
 };
 
 MyLibrary.acl = {
