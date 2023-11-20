@@ -33,6 +33,7 @@ const defineRulesFor = (role: string, subject: string) => {
         'myTrainerProfile-page',
         'myStudentProfile2-page',
         'myRequests-page',
+        'planesTitle',
         'perfilTitle',
         'plans-page',
         'tracking-page',
@@ -59,8 +60,14 @@ const defineRulesFor = (role: string, subject: string) => {
         'tracking-page'
       ]
     )
-    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page', 'myLibrary-page'])
-    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myRequests-page', 'myLibrary-page'])
+    cannot('read', [
+      'newPlan-page',
+      'perfilEntrenador',
+      'myStudents-page',
+      'myRequests-page',
+      'myLibrary-page',
+      'planesTitle'
+    ])
   } else {
     can(['read', 'create', 'update', 'delete'], subject)
   }

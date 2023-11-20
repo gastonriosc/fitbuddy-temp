@@ -49,10 +49,22 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
+      sectionTitle: 'Planes',
+      subject: 'planesTitle',
+      action: 'manage'
+    },
+    {
       title: 'Planes creados',
       icon: 'mdi-file-outline',
       path: '/myStudentsPlans/' + session?.user._id,
       subject: 'myStudents-page',
+      action: 'manage'
+    },
+    {
+      title: 'Mi Biblioteca',
+      icon: 'mdi-library',
+      path: '/exerciseLibrary/' + session?.user?._id,
+      subject: 'myLibrary-page',
       action: 'manage'
     },
     {
@@ -72,13 +84,6 @@ const navigation = (): VerticalNavItemsType => {
       icon: 'mdi-account',
       path: '/myProfile/' + session?.user?._id,
       subject: 'myTrainerProfile-page',
-      action: 'manage'
-    },
-    {
-      title: 'Mi Biblioteca',
-      icon: 'mdi-library',
-      path: '/exerciseLibrary/' + session?.user?._id,
-      subject: 'myLibrary-page',
       action: 'manage'
     },
     {
