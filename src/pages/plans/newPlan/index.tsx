@@ -149,21 +149,24 @@ const NewPlan = () => {
     const trainerId = session?.user._id;
 
     try {
-      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
+      const res = await fetch(`/api/library/?id=${trainerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (res.status == 200) {
+        const data = await res.json();
+        console.log(data.exercisesData)
 
-        return data.exercises || [];
-      } else {
-        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
-
-        return [];
+        return data.exercisesData || [];
+      }
+      if (res.status == 404) {
+        route.replace('/404')
+      }
+      if (res.status == 500) {
+        route.replace('/500')
       }
     } catch (error) {
       console.error('Error:', error);
@@ -322,7 +325,6 @@ const NewPlan = () => {
   };
 
   const muscleGroups = ["pecho", "piernas", /* otros grupos musculares */];
-
   // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
   const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
 
@@ -332,7 +334,7 @@ const NewPlan = () => {
 
       console.log(libraryData)
       setPlan(libraryData);
-      console.log(plan)
+      console.log('mis ejercicios:', plan)
     };
 
     fetchDataAndPersonal();
@@ -520,8 +522,6 @@ const NewPlan = () => {
                               </>
                             )}
                           </StyledTableCell>
-
-
                           <StyledTableCell align='right'>
                             {editingRow[dayIndex] === rowIndex ? (
                               <>
@@ -606,7 +606,6 @@ const NewPlan = () => {
               Exportar a PDF
             </ButtonStyled> */}
           </Grid>
-
           <Grid item md={1.2} xs={12} >
             <ButtonStyled sx={{ marginLeft: '2%' }} onClick={createPlanTraining}>
               Guardar plan
@@ -644,7 +643,6 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-
             <Button href={'/myStudents/' + session?.user._id} variant='outlined' color='success' onClick={closePopUp}>
               OK
             </Button>
@@ -681,7 +679,6 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-
             <Button variant='outlined' color='success' onClick={closePopUpError}>
               OK
             </Button>
@@ -718,7 +715,6 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-
             <Button variant='outlined' color='success' onClick={closePopUpErrorDay}>
               OK
             </Button>
@@ -755,7 +751,6 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-
             <Button variant='outlined' color='success' onClick={closePopUpErrorDataExercise}>
               OK
             </Button>
@@ -792,24 +787,18 @@ const NewPlan = () => {
               pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
             }}
           >
-
             <Button variant='outlined' color='success' onClick={closePopUpErrorName}>
               OK
             </Button>
           </DialogActions>
         </Dialog>
-
       </Grid>
-
     </form >
-
   );
 };
-
 NewPlan.acl = {
   action: 'manage',
   subject: 'newPlan-page',
 };
-
 export default NewPlan;
 
