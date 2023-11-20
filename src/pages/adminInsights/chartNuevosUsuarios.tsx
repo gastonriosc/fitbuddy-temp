@@ -1,62 +1,130 @@
 // ** React Imports
-import { forwardRef, useState } from 'react'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
-import TextField from '@mui/material/TextField'
+
 import { useTheme } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import InputAdornment from '@mui/material/InputAdornment'
 
 // ** Third Party Imports
-import format from 'date-fns/format'
+
 import { ApexOptions } from 'apexcharts'
-import DatePicker from 'react-datepicker'
+
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
+
 
 // ** Types
-import { DateType } from 'src/types/forms/reactDatepickerTypes'
+
 
 // ** Component Import
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
 const columnColors = {
-  bg: '#f8d3ff',
   series1: '#826af9',
   series2: '#d2b0ff'
 }
 
-interface PickerProps {
-  start: Date | number
-  end: Date | number
-}
+// interface PickerProps {
+//   start: Date | number
+//   end: Date | number
+// }
 
-const series = [
-  {
-    name: 'Apple',
-    data: [90, 120, 55, 100, 80, 125, 175, 70, 88]
-  },
-  {
-    name: 'Samsung',
-    data: [85, 100, 30, 40, 95, 90, 30, 110, 62]
-  }
-]
+
+
+
+interface User {
+  role: string,
+  registrationDate: Date
+}
 
 const ApexColumnChart = () => {
   // ** Hook
   const theme = useTheme()
+  const route = useRouter();
+  const [newUsers, setNewUsers] = useState<User[]>();
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1; // Los meses en JavaScript son de 0 a 11, por eso sumamos 1
+
+  // Inicializa un objeto para almacenar las estadísticas mensuales por rol
+  const monthlyStats = {
+    Entrenadores: Array(12).fill(0), // Inicializa un array de 12 elementos con valores 0
+    Alumnos: Array(12).fill(0),
+  };
+
+  newUsers?.forEach((user: User) => {
+    const registrationDate = new Date(user.registrationDate);
+
+    const userMonth = registrationDate.getMonth() + 1;
+    const userYear = registrationDate.getFullYear();
+
+    // Verifica si el usuario está registrado en el año y mes actual
+    if (userYear === currentYear && userMonth <= currentMonth) {
+      // Incrementa el contador correspondiente al rol del usuario
+      if (user.role === 'Entrenador') {
+        monthlyStats.Entrenadores[userMonth - 1]++;
+      } else if (user.role === 'Alumno') {
+        monthlyStats.Alumnos[userMonth - 1]++;
+      }
+    }
+  });
+
+  const series = [
+    {
+      name: 'Entrenadores',
+      data: monthlyStats.Entrenadores,
+    },
+    {
+      name: 'Alumnos',
+      data: monthlyStats.Alumnos,
+    },
+  ];
+
+  useEffect(() => {
+    const fetchMyRequests = async () => {
+
+      try {
+        const res = await fetch(
+          `/api/adminInsights/`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (res.status == 200) {
+          const data = await res.json();
+          setNewUsers(data.newUsers);
+          console.log(data.newUsers)
+          console.log(newUsers)
+        }
+        if (res.status == 404) {
+          route.replace('/404');
+        }
+        if (res.status == 500) {
+          route.replace('/500');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchMyRequests();
+  }, [newUsers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ** States
-  const [endDate, setEndDate] = useState<DateType>(null)
-  const [startDate, setStartDate] = useState<DateType>(null)
+  // const [endDate, setEndDate] = useState<DateType>(null)
+  // const [startDate, setStartDate] = useState<DateType>(null)
 
   const options: ApexOptions = {
     chart: {
       offsetX: -10,
-      stacked: true,
+      stacked: false,
       parentHeightOffset: 0,
       toolbar: { show: false }
     },
@@ -66,7 +134,7 @@ const ApexColumnChart = () => {
     legend: {
       position: 'top',
       horizontalAlign: 'left',
-      labels: { colors: theme.palette.text.secondary },
+      labels: { colors: theme.palette.text.primary },
       markers: {
         offsetY: 1,
         offsetX: -3
@@ -82,17 +150,14 @@ const ApexColumnChart = () => {
     },
     plotOptions: {
       bar: {
-        columnWidth: '15%',
-        colors: {
-          backgroundBarRadius: 10,
-          backgroundBarColors: [columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg]
-        }
+        columnWidth: '70%',
+
       }
     },
     grid: {
       borderColor: theme.palette.divider,
       xaxis: {
-        lines: { show: true }
+        lines: { show: false }
       }
     },
     yaxis: {
@@ -103,7 +168,7 @@ const ApexColumnChart = () => {
     xaxis: {
       axisBorder: { show: false },
       axisTicks: { color: theme.palette.divider },
-      categories: ['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12'],
+      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       crosshairs: {
         stroke: { color: theme.palette.divider }
       },
@@ -125,62 +190,50 @@ const ApexColumnChart = () => {
     ]
   }
 
-  const CustomInput = forwardRef((props: PickerProps, ref) => {
-    const startDate = props.start !== null ? format(props.start, 'MM/dd/yyyy') : ''
-    const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
+  // const CustomInput = forwardRef((props: PickerProps, ref) => {
+  //   const startDate = props.start !== null ? format(props.start, 'MM/dd/yyyy') : ''
+  //   const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
 
-    const value = `${startDate}${endDate !== null ? endDate : ''}`
+  //   const value = `${startDate}${endDate !== null ? endDate : ''}`
 
-    return (
-      <TextField
-        {...props}
-        size='small'
-        value={value}
-        inputRef={ref}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position='start'>
-              <Icon icon='mdi:bell-outline' />
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position='end'>
-              <Icon icon='mdi:chevron-down' />
-            </InputAdornment>
-          )
-        }}
-      />
-    )
-  })
+  //   return (
+  //     <TextField
+  //       {...props}
+  //       size='small'
+  //       value={value}
+  //       inputRef={ref}
+  //       InputProps={{
+  //         startAdornment: (
+  //           <InputAdornment position='start'>
+  //             <Icon icon='mdi:bell-outline' />
+  //           </InputAdornment>
+  //         ),
+  //         endAdornment: (
+  //           <InputAdornment position='end'>
+  //             <Icon icon='mdi:chevron-down' />
+  //           </InputAdornment>
+  //         )
+  //       }}
+  //     />
+  //   )
+  // })
 
-  const handleOnChange = (dates: any) => {
-    const [start, end] = dates
-    setStartDate(start)
-    setEndDate(end)
-  }
+  // const handleOnChange = (dates: any) => {
+  //   const [start, end] = dates
+  //   setStartDate(start)
+  //   setEndDate(end)
+  // }
 
   return (
     <Card>
       <CardHeader
-        title='Data Science'
+        title={`Ingresos del año de ${currentYear}`}
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
           '& .MuiCardHeader-action': { mb: 0 },
           '& .MuiCardHeader-content': { mb: [2, 0] }
         }}
-        action={
-          <DatePicker
-            selectsRange
-            endDate={endDate}
-            selected={startDate}
-            id='apexchart-column'
-            startDate={startDate}
-            onChange={handleOnChange}
-            placeholderText='Click to select a date'
-            customInput={<CustomInput start={startDate as Date | number} end={endDate as Date | number} />}
-          />
-        }
       />
       <CardContent>
         <ReactApexcharts type='bar' height={400} options={options} series={series} />

@@ -153,6 +153,9 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours())
+    const registrationDate = currentDate.toISOString();
     const { email, password, phone, country, gender, role, name, discipline, height, weight } = data
     let avatar = '';
     if (gender === 'Masculino') {
@@ -168,7 +171,7 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight })
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight, registrationDate })
       })
       if (res.status == 200) {
         await signIn('credentials', { email, password, redirect: false }).then(res => {

@@ -46,6 +46,10 @@ const usersSchema = new mongoose.Schema({
   weight: {
     type: String,
     default: null
+  },
+  registrationDate: {
+    type: Date,
+    require: true
   }
 })
 

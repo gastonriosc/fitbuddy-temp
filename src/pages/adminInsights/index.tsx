@@ -22,7 +22,7 @@ const AdminInsights = () => {
         <ChartIngresosMensuales direction='ltr'></ChartIngresosMensuales>
       </Box>
       <Box sx={{ mt: 5 }}>
-        <ChartNuevosUsuarios direction='ltr'></ChartNuevosUsuarios>
+        <ChartNuevosUsuarios ></ChartNuevosUsuarios>
       </Box>
       <Box sx={{ mt: 5 }}>
         <ChartIngresosAnuales direction='ltr'></ChartIngresosAnuales>
