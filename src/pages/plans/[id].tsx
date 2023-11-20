@@ -33,6 +33,9 @@ interface Exercise {
   link: string;
 }
 
+interface TrackingId {
+  _id: string;
+}
 
 const ButtonStyled = styled(Button)<ButtonProps & { component?: React.ElementType; htmlFor?: string }>(
   ({ theme }) => ({
@@ -71,6 +74,7 @@ const MyPlans = () => {
   const [popUpErrorDelete, setPopUpErrorDelete] = useState<boolean>(false)
   const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
 
+  const [trackingId, setTrackingId] = useState<TrackingId>()
 
   //const [plan, setPlan] = useState([]);
   const [manualInput, setManualInput] = React.useState(false);
@@ -276,12 +280,8 @@ const MyPlans = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-
-          console.log(data.trainerName)
-
-          setPlan(data);
-
-          console.log(data)
+          setPlan(data.combinedInfo);
+          setTrackingId(data.trackingId)
           setIsLoading(true);
         }
         if (res.status == 404) {
@@ -444,29 +444,26 @@ const MyPlans = () => {
     return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Card>
-            <Box display={'flex'}>
-              <Box flexGrow={1}>
-                <CardHeader title={plan?.nombrePlan} />
-
+          <Card >
+            <Box display={'flex'} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box ml={5}>
+                <h2 style={{ fontSize: '24px', textTransform: 'uppercase' }}>{plan?.nombrePlan}</h2>
               </Box>
               <Box display={'flex'} sx={{ justifyContent: 'flex-end' }}>
                 <Button
-                  variant='outlined'
-                  color='info'
+                  variant='contained'
                   startIcon={<Icon icon='wpf:faq' />}
-                  sx={{ mx: 2, my: 2, height: 'auto' }}
+                  sx={{ mx: 2, my: 4, height: 'auto' }}
                   onClick={() => foro()}
                 >
                   CHAT
                 </Button>
                 <Button
-                  variant='outlined'
-                  color='info'
+                  variant='contained'
                   startIcon={<Icon icon='wpf:statistics' />}
-                  sx={{ mx: 2, my: 2, height: 'auto' }}
+                  sx={{ mr: 4, my: 4, height: 'auto' }}
 
-                // href={'/plans/tracking/' + 1}
+                  href={'/plans/tracking/' + trackingId?._id}
                 >
                   SEGUIMIENTO
                 </Button>
@@ -539,6 +536,8 @@ const MyPlans = () => {
                                       exercise.nombreEjercicio
                                     )}
                                   </TableCell>
+
+
 
 
                                   <TableCell>
@@ -679,30 +678,30 @@ const MyPlans = () => {
 
           <Foro foroPopUp={foroPopUp} setForoPopUp={setForoPopUp} planId={planId} />
         </Grid>
-        <Grid container justifyContent='space-between'>
+        <Grid container justifyContent='space-between' mt={2}>
           <Grid item md={6} xs={12} >
             {esEntrenador && (
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleAddDay}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleAddDay}>
                 Agregar Día
-              </ButtonStyled>
+              </Button>
             )}
             {esEntrenador && (
 
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleDeleteLastDay}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleDeleteLastDay}>
                 Eliminar Día
-              </ButtonStyled>
+              </Button>
             )}
-            <ButtonStyled sx={{ marginLeft: '2%' }} onClick={exportToPDF} >
+            <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={exportToPDF} >
               Exportar a PDF
-            </ButtonStyled>
+            </Button>
           </Grid>
 
           <Grid item md={1.4} xs={12} >
             {esEntrenador && (
 
-              <ButtonStyled sx={{ marginLeft: '2%' }} onClick={handleExerciseChange}>
+              <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleExerciseChange}>
                 Actualizar plan
-              </ButtonStyled>
+              </Button>
             )}
           </Grid>
         </Grid>

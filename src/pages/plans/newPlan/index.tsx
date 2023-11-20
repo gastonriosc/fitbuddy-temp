@@ -149,24 +149,21 @@ const NewPlan = () => {
     const trainerId = session?.user._id;
 
     try {
-      const res = await fetch(`/api/library/?id=${trainerId}`, {
+      const response = await fetch(`/api/myLibrary/?id=${trainerId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (res.status == 200) {
-        const data = await res.json();
-        console.log(data.exercisesData)
+      if (response.ok) {
+        const data = await response.json();
 
-        return data.exercisesData || [];
-      }
-      if (res.status == 404) {
-        route.replace('/404')
-      }
-      if (res.status == 500) {
-        route.replace('/500')
+        return data.exercises || [];
+      } else {
+        console.error('Error al tratar de obtener un ejercicio:', response.statusText);
+
+        return [];
       }
     } catch (error) {
       console.error('Error:', error);

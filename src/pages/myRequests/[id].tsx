@@ -15,7 +15,7 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Icon from 'src/@core/components/icon';
 import RequestPopUp from './requestPopUp';
-import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import CustomChip from 'src/@core/components/mui/chip'
 
 // Styled Grid component

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
+
 import { useTheme } from '@mui/material/styles'
 
 // ** Third Party Imports
@@ -15,8 +15,26 @@ import ReactApexcharts from 'src/@core/components/react-apexcharts'
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
-const CardWorkoutMensual = () => {
+interface Data {
+  _id: string
+  date: Date,
+  number: number
+}
+
+interface Tracking {
+  _id: string,
+  planId: string,
+  data: [Data]
+}
+
+interface Props {
+  tracking: Tracking
+}
+
+const CardWorkoutMensual = (props: Props) => {
   // ** Hook
+  const { tracking } = props
+
   const theme = useTheme()
 
   const options: ApexOptions = {

@@ -15,6 +15,7 @@ import { UsersType } from 'src/types/apps/userTypes'
 import Icon from 'src/@core/components/icon'
 import { Button, CircularProgress } from '@mui/material'
 import { getInitials } from 'src/@core/utils/get-initials'
+import { useSession } from 'next-auth/react'
 
 // iconos
 interface UserDisciplineType {
@@ -58,6 +59,7 @@ const renderClient = (row: UsersType) => {
 const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => {
   const [users, setUsers] = useState<UsersType[]>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const session = useSession()
 
   useEffect(() => {
     setIsLoading(true)
@@ -98,32 +100,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       }
     },
 
-    // {
-    //   flex: 0.2,
-    //   minWidth: 280,
-    //   field: 'email',
-    //   headerName: 'Email',
-    //   renderCell: ({ row }: CellType) => {
-    //     return (
-    //       <Typography color={'lightgray'} noWrap variant='body2'>
-    //         <b>{row.email}</b>
-    //       </Typography>
-    //     );
-    //   }
-    // },
-    // {
-    //   flex: 0.2,
-    //   minWidth: 250,
-    //   field: 'phoneNumber',
-    //   headerName: 'Telefono',
-    //   renderCell: ({ row }: CellType) => {
-    //     return (
-    //       <Typography color={'lightgray'} noWrap variant='body2'>
-    //         <b>{row.phone}</b>
-    //       </Typography>
-    //     );
-    //   }
-    // },
+
     {
       flex: 0.2,
       minWidth: 200,
@@ -175,20 +152,24 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
-            <Button href={'/myProfile/' + row._id}>
-              <Icon icon={'mdi:eye-outline'} fontSize={20} />
-            </Button>
+            {row._id !== session?.data?.user._id && (
+              <Button href={'/myProfile/' + row._id}>
+                <Icon icon={'mdi:eye-outline'} fontSize={20} />
+              </Button>
+            )}
           </Typography>
         );
       }
     },
+
   ];
 
   const getRowId = (user: any) => user._id;                                 // La función getRowId  se utiliza para identificar de manera única cada fila de datos dentro de la tabla. Cuando el usuario interactúa con la tabla (por ejemplo, seleccionando una fila o actualizando los datos), el componente necesita saber qué fila específica está siendo afectada
 
-  const filterUsersByName = (users: UsersType[], name: string) => {         //Esta función realiza una búsqueda de usuarios dentro de un array de usuarios (users) en base a un nombre (name) dado como parámetro
-    return users.filter((user) =>                                           // Recibe dos parámetros: users (array de usuarios) y name (nombre a buscar). Utiliza el método filter en el array de usuarios (users). El método filter crea un nuevo array con todos los elementos que cumplan con la condición especificada.
-      user.name.toLowerCase().includes(name.toLowerCase())                  // Para cada usuario en el array, se compara el nombre del usuario (convertido a minúsculas) con el nombre de búsqueda (también convertido a minúsculas) utilizando includes.
+  const filterUsersByName = (users: UsersType[], name: string) => {
+    return users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(name.toLowerCase())
     );
   };
 

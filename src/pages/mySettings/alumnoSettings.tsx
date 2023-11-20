@@ -108,7 +108,7 @@ const AlumnoProfile = () => {
   // const [userInput, setUserInput] = useState<string>('yes')
   const [formData, setFormData] = useState<Data>(initialData);
 
-  // const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+  // const [imgSrc, setImgSrc] = useState<string>('/images/animals/1.png')
 
   // const [secondDialogOpen, setSecondDialogOpen] = useState<boolean>(false)
   // const [avatar, setAvatar] = useState<string>();
@@ -116,9 +116,10 @@ const AlumnoProfile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSaveResult, setShowSaveResult] = useState(false);
   const [var1, setVar1] = useState("");
-  const avatars = ['/images/avatars/1.png', '/images/avatars/2.png', '/images/avatars/3.png',
-    '/images/avatars/4.png', '/images/avatars/5.png', '/images/avatars/6.png',
-    '/images/avatars/7.png', '/images/avatars/8.png']
+  const avatars = ['/images/animals/1.png', '/images/animals/2.png', '/images/animals/3.png',
+    '/images/animals/4.png', '/images/animals/5.png', '/images/animals/6.png',
+    '/images/animals/7.png', '/images/animals/8.png', '/images/animals/9.png', '/images/animals/10.png',
+    '/images/animals/11.png', '/images/animals/12.png']
   const [selectedCheckbox, setSelectedCheckbox] = useState(null);
 
   const handleCheckboxChange = (index: any, avatar: string) => {
@@ -165,7 +166,7 @@ const AlumnoProfile = () => {
   // }
   // const handleInputImageReset = () => {
   //   setInputValue('')
-  //   setImgSrc('/images/avatars/1.png')
+  //   setImgSrc('/images/animals/1.png')
   // }
 
   useEffect(() => {

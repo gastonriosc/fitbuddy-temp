@@ -2,6 +2,7 @@ import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import PlanSchema from 'src/models/planSchema'
 import SubsRequest from 'src/models/subsRequestSchema'
+import TrackingSchema from 'src/models/trackingSchema'
 import mongoose from 'mongoose'
 import PlanModel from 'src/models/planSchema'
 
@@ -14,8 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const subsRequest = await SubsRequest.findByIdAndUpdate(subsRequestId, { status: 'conPlan' })
       const plans = await PlanSchema.create(req.body)
+      const tracking = await TrackingSchema.create({ planId: plans._id })
 
-      if (plans && subsRequest) {
+      if (plans && subsRequest && tracking) {
         return res.status(200).json(plans)
       } else {
         return res.status(400).json('No se pudo crear el plan')
@@ -24,8 +26,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { id } = req.query
 
       try {
+        const plan = await PlanSchema.findOne({ _id: id })
+        const trackingId = await TrackingSchema.findOne({ planId: plan._id }, { _id: 1 })
         const objectId = new mongoose.Types.ObjectId(id)
-
         const combinedInfo = await PlanModel.aggregate([
           {
             $match: {
@@ -70,8 +73,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         ])
 
-        if (combinedInfo.length > 0) {
-          return res.status(200).json(combinedInfo[0])
+        if (combinedInfo.length > 0 && trackingId) {
+          const data = {
+            combinedInfo: combinedInfo[0],
+            trackingId: trackingId
+          }
+
+          return res.status(200).json(data)
         } else {
           return res.status(404).json('No se encontraron planes para este alumno')
         }
