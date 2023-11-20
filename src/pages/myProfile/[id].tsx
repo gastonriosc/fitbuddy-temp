@@ -116,15 +116,15 @@ const MyProfile = () => {
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
 
-  // const requestSend = () => {
-  //   setTitlePopUp('Solicitud enviada!')
-  //   setTextPopUp('')
-  //   setPopUp(true)
-  //   hanldeSubscriptionRequest()
-  // }
+  const esEntrenador = session?.user.role === 'Entrenador';
+  const esAlumno = session?.user.role === 'Alumno';
+
+
+
   const handlePlansClose = () => setOpenPlans(false)
   const handleEditClick = (sub: any) => {
     setValue("name", sub.name)
@@ -416,7 +416,6 @@ const MyProfile = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                       {isTrainerSession ? (
                         <Box sx={{ display: 'flex', gap: '10px' }}>
-
                           <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
                             <Icon icon='mdi:pencil' />
                           </Button>
@@ -424,13 +423,25 @@ const MyProfile = () => {
                             <Icon icon='mdi:delete' />
                           </Button>
                         </Box>
-                      ) :
-
-                        <Button variant='contained' title='Enviar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleSendSubsRequest(sub)}>
-                          <Icon icon='mdi:send' />
-                        </Button>
-                      }
+                      ) : (
+                        (esAlumno || !esEntrenador) ? (
+                          <Button
+                            variant='contained'
+                            sx={{
+                              width: '50px',
+                              height: '50px',
+                              borderRadius: '50%',
+                              padding: 0,
+                              minWidth: 'auto'
+                            }}
+                            onClick={() => handleSendSubsRequest(sub)}
+                          >
+                            <Icon icon='mdi:send' />
+                          </Button>
+                        ) : null
+                      )}
                     </Box>
+
                   </CardContent>
 
                   <Dialog
