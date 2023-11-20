@@ -38,6 +38,14 @@ const usersSchema = new mongoose.Schema({
   avatar: {
     type: String,
     require: true
+  },
+  height: {
+    type: String,
+    default: null
+  },
+  weight: {
+    type: String,
+    default: null
   }
 })
 

@@ -72,6 +72,8 @@ interface FormData {
   email: string
   password: string
   passwordC: string
+  height: string
+  weight: string
 }
 
 const defaultValues = {
@@ -83,7 +85,9 @@ const defaultValues = {
   discipline: undefined,
   email: '',
   password: '',
-  passwordC: ''
+  passwordC: '',
+  height: '',
+  weight: ''
 }
 
 const phoneRegExp = /^(\+?549?|0)(11|[2368]\d)(\d{4})(\d{4})$/;
@@ -93,7 +97,10 @@ const schema = yup.object().shape({
   phone: yup.string().required("Teléfono es un campo obligatorio").matches(phoneRegExp, 'No es un teléfono válido'),
   email: yup.string().email("Debe ser un email válido").required("Email es un campo obligatorio"),
   password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo"),
-  passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden')
+  passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
+  height: yup.string().required("Altura es un campo obligatorio"),
+  weight: yup.string().required("Peso es un campo obligatorio"),
+
 })
 
 const Register = () => {
@@ -146,7 +153,7 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
-    const { email, password, phone, country, gender, role, name, discipline } = data
+    const { email, password, phone, country, gender, role, name, discipline, height, weight } = data
     let avatar = '';
     if (gender === 'Masculino') {
       avatar = '/images/animals/4.png'
@@ -161,7 +168,7 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar })
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight })
       })
       if (res.status == 200) {
         await signIn('credentials', { email, password, redirect: false }).then(res => {
@@ -313,6 +320,66 @@ const Register = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                </FormControl>
+              </Box>
+
+              <Box sx={{
+                display: 'flex',
+                gap: { xs: '1px', md: '1px', lg: '10px' },
+                width: '100%',
+                flexDirection: { xs: 'column', md: 'column', lg: 'row' }
+              }}>
+                {/* Altura */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='height'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        label='Altura'
+                        value={value}
+                        name='height'
+                        type='number'
+
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.height)}
+                        placeholder='1.80m'
+                      />
+                    )}
+                  />
+                  {errors.height && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.height.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+
+                {/* Peso */}
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='weight'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <TextField
+                        label='Peso'
+                        value={value}
+                        type='number'
+                        name='weight'
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.weight)}
+                        placeholder='Kg'
+                      />
+                    )}
+                  />
+                  {errors.weight && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.weight.message}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Box>
 

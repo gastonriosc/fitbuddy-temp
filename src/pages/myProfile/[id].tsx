@@ -72,7 +72,9 @@ const data: UsersType = {
   name: '',
   phone: 0,
   gender: '',
-  discipline: ''
+  discipline: '',
+  height: '',
+  weight: '',
 }
 
 const statusColors: ColorsType = {
@@ -362,9 +364,17 @@ const MyProfile = () => {
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Género:</Typography>
                   <Typography variant='body2'>{users.gender}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>País:</Typography>
                   <Typography variant='body2'>{users.country}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Altura:</Typography>
+                  <Typography variant='body2'>{users.height}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Peso:</Typography>
+                  <Typography variant='body2'>{users.weight}</Typography>
                 </Box>
               </Box>
             </CardContent>
