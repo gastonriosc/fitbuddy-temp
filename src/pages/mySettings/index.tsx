@@ -10,6 +10,7 @@ import Grid from '@mui/material/Grid'
 // ** Customs
 import AlumnoProfile from './alumnoSettings'
 import EntrenadorProfile from './entrenadorSettings'
+import AdminProfile from './adminSettings'
 
 const MyProfile = () => {
   // ** Hooks
@@ -22,6 +23,9 @@ const MyProfile = () => {
       ) : null}
       {ability?.can('manage', 'perfilAlumno') ? (
         <AlumnoProfile></AlumnoProfile>
+      ) : null}
+      {ability?.can('manage', 'perfilAdmin') ? (
+        <AdminProfile></AdminProfile>
       ) : null}
     </Grid>
   )

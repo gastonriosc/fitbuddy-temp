@@ -87,6 +87,20 @@ const navigation = (): VerticalNavItemsType => {
       action: 'manage'
     },
     {
+      title: 'Mis métricas',
+      icon: 'ic:twotone-insights',
+      path: '/insights/' + session?.user?._id,
+      subject: 'trainerInsights-page',
+      action: 'manage'
+    },
+    {
+      title: 'Mis métricas',
+      icon: 'ic:twotone-insights',
+      path: '/adminInsights',
+      subject: 'adminInsights-page',
+      action: 'manage'
+    },
+    {
       title: 'Configuración',
       icon: 'mdi-settings',
       path: '/mySettings',

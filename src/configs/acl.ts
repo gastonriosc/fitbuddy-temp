@@ -1,5 +1,4 @@
 import { AbilityBuilder, Ability } from '@casl/ability'
-import MyProfile from 'src/pages/mySettings'
 
 export type Subjects = string
 export type Actions = 'manage' | 'create' | 'read' | 'update' | 'delete'
@@ -38,7 +37,8 @@ const defineRulesFor = (role: string, subject: string) => {
         'plans-page',
         'tracking-page',
         'myLibrary-page',
-        'search-page'
+        'search-page',
+        'trainerInsights-page'
       ]
     )
     cannot('read', [, /*'myPlans-page'*/ 'perfilAlumno'])
@@ -68,6 +68,8 @@ const defineRulesFor = (role: string, subject: string) => {
       'myLibrary-page',
       'planesTitle'
     ])
+  } else if (role === 'Administrador') {
+    can(['manage'], ['mySettings-page', 'perfilAdmin', 'adminInsights-page'])
   } else {
     can(['read', 'create', 'update', 'delete'], subject)
   }
