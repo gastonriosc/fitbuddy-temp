@@ -375,7 +375,7 @@ const MyLibrary = () => {
         </Grid>
 
         <Box display="flex" justifyContent="flex-end">
-          <Button variant="outlined" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
+          <Button sx={{ mt: 6 }} variant="outlined" color="primary" onClick={() => setAddExerciseModalOpen(true)}>
             Agregar Ejercicio
           </Button>
           {/* <Button variant="text" color="success" onClick={() => addExerciseToMyPersonalLibrary(addedExercises)} >
