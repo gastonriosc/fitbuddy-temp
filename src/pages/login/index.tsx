@@ -303,7 +303,7 @@ const LoginPage = () => {
                 Entrenador: <strong>juantargon@gmail.com</strong> / Pass: <strong>entrenador</strong>
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Alumno: <strong>facutissera@gmail.com</strong> / Pass: <strong>alumno</strong>
+                Alumno: <strong>gastonriosc@gmail.com</strong> / Pass: <strong>alumno</strong>
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>

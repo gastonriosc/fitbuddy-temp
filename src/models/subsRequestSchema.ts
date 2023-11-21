@@ -24,6 +24,10 @@ const subsRequestSchema = new mongoose.Schema({
   date: {
     type: Date,
     require: true
+  },
+  amount: {
+    type: Number,
+    require: true
   }
 })
 

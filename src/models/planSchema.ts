@@ -26,6 +26,10 @@ const planSchema = new mongoose.Schema({
   expirationDate: {
     type: Date,
     require: true
+  },
+  amount: {
+    type: Number,
+    require: true
   }
 })
 

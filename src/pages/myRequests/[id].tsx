@@ -42,6 +42,7 @@ interface subsRequest {
   studentName: string;
   subscriptionName: string;
   avatar: string;
+  amount: number
 }
 
 const MyRequests = () => {
@@ -223,7 +224,21 @@ const MyRequests = () => {
                             <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString()} />
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
+                              </Typography>
+                            </Box>
+                            <Box>
+
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='success'
+                                  label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                      <Icon icon='mdi:arrow-up' fontSize='1rem' />
+                                      <span>${sub.amount}</span>
+                                    </Box>
+                                  }
+                                />
                               </Typography>
                             </Box>
                           </Box>

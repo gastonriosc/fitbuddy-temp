@@ -274,6 +274,7 @@ const MyProfile = () => {
     const trainerId = route.query.id
     const studentId = session?.user._id
     const subscriptionId = sendSubsRequest?._id
+    const amount = sendSubsRequest?.amount
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const formattedDate = currentDate.toISOString();
@@ -283,7 +284,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, date: formattedDate })
+        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, date: formattedDate })
       })
       if (res.status == 200) {
         hanldeSubscriptionRequest()
