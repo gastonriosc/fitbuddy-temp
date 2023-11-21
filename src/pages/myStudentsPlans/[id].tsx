@@ -226,12 +226,12 @@ const MyRequests = () => {
                             <Box display={'flex'} justifyContent={'center'}>
                               <Box>
                                 <Typography variant='h5' sx={{ mb: 2 }}>
-                                  <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString()} />
+                                  <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString('es-ES')} />
                                 </Typography>
                               </Box>
                               <Box>
                                 <Typography variant='h5' sx={{ mb: 2 }}>
-                                  <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString()} />
+                                  <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString('es-ES')} />
                                 </Typography>
                               </Box>
                             </Box>
