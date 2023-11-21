@@ -2,22 +2,83 @@
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import connect from 'src/lib/mongodb'
 import User from 'src/models/userSchema'
+import PlanModel from 'src/models/planSchema'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connect()
   if (req.method === 'GET') {
+    const currentMonth = new Date().getMonth()
     const currentYear = new Date().getFullYear()
 
-    const startDate = new Date(currentYear, 0, 1)
-    const endDate = new Date(currentYear, 11, 31)
+    const startDateM = new Date(currentYear, currentMonth, 1)
+    const endDateM = new Date(currentYear, currentMonth + 1, 0)
+    const startDateA = new Date(currentYear, 0, 1)
+    const endDateA = new Date(currentYear, 11, 31)
 
     try {
       const newUsers = await User.find(
-        { registrationDate: { $gte: startDate, $lte: endDate } },
+        { registrationDate: { $gte: startDateA, $lte: endDateA } },
         'role registrationDate'
       )
-      if (newUsers) {
+      const montosMensuales = await PlanModel.aggregate([
+        {
+          $match: {
+            date: {
+              $gte: startDateM,
+              $lte: endDateM
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'subsrequests',
+            localField: 'subsRequestId',
+            foreignField: '_id',
+            as: 'subRequest_info'
+          }
+        },
+        {
+          $unwind: '$subRequest_info'
+        },
+        {
+          $project: {
+            date: 1,
+            amount: '$subRequest_info.amount'
+          }
+        }
+      ])
+      const montosAnuales = await PlanModel.aggregate([
+        {
+          $match: {
+            date: {
+              $gte: startDateA,
+              $lte: endDateA
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'subsrequests',
+            localField: 'subsRequestId',
+            foreignField: '_id',
+            as: 'subRequest_info'
+          }
+        },
+        {
+          $unwind: '$subRequest_info'
+        },
+        {
+          $project: {
+            date: 1,
+            amount: '$subRequest_info.amount'
+          }
+        }
+      ])
+
+      if (newUsers && montosMensuales && montosAnuales) {
         const responseData = {
+          montosMensuales: montosMensuales,
+          montosAnuales: montosAnuales,
           newUsers: newUsers
         }
 

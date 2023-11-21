@@ -1,63 +1,45 @@
-// ** React Imports
-
 // ** MUI Imports
 import Card from '@mui/material/Card'
-import { useTheme } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
+import { useTheme } from '@mui/material/styles'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
-
-// ** Icon Imports
-
-// ** Types
-
-
-// ** Component Import
+// ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
-const columnColors = {
-  series1: '#826af9',
-  series2: '#d2b0ff'
+// ** Util Import
+
+interface Props {
+  series: {
+    name: string;
+    data: number[];
+  }[];
+  total: number
 }
 
-
-
-interface props {
-  h: [{
-    name: string,
-    data: number[]
-  }]
-}
-
-const ApexColumnChart = ({ h }: props) => {
+const ChartNuevosUsuarios = ({ series, total }: Props) => {
   // ** Hook
+  const currentYear = new Date().getFullYear();
   const theme = useTheme()
-
-
-  const series = [
-    {
-      name: 'Apple',
-      data: [90, 120, 55, 100, 80, 125, 175, 70, 88]
-    },
-    {
-      name: 'Samsung',
-      data: [85, 100, 30, 40, 95, 90, 30, 110, 62]
-    }
-  ]
-
+  const columnColors = {
+    series1: '#826af9',
+    series2: '#d2b0ff'
+  }
   const options: ApexOptions = {
     chart: {
       offsetX: -10,
-      stacked: true,
       parentHeightOffset: 0,
+      stacked: false,
       toolbar: { show: false }
     },
     fill: { opacity: 1 },
     dataLabels: { enabled: false },
-    colors: [columnColors.series1, columnColors.series2],
+    tooltip: {
+      theme: 'dark',
+    },
     legend: {
       position: 'top',
       horizontalAlign: 'left',
@@ -71,71 +53,95 @@ const ApexColumnChart = ({ h }: props) => {
         horizontal: 10
       }
     },
+    colors: [columnColors.series1, columnColors.series2],
+
+    // colors: [
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, .3),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, .3),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 0.3),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 1),
+    //   hexToRGBA(theme.palette.primary.main, 0.3)
+    // ],
+    grid: {
+      show: true,
+      borderColor: '#6D6D6D',
+      strokeDashArray: 5,
+      padding: {
+        top: -15,
+        left: 10,
+        right: 10
+      }
+    },
+    states: {
+      hover: {
+        filter: { type: 'none' }
+      },
+      active: {
+        filter: { type: 'none' }
+      }
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 5,
+        distributed: false,
+        columnWidth: '50%',
+        endingShape: 'rounded',
+        startingShape: 'rounded'
+      }
+    },
     stroke: {
       show: true,
       colors: ['transparent']
     },
-    plotOptions: {
-      bar: {
-        columnWidth: '15%',
-        colors: {
-          backgroundBarRadius: 10,
-          backgroundBarColors: [columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg]
-        }
-      }
-    },
-    grid: {
-      borderColor: theme.palette.divider,
-      xaxis: {
-        lines: { show: true }
+    xaxis: {
+      axisTicks: { show: false },
+      axisBorder: { show: false },
+      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      labels: {
+        style: { colors: theme.palette.text.primary }
       }
     },
     yaxis: {
+      show: true,
       labels: {
-        style: { colors: theme.palette.text.disabled }
+        style: { colors: theme.palette.text.primary },
+        formatter: (value) => {
+          console.log(value);
+
+          return value.toFixed(0);
+        },
       }
-    },
-    xaxis: {
-      axisBorder: { show: false },
-      axisTicks: { color: theme.palette.divider },
-      categories: ['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12'],
-      crosshairs: {
-        stroke: { color: theme.palette.divider }
-      },
-      labels: {
-        style: { colors: theme.palette.text.disabled }
-      }
-    },
-    responsive: [
-      {
-        breakpoint: 600,
-        options: {
-          plotOptions: {
-            bar: {
-              columnWidth: '35%'
-            }
-          }
-        }
-      }
-    ]
+    }
   }
 
   return (
-    <Card>
-      <CardHeader
-        title='Data Science'
-        sx={{
-          flexDirection: ['column', 'row'],
-          alignItems: ['flex-start', 'center'],
-          '& .MuiCardHeader-action': { mb: 0 },
-          '& .MuiCardHeader-content': { mb: [2, 0] }
-        }}
-      />
-      <CardContent>
-        <ReactApexcharts type='bar' height={400} options={options} series={series} />
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader
+          title={`Nuevos usuarios en ${currentYear}`}
+          subheader={`Total de ${total} nuevos usuarios en este año`}
+          titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
+          subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
+        />
+        <CardContent>
+          <ReactApexcharts type='bar' height={290} options={options} series={series} />
+          {/* <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant='h6' sx={{ mb: 0.75, fontWeight: 600, color: '#81c784' }}>Hubo un incremento</Typography>
+              <Typography variant='body2'>del 32% con respecto al año pasado.</Typography>
+            </Box>
+          </Box> */}
+        </CardContent>
+      </Card>
+    </>
   )
 }
 
-export default ApexColumnChart
+export default ChartNuevosUsuarios
