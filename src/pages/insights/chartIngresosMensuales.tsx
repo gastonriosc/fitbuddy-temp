@@ -13,16 +13,11 @@ import Icon from 'src/@core/components/icon'
 
 // ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router';
 
 interface Props {
   direction: 'ltr' | 'rtl'
-}
-
-interface amount {
-  amount: number;
-  date: Date
+  data: { pv: number; name: string }[];
+  total: number
 }
 
 const CustomTooltip = (props: TooltipProps<any, any>) => {
@@ -40,73 +35,10 @@ const CustomTooltip = (props: TooltipProps<any, any>) => {
   return null
 }
 
-const ChartIngresosMensualesEntrenador = ({ direction }: Props) => {
+const ChartIngresosMensualesEntrenador = ({ direction, data, total }: Props) => {
 
   const currentDate = new Date()
   const monthName = currentDate.toLocaleDateString('es', { month: 'long' });
-  const [montosMensuales, setMontosMensuales] = useState<amount[] | undefined>()
-  const route = useRouter();
-
-  const getLastDayOfMonth = (year: number, month: number): number => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-
-
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
-
-
-  const lastDayOfMonth = getLastDayOfMonth(currentYear, currentMonth);
-
-  const daysOfMonth = Array.from({ length: lastDayOfMonth }, (_, index) => index + 1);
-
-  // Construye el array final con los datos requeridos
-  const data = daysOfMonth.map((day) => {
-    const dateKey = `${day.toString().padStart(2, '0')}`;
-    const totalAmount = (montosMensuales ?? [])
-      .filter((item) => new Date(item.date).getDate() === day)
-      .reduce((acc, item) => acc + item.amount, 0);
-
-    return { pv: totalAmount, name: dateKey };
-  });
-
-  const total = (montosMensuales ?? [])
-    .reduce((acc, item) => acc + item.amount, 0);
-
-
-  useEffect(() => {
-    const fetchMyRequests = async () => {
-
-      const id = route.query.id
-
-      try {
-        const res = await fetch(
-          `/api/insights/?id=` + id,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        if (res.status == 200) {
-          const data = await res.json();
-          setMontosMensuales(data.montosMensuales);
-
-        }
-        if (res.status == 404) {
-          route.replace('/404');
-        }
-        if (res.status == 500) {
-          route.replace('/500');
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchMyRequests();
-  }, []);
 
   return (
     <Card>

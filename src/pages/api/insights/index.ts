@@ -13,9 +13,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const currentMonth = new Date().getMonth()
     const currentYear = new Date().getFullYear()
 
-    const startDate = new Date(currentYear, currentMonth, 1)
-    const endDate = new Date(currentYear, currentMonth + 1, 0)
-    console.log(startDate, endDate)
+    const startDateM = new Date(currentYear, currentMonth, 1)
+    const endDateM = new Date(currentYear, currentMonth + 1, 0)
+    const startDateA = new Date(currentYear, 0, 1)
+    const endDateA = new Date(currentYear, 11, 31)
 
     try {
       const montosMensuales = await PlanModel.aggregate([
@@ -23,8 +24,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           $match: {
             trainerId: objectId,
             date: {
-              $gte: startDate,
-              $lte: endDate
+              $gte: startDateM,
+              $lte: endDateM
             }
           }
         },
@@ -46,9 +47,39 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         }
       ])
-      if (montosMensuales) {
+      const montosAnuales = await PlanModel.aggregate([
+        {
+          $match: {
+            trainerId: objectId,
+            date: {
+              $gte: startDateA,
+              $lte: endDateA
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'subsrequests',
+            localField: 'subsRequestId',
+            foreignField: '_id',
+            as: 'subRequest_info'
+          }
+        },
+        {
+          $unwind: '$subRequest_info'
+        },
+        {
+          $project: {
+            date: 1,
+            amount: '$subRequest_info.amount'
+          }
+        }
+      ])
+
+      if (montosMensuales && montosAnuales) {
         const responseData = {
-          montosMensuales: montosMensuales
+          montosMensuales: montosMensuales,
+          montosAnuales: montosAnuales
         }
 
         return res.status(200).json(responseData)
