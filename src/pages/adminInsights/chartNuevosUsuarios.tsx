@@ -1,21 +1,16 @@
 // ** React Imports
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
-
 import { useTheme } from '@mui/material/styles'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 
 // ** Third Party Imports
-
 import { ApexOptions } from 'apexcharts'
 
 
 // ** Icon Imports
-
 
 // ** Types
 
@@ -28,101 +23,35 @@ const columnColors = {
   series2: '#d2b0ff'
 }
 
-// interface PickerProps {
-//   start: Date | number
-//   end: Date | number
-// }
 
 
-
-
-interface User {
-  role: string,
-  registrationDate: Date
+interface props {
+  h: [{
+    name: string,
+    data: number[]
+  }]
 }
 
-const ApexColumnChart = () => {
+const ApexColumnChart = ({ h }: props) => {
   // ** Hook
   const theme = useTheme()
-  const route = useRouter();
-  const [newUsers, setNewUsers] = useState<User[]>();
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-
-
-  const monthlyStats = {
-    Entrenadores: Array(12).fill(0),
-    Alumnos: Array(12).fill(0),
-  };
-
-  newUsers?.forEach((user: User) => {
-    const registrationDate = new Date(user.registrationDate);
-
-    const userMonth = registrationDate.getMonth() + 1;
-    const userYear = registrationDate.getFullYear();
-
-    if (userYear === currentYear && userMonth <= currentMonth) {
-      if (user.role === 'Entrenador') {
-        monthlyStats.Entrenadores[userMonth - 1]++;
-      } else if (user.role === 'Alumno') {
-        monthlyStats.Alumnos[userMonth - 1]++;
-      }
-    }
-  });
 
   const series = [
     {
-      name: 'Entrenadores',
-      data: monthlyStats.Entrenadores,
+      name: 'Apple',
+      data: [90, 120, 55, 100, 80, 125, 175, 70, 88]
     },
     {
-      name: 'Alumnos',
-      data: monthlyStats.Alumnos,
-    },
-  ];
-
-  useEffect(() => {
-    const fetchMyRequests = async () => {
-
-      try {
-        const res = await fetch(
-          `/api/adminInsights/`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        if (res.status == 200) {
-          const data = await res.json();
-          setNewUsers(data.newUsers);
-          console.log(data.newUsers)
-          console.log(newUsers)
-        }
-        if (res.status == 404) {
-          route.replace('/404');
-        }
-        if (res.status == 500) {
-          route.replace('/500');
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchMyRequests();
-  }, [newUsers]);
-
-  // ** States
-  // const [endDate, setEndDate] = useState<DateType>(null)
-  // const [startDate, setStartDate] = useState<DateType>(null)
+      name: 'Samsung',
+      data: [85, 100, 30, 40, 95, 90, 30, 110, 62]
+    }
+  ]
 
   const options: ApexOptions = {
     chart: {
       offsetX: -10,
-      stacked: false,
+      stacked: true,
       parentHeightOffset: 0,
       toolbar: { show: false }
     },
@@ -132,7 +61,7 @@ const ApexColumnChart = () => {
     legend: {
       position: 'top',
       horizontalAlign: 'left',
-      labels: { colors: theme.palette.text.primary },
+      labels: { colors: theme.palette.text.secondary },
       markers: {
         offsetY: 1,
         offsetX: -3
@@ -148,14 +77,17 @@ const ApexColumnChart = () => {
     },
     plotOptions: {
       bar: {
-        columnWidth: '70%',
-
+        columnWidth: '15%',
+        colors: {
+          backgroundBarRadius: 10,
+          backgroundBarColors: [columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg, columnColors.bg]
+        }
       }
     },
     grid: {
       borderColor: theme.palette.divider,
       xaxis: {
-        lines: { show: false }
+        lines: { show: true }
       }
     },
     yaxis: {
@@ -166,7 +98,7 @@ const ApexColumnChart = () => {
     xaxis: {
       axisBorder: { show: false },
       axisTicks: { color: theme.palette.divider },
-      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      categories: ['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12'],
       crosshairs: {
         stroke: { color: theme.palette.divider }
       },
@@ -188,44 +120,10 @@ const ApexColumnChart = () => {
     ]
   }
 
-  // const CustomInput = forwardRef((props: PickerProps, ref) => {
-  //   const startDate = props.start !== null ? format(props.start, 'MM/dd/yyyy') : ''
-  //   const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
-
-  //   const value = `${startDate}${endDate !== null ? endDate : ''}`
-
-  //   return (
-  //     <TextField
-  //       {...props}
-  //       size='small'
-  //       value={value}
-  //       inputRef={ref}
-  //       InputProps={{
-  //         startAdornment: (
-  //           <InputAdornment position='start'>
-  //             <Icon icon='mdi:bell-outline' />
-  //           </InputAdornment>
-  //         ),
-  //         endAdornment: (
-  //           <InputAdornment position='end'>
-  //             <Icon icon='mdi:chevron-down' />
-  //           </InputAdornment>
-  //         )
-  //       }}
-  //     />
-  //   )
-  // })
-
-  // const handleOnChange = (dates: any) => {
-  //   const [start, end] = dates
-  //   setStartDate(start)
-  //   setEndDate(end)
-  // }
-
   return (
     <Card>
       <CardHeader
-        title={`Ingresos del año de ${currentYear}`}
+        title='Data Science'
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
