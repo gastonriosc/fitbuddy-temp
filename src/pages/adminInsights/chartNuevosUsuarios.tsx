@@ -48,11 +48,11 @@ const ApexColumnChart = () => {
   const [newUsers, setNewUsers] = useState<User[]>();
 
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1; // Los meses en JavaScript son de 0 a 11, por eso sumamos 1
+  const currentMonth = new Date().getMonth() + 1;
 
-  // Inicializa un objeto para almacenar las estadísticas mensuales por rol
+
   const monthlyStats = {
-    Entrenadores: Array(12).fill(0), // Inicializa un array de 12 elementos con valores 0
+    Entrenadores: Array(12).fill(0),
     Alumnos: Array(12).fill(0),
   };
 
@@ -62,9 +62,7 @@ const ApexColumnChart = () => {
     const userMonth = registrationDate.getMonth() + 1;
     const userYear = registrationDate.getFullYear();
 
-    // Verifica si el usuario está registrado en el año y mes actual
     if (userYear === currentYear && userMonth <= currentMonth) {
-      // Incrementa el contador correspondiente al rol del usuario
       if (user.role === 'Entrenador') {
         monthlyStats.Entrenadores[userMonth - 1]++;
       } else if (user.role === 'Alumno') {
@@ -115,7 +113,7 @@ const ApexColumnChart = () => {
     };
 
     fetchMyRequests();
-  }, [newUsers]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [newUsers]);
 
   // ** States
   // const [endDate, setEndDate] = useState<DateType>(null)

@@ -1,0 +1,155 @@
+// ** MUI Imports
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
+
+// ** Third Party Imports
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
+
+// ** Icon Imports
+import Icon from 'src/@core/components/icon'
+
+// ** Custom Components Imports
+import CustomChip from 'src/@core/components/mui/chip'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router';
+
+interface Props {
+  direction: 'ltr' | 'rtl'
+}
+
+interface amount {
+  amount: number;
+  date: Date
+}
+
+const CustomTooltip = (props: TooltipProps<any, any>) => {
+  // ** Props
+  const { active, payload } = props
+
+  if (active && payload) {
+    return (
+      <div className='recharts-custom-tooltip'>
+        <Typography sx={{ fontSize: '0.875rem' }}>{`${payload[0].value}`}</Typography>
+      </div>
+    )
+  }
+
+  return null
+}
+
+const ChartIngresosMensualesEntrenador = ({ direction }: Props) => {
+
+  const currentDate = new Date()
+  const monthName = currentDate.toLocaleDateString('es', { month: 'long' });
+  const [montosMensuales, setMontosMensuales] = useState<amount[] | undefined>()
+  const route = useRouter();
+
+  const getLastDayOfMonth = (year: number, month: number): number => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
+
+  const lastDayOfMonth = getLastDayOfMonth(currentYear, currentMonth);
+
+  const daysOfMonth = Array.from({ length: lastDayOfMonth }, (_, index) => index + 1);
+
+  // Construye el array final con los datos requeridos
+  const data = daysOfMonth.map((day) => {
+    const dateKey = `${day.toString().padStart(2, '0')}`;
+    const totalAmount = (montosMensuales ?? [])
+      .filter((item) => new Date(item.date).getDate() === day)
+      .reduce((acc, item) => acc + item.amount, 0);
+
+    return { pv: totalAmount, name: dateKey };
+  });
+
+  const total = (montosMensuales ?? [])
+    .reduce((acc, item) => acc + item.amount, 0);
+
+
+  useEffect(() => {
+    const fetchMyRequests = async () => {
+
+      const id = route.query.id
+
+      try {
+        const res = await fetch(
+          `/api/insights/?id=` + id,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (res.status == 200) {
+          const data = await res.json();
+          setMontosMensuales(data.montosMensuales);
+
+        }
+        if (res.status == 404) {
+          route.replace('/404');
+        }
+        if (res.status == 500) {
+          route.replace('/500');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchMyRequests();
+  }, []);
+
+  return (
+    <Card>
+      <CardHeader
+        title={`Ingresos del mes de ${monthName}`}
+        subheaderTypographyProps={{ sx: { color: theme => `${theme.palette.text.disabled} !important` } }}
+        sx={{
+          flexDirection: ['column', 'row'],
+          alignItems: ['flex-start', 'center'],
+          '& .MuiCardHeader-action': { mb: 0 },
+          '& .MuiCardHeader-content': { mb: [2, 0] }
+        }}
+        action={
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <CustomChip
+              skin='light'
+              color='success'
+              sx={{ fontWeight: 500, borderRadius: 1, fontSize: '0.875rem' }}
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                  <Icon icon='mdi:dollar' fontSize='1rem' />
+                  <span>{total}</span>
+                </Box>
+              }
+            />
+          </Box>
+        }
+      />
+      <CardContent>
+        <Box sx={{ height: 350 }}>
+          <ResponsiveContainer>
+            <LineChart height={350} data={data} style={{ direction }} margin={{ left: -0 }}>
+              <CartesianGrid />
+              <XAxis dataKey='name' reversed={direction === 'rtl'} />
+              <YAxis orientation={direction === 'rtl' ? 'right' : 'left'} />
+              <Tooltip content={CustomTooltip} />
+              <Line dataKey='pv' stroke='#ff9f43' strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </Box>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default ChartIngresosMensualesEntrenador
