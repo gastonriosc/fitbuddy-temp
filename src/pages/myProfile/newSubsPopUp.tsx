@@ -85,7 +85,8 @@ const NewSubsPopUp = (props: Props) => {
         handleAddSubscriptionClose();
         setTitlePopUp('Suscripción creada!')
         setPopUp(true)
-        const newSubs = { name: name, amount: amount, description: description, trainerId: trainerId, deleted: deleted }
+        const data = await res.json();
+        const newSubs = data
         setSubs((prevSubs: any) => [...prevSubs, newSubs]);
       }
       else {
