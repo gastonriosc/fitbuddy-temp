@@ -548,7 +548,7 @@ const MyProfile = () => {
                           <Controller
                             name='daysPerWeek'
                             control={updateControl}
-                            rules={{ required: true, min: 1, max: 7 }}
+                            rules={{ required: true }}
                             defaultValue={1}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField

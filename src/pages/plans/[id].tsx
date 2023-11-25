@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Card, CardHeader, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
+import { Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -18,6 +18,20 @@ interface Plan {
   plan: Day[];
   trainerName: string;
   studentName: string;
+}
+
+interface PlanData {
+  _id: string;
+  nombrePlan: string;
+  trainerId: string;
+  plan: Day[];
+  trainerName: string;
+  studentName: string;
+  date: string;
+  expirationDate: string;
+  subscriptionId: string;
+  subscriptionName: string;
+  daysPerWeek: number;
 }
 
 interface Day {
@@ -75,6 +89,8 @@ const MyPlans = () => {
   const [titlePopUpErrorDelete, setTitlePopUpErrorDelete] = useState<string>()
 
   const [trackingId, setTrackingId] = useState<TrackingId>()
+  const [planData, setPlanData] = useState<PlanData>();
+
 
   //const [plan, setPlan] = useState([]);
   const [manualInput, setManualInput] = React.useState(false);
@@ -82,7 +98,7 @@ const MyPlans = () => {
 
 
   const textPopUp = 'Pulse el botón OK para continuar'
-  const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento que desea modificar debe tener al menos un día.'
+  const textPopUpErrorDay = `Por favor, intente nuevamente. El plan de entrenamiento que desea crear o modificar debe tener una cantidad mayor o igual de días que el plan de suscripción ofrecido. (${planData?.daysPerWeek} días). `
   const textPopUpError = 'Por favor, intente nuevamente o elimine el día de entrenamiento en caso de no tener ejercicios.'
   const textPopUpErrorDelete = 'Por favor, intente nuevamente. El plan de entrenamiento que desea actualizar, no puede tener una cantidad menor de ejercicios que el plan original.'
 
@@ -282,6 +298,8 @@ const MyPlans = () => {
     setPlanId(route.query.id?.toString());
   };
 
+
+
   useEffect(() => {
     const fetchMyRequests = async () => {
       const id = route.query.id;
@@ -296,16 +314,19 @@ const MyPlans = () => {
             },
           }
         );
-        if (res.status == 200) {
+
+        if (res.status === 200) {
           const data = await res.json();
-          setPlan(data.combinedInfo);
-          setTrackingId(data.trackingId)
+          const fetchedPlanData = data.combinedInfo;
+          setPlanData(fetchedPlanData);
+          setPlan(fetchedPlanData);
+          setTrackingId(data.trackingId);
           setIsLoading(true);
-        }
-        if (res.status == 404) {
+          console.log(fetchedPlanData.daysPerWeek);
+
+        } else if (res.status === 404) {
           route.replace('/404');
-        }
-        if (res.status == 500) {
+        } else if (res.status === 500) {
           route.replace('/500');
         }
       } catch (error) {
@@ -316,8 +337,46 @@ const MyPlans = () => {
     fetchMyRequests();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+
+  const handleDeleteLastDay = () => {
+    setPlan((prevPlan: any) => {
+      const updatedPlanLists = [...prevPlan.plan];
+
+      const minimumDays = planData?.daysPerWeek ?? 0;
+
+      if (updatedPlanLists.length > minimumDays) {
+        updatedPlanLists.pop();
+
+        return { ...prevPlan, plan: updatedPlanLists };
+      } else {
+        setTitlePopUpErrorDay(`El plan debe tener al menos ${minimumDays} días.`);
+        setPopUpErrorDay(true);
+      }
+
+      return prevPlan;
+    });
+  };
+
+
   const handleExerciseChange = async () => {
     const planId = route.query.id;
+
+    const isValidPlan = plan?.plan.every((day: Day) =>
+      day.Ejercicios.every((exercise: Exercise) =>
+        exercise.nombreEjercicio &&
+        exercise.series !== undefined &&
+        exercise.repeticiones !== undefined &&
+        exercise.peso !== undefined
+      )
+    );
+
+    if (!isValidPlan) {
+      setTitlePopUpError('Datos de ejercicios incorrectos');
+      setPopUpError(true);
+
+      return;
+    }
+
     try {
       const res = await fetch(`/api/trainingPlans/?id=${planId}`, {
         method: 'PUT',
@@ -328,11 +387,10 @@ const MyPlans = () => {
       });
 
       if (res.status === 200) {
-
         const updatedPlan = await res.json();
         console.log('plan actualizado:', updatedPlan);
-        setTitlePopUp('Plan actualizado con éxito!')
-        setPopUp(true)
+        setTitlePopUp('Plan actualizado con éxito!');
+        setPopUp(true);
       } else {
         console.error('Error al actualizar el plan');
       }
@@ -340,6 +398,7 @@ const MyPlans = () => {
       console.error('Error al actualizar el plan', error);
     }
   };
+
 
   const handleAddRow = (dayIndex: number) => {
     setPlan((prevPlan: any) => {
@@ -354,17 +413,15 @@ const MyPlans = () => {
     setPlan((prevPlan: any) => {
       const updatedPlanLists = prevPlan?.plan.map((day: any, dIndex: number) => {
         if (dIndex === dayIndex) {
-          // Verificar si es el último ejercicio
           if (day.Ejercicios.length === 1) {
             setTitlePopUpError('El plan debe tener al menos un día con un ejercicio.');
             setPopUpError(true);
 
-            return day; // No permitir eliminar el último ejercicio
+            return day;
           }
 
           const exerciseToDelete = day.Ejercicios[rowIndex];
 
-          // Verificar si el ejercicio ya está guardado
           if (exerciseToDelete._id) {
             setTitlePopUpErrorDelete('No se puede eliminar un ejercicio ya guardado.');
             setPopUpErrorDelete(true);
@@ -382,16 +439,14 @@ const MyPlans = () => {
 
       return { ...prevPlan, plan: updatedPlanLists };
     });
-  };
-
-
+  }
 
   const handleAddDay = () => {
     const lastDayIndex = plan.plan.length - 1;
     const newDayIndex = lastDayIndex + 1;
 
     const newDay = {
-      nombreDia: `Día ${newDayIndex + 1}`, // Así, el nuevo día será "Día 2" si el último era "Día 1"
+      nombreDia: `Día ${newDayIndex + 1}`,
       Ejercicios: [createData('Agregue aquí un ejercicio', 0, 0, 0, '')],
     };
 
@@ -399,22 +454,6 @@ const MyPlans = () => {
     setPlan((prevPlan: any) => ({ ...prevPlan, plan: newPlanLists }));
   };
 
-  const handleDeleteLastDay = () => {
-    setPlan((prevPlan: any) => {
-      const updatedPlanLists = [...prevPlan.plan];
-      if (updatedPlanLists.length > 1) {
-        updatedPlanLists.pop(); // Elimina el último día
-
-        return { ...prevPlan, plan: updatedPlanLists };
-      } else {
-        // Asegúrate de que siempre haya al menos un día en el plan
-        setTitlePopUpErrorDay('El plan debe tener al menos un día!')
-        setPopUpErrorDay(true)
-      }
-
-      return prevPlan;
-    });
-  };
 
   const getExerciseFromMyPersonalLibrary = async () => {
     const trainerId = session.data?.user._id;
@@ -458,6 +497,8 @@ const MyPlans = () => {
     fetchDataAndPersonal();
   }, []);
 
+
+
   if (isLoading) {
     return (
       <Grid container spacing={3}>
@@ -466,7 +507,12 @@ const MyPlans = () => {
             <Box display={'flex'} sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
               <Box ml={5}>
                 <h2 style={{ fontSize: '24px', textTransform: 'uppercase' }}>{plan?.nombrePlan}</h2>
+                <h2 style={{ fontSize: '12px', textTransform: 'uppercase' }}>
+                  El plan debe contener al menos {planData?.daysPerWeek} días
+                </h2>
               </Box>
+
+
               <Box display={'flex'} sx={{ justifyContent: 'flex-end' }}>
                 <Button
                   variant='contained'
@@ -486,16 +532,19 @@ const MyPlans = () => {
                   SEGUIMIENTO
                 </Button>
               </Box>
+
             </Box>
             <CardContent>
               <Box>
                 <Card>
+
                   <CardContent>
                     {plan?.plan.map((day: Day, dayIndex: any) => (
                       <Box key={dayIndex}>
                         <h3 style={{ textDecoration: 'underline', textUnderlineOffset: '5px' }}>
                           {day.nombreDia}
                         </h3>
+
                         <TableContainer>
                           <Table>
                             <TableHead>
@@ -699,7 +748,7 @@ const MyPlans = () => {
         </Grid>
         <Grid container justifyContent='space-between' mt={2}>
           <Grid item md={6} xs={12} >
-            {/* {esEntrenador && (
+            {esEntrenador && (
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleAddDay}>
                 Agregar Día
               </Button>
@@ -709,7 +758,7 @@ const MyPlans = () => {
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleDeleteLastDay}>
                 Eliminar Día
               </Button>
-            )} */}
+            )}
             <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={exportToPDF} >
               Exportar a PDF
             </Button>

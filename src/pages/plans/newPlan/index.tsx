@@ -284,16 +284,14 @@ const NewPlan = () => {
       return;
     }
 
-    if (planLists.length !== cantidadDeDias) {
-      setTitlePopUpErrorDay(`El plan debe tener exactamente ${cantidadDeDias} días de entrenamiento`);
+    if (typeof cantidadDeDias !== 'undefined' && planLists.length < cantidadDeDias) {
+      setTitlePopUpErrorDay(`El plan debe tener al menos ${cantidadDeDias} días de entrenamiento`);
       setPopUpErrorDay(true);
 
       return;
     }
 
     const hasAtLeastOneExercisePerDay = planLists.every((day) => day.some((exercise) => exercise.nombre.trim() !== ''));
-
-    console.log('planLists', planLists);
 
     if (!hasAtLeastOneExercisePerDay) {
       setTitlePopUpError('Cada día debe tener al menos un ejercicio.');

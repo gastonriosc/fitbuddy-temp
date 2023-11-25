@@ -52,10 +52,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           },
           {
+            $lookup: {
+              from: 'subsrequests',
+              localField: 'subsRequestId',
+              foreignField: '_id',
+              as: 'subsrequest_info'
+            }
+          },
+          {
             $unwind: '$trainer_info'
           },
           {
             $unwind: '$student_info'
+          },
+          {
+            $unwind: '$subsrequest_info'
+          },
+          {
+            $lookup: {
+              from: 'subscriptions',
+              localField: 'subsrequest_info.subscriptionId',
+              foreignField: '_id',
+              as: 'subscription_info'
+            }
+          },
+          {
+            $unwind: '$subscription_info'
           },
           {
             $project: {
@@ -66,9 +88,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               expirationDate: 1,
               trainerId: 1,
               studentId: 1,
-              subsRequestId: 1,
+              planId: 1,
               trainerName: '$trainer_info.name',
-              studentName: '$student_info.name'
+              studentName: '$student_info.name',
+              subscriptionName: '$subscription_info.name',
+              daysPerWeek: '$subscription_info.daysPerWeek'
             }
           }
         ])

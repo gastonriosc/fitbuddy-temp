@@ -49,6 +49,8 @@ interface planType {
   avatar: string;
 }
 
+
+
 const MyRequests = () => {
 
   const route = useRouter();
@@ -190,7 +192,7 @@ const MyRequests = () => {
                   }
                 })
                 .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .map((OPlan: planType, index) => (
+                .map((OPlan: planType, sub: any, index) => (
 
 
                   <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
@@ -246,7 +248,7 @@ const MyRequests = () => {
                                 color='primary'
                                 title='Plan'
 
-                                href={'/plans/' + OPlan._id}
+                                href={'/plans/' + OPlan._id + '&subsReq=' + sub._id}
                               >
                                 <Icon icon='mdi:file-eye-outline' />
                               </Button>
