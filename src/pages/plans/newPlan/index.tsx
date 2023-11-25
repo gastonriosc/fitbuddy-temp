@@ -186,8 +186,6 @@ const NewPlan = () => {
       const personalLibraryData = await getExerciseFromMyPersonalLibrary();
       const cantidadDeDias = await getDaysPerWeek()
 
-      // Combina los resultados de ambos GET
-
 
       setPlan(personalLibraryData);
       setCantidadDeDias(cantidadDeDias)
@@ -273,7 +271,7 @@ const NewPlan = () => {
 
 
   const handleAddDay = () => {
-    const newDay = [createData('Agregue aquí un ejercicio', 0, 0, 0, '')];
+    const newDay = [createData('', 0, 0, 0, '')];
     const newPlanLists = [...planLists, newDay];
     setPlanLists(newPlanLists);
   };
@@ -282,6 +280,34 @@ const NewPlan = () => {
     if (nombrePlan.trim() === '') {
       setTitlePopUpErrorName('El plan debe tener asignado un nombre!')
       setPopUpErrorName(true);
+
+      return;
+    }
+
+    if (planLists.length !== cantidadDeDias) {
+      setTitlePopUpErrorDay(`El plan debe tener exactamente ${cantidadDeDias} días de entrenamiento`);
+      setPopUpErrorDay(true);
+
+      return;
+    }
+
+    const hasAtLeastOneExercisePerDay = planLists.every((day) => day.some((exercise) => exercise.nombre.trim() !== ''));
+
+    console.log('planLists', planLists);
+
+    if (!hasAtLeastOneExercisePerDay) {
+      setTitlePopUpError('Cada día debe tener al menos un ejercicio.');
+      setPopUpError(true);
+
+      return;
+    }
+    const isValidPlan = planLists.every((day) =>
+      day.every((exercise) => exercise.nombre.trim() !== '')
+    );
+
+    if (!isValidPlan) {
+      setTitlePopUpErrorDataExercise('Datos de ejercicios incorrectos en algún día.');
+      setPopUpErrorDataExercise(true);
 
       return;
     }
@@ -343,7 +369,7 @@ const NewPlan = () => {
           <Grid item xs={12}  >
             <Card >
               <CardHeader
-                title={`Nombre del plan de entrenamiento ( {${cantidadDeDias}} cantidad dias de la subs)`}
+                title={`Nombre del plan de entrenamiento `}
                 sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
               />
               <CardContent>
@@ -364,6 +390,14 @@ const NewPlan = () => {
                         placeholder='Ingrese un nombre para buscar'
                       />
                     </FormControl>
+                  </Grid>
+                  <Grid item sm={4} xs={12}>
+                    <TextField
+                      sx={{ width: '100%' }}
+                      label='Cantidad de Días del plan'
+                      value={cantidadDeDias}
+                      disabled
+                    />
                   </Grid>
                 </Grid>
               </CardContent>

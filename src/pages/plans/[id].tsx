@@ -255,8 +255,26 @@ const MyPlans = () => {
 
 
   const handleExerciseUpdate = (dayIndex: number) => {
-    setEditingExerciseIndexs(dayIndex, null);
+    const day = plan?.plan[dayIndex];
+
+    const isExerciseDataValid = day?.Ejercicios.every((exercise: any) => {
+      const isExerciseNameValid = exercise.nombreEjercicio && exercise.nombreEjercicio.length > 0;
+      const isSeriesValid = /^\d+$/.test(exercise.series);
+      const isRepsValid = /^\d+$/.test(exercise.repeticiones);
+      const isPesoValid = /^\d+$/.test(exercise.peso);
+
+      return isExerciseNameValid && isSeriesValid && isRepsValid && isPesoValid;
+    });
+
+
+    if (isExerciseDataValid) {
+      setEditingExerciseIndexs(dayIndex, null);
+    } else {
+      setTitlePopUpError('Datos de ejercicios incorrectos');
+      setPopUpError(true);
+    }
   };
+
 
 
   const foro = () => {
@@ -554,6 +572,7 @@ const MyPlans = () => {
                                       exercise.series
                                     )}
                                   </TableCell>
+
                                   <TableCell>
                                     {editingExerciseIndices[dayIndex] === exerciseIndex ? (
                                       <TextField
@@ -680,7 +699,7 @@ const MyPlans = () => {
         </Grid>
         <Grid container justifyContent='space-between' mt={2}>
           <Grid item md={6} xs={12} >
-            {esEntrenador && (
+            {/* {esEntrenador && (
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleAddDay}>
                 Agregar Día
               </Button>
@@ -690,7 +709,7 @@ const MyPlans = () => {
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleDeleteLastDay}>
                 Eliminar Día
               </Button>
-            )}
+            )} */}
             <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={exportToPDF} >
               Exportar a PDF
             </Button>

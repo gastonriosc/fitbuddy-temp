@@ -548,16 +548,18 @@ const MyProfile = () => {
                           <Controller
                             name='daysPerWeek'
                             control={updateControl}
-                            rules={{ required: true }}
+                            rules={{ required: true, min: 1, max: 7 }}
+                            defaultValue={1}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-                                label='Dias por semana (entre 1 y 7)'
+                                label='Días por semana (entre 1 y 7)'
                                 name='daysPerWeek'
                                 type='number'
                                 value={value}
                                 onBlur={onBlur}
                                 onChange={onChange}
                                 error={Boolean(updateErrors.daysPerWeek)}
+                                inputProps={{ min: 1, max: 7 }}
                               />
                             )}
                           />
@@ -567,6 +569,7 @@ const MyProfile = () => {
                             </FormHelperText>
                           )}
                         </FormControl>
+
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='description'
