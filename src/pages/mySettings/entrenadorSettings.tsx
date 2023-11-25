@@ -341,9 +341,9 @@ const EntrenadorProfile = () => {
                       </Box>
                     ) : (<Typography>Guardar Cambios</Typography>)}
                   </Button>
-                  <Button sx={{ mb: 5 }} type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
+                  {/* <Button sx={{ mb: 5 }} type='reset' variant='outlined' color='secondary' onClick={() => setFormData(initialData)}>
                     Reestablecer
-                  </Button>
+                  </Button> */}
                   {showSaveResult && (
                     <Typography >
                       Los cambios han sido guardados de manera correcta! Por favor, para que los cambios actualizados puedan observarse en su perfil, le recomendamos que inicie sesión nuevamente.
