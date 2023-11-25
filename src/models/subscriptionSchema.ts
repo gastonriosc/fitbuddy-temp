@@ -17,6 +17,10 @@ const subscriptionSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     require: true
   },
+  daysPerWeek: {
+    type: Number,
+    require: true
+  },
   deleted: {
     type: Boolean,
     require: true

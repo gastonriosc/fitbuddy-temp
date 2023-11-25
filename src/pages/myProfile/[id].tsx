@@ -53,6 +53,7 @@ interface Subscription {
   name: string
   amount: string
   description: string
+  daysPerWeek: number
   deleted: boolean
 }
 
@@ -87,8 +88,9 @@ const MyProfile = () => {
   interface FormData {
     _id: number | string
     name: string
-    amount: string
+    amount: number
     description: string
+    daysPerWeek: number
   }
 
   const schema = yup.object().shape({
@@ -97,8 +99,9 @@ const MyProfile = () => {
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    amount: yup.string().required("Precio es un campo numérico y obligatorio"),
+    amount: yup.number().required("Precio es un campo numérico y obligatorio").min(0, "Precio debe ser mayor a 0"),
     description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    daysPerWeek: yup.number().required("Es obligatorio completar la cantidad de dias a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7")
   })
 
 
@@ -132,6 +135,7 @@ const MyProfile = () => {
     setValue("name", sub.name)
     setValue("amount", sub.amount)
     setValue("description", sub.description)
+    setValue("daysPerWeek", sub.daysPerWeek)
     setEditSubscription(sub);
     setOpenPlans(true);
   };
@@ -171,8 +175,9 @@ const MyProfile = () => {
   } = useForm<FormData>({
     defaultValues: {
       name: '',
-      amount: '',
+      amount: 0,
       description: '',
+      daysPerWeek: 1.,
     },
     mode: 'onBlur',
     resolver: yupResolver(updateSchema),
@@ -212,19 +217,21 @@ const MyProfile = () => {
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
-    let name, amount, description;
+    let name, amount, description, daysPerWeek;
     let deleted;
 
     if (openPlans) {
       name = data.name
       amount = data.amount
-      description = data.description;
+      description = data.description
+      daysPerWeek = data.daysPerWeek
       deleted = false;
     }
     else {
       name = deletedSubs?.name
       amount = deletedSubs?.amount
-      description = deletedSubs?.description;
+      description = deletedSubs?.description
+      daysPerWeek = deletedSubs?.daysPerWeek
       deleted = true;
     }
 
@@ -234,7 +241,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ subsId, name, amount, description, deleted })
+        body: JSON.stringify({ subsId, name, amount, description, daysPerWeek, deleted })
       })
       if (res.status == 200) {
         if (openPlans) {
@@ -243,7 +250,7 @@ const MyProfile = () => {
           setPopUp(true)
           if (subsId) {
 
-            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, deleted: deleted };
+            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, daysPerWeek: daysPerWeek, deleted: deleted };
             setSubs((prevSubs) => prevSubs.map((sub) => (sub._id === editedSubscription._id ? editedSubscription : sub)));
           }
 
@@ -411,6 +418,11 @@ const MyProfile = () => {
 
                   <CardContent>
                     <Box sx={{ mt: 4, mb: 5, height: '200px' }}>
+                      <Box>
+                        <ul>
+                          <li><b>{sub.daysPerWeek}</b> dias por semana.</li>
+                        </ul>
+                      </Box>
                       <Box
                         sx={{ display: 'flex', mb: 2.5, alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}
                       >
@@ -529,6 +541,29 @@ const MyProfile = () => {
                           {updateErrors.amount && (
                             <FormHelperText sx={{ color: 'error.main' }}>
                               {updateErrors.amount.message}
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+                        <FormControl fullWidth sx={{ mb: 4 }}>
+                          <Controller
+                            name='daysPerWeek'
+                            control={updateControl}
+                            rules={{ required: true }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <TextField
+                                label='Dias por semana (entre 1 y 7)'
+                                name='daysPerWeek'
+                                type='number'
+                                value={value}
+                                onBlur={onBlur}
+                                onChange={onChange}
+                                error={Boolean(updateErrors.daysPerWeek)}
+                              />
+                            )}
+                          />
+                          {updateErrors.daysPerWeek && (
+                            <FormHelperText sx={{ color: 'error.main' }}>
+                              {updateErrors.daysPerWeek.message}
                             </FormHelperText>
                           )}
                         </FormControl>
