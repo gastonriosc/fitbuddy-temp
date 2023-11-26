@@ -303,7 +303,7 @@ const Tracking = () => {
       </Card>
 
 
-      {tracking ? (
+      {tracking?.data.length > 0 ? (
         <Box>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
             {/* Que le parecio el entrenamiento? */}
@@ -438,12 +438,15 @@ const Tracking = () => {
 
           </Box>
         </Box>
-      ) : (
+      ) : (isTrainer ? (
         <Box sx={{ mt: '50px', mb: '20px' }}>
-          <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
+          <Typography variant='h6' sx={{ textAlign: 'center' }}>Su alumno no ha hecho registros aún.</Typography>
         </Box>
-      )
-      }
+      ) :
+        <Box sx={{ mt: '50px', mb: '20px' }}>
+          <Typography variant='h6' sx={{ textAlign: 'center' }}>No has hecho registros de seguimiento aún.</Typography>
+        </Box>
+      )}
 
 
 
