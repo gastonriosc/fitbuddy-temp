@@ -455,7 +455,7 @@ const Tracking = () => {
         onClose={handlePopUpNuevoRegistro}
         aria-labelledby='user-view-plans'
         aria-describedby='user-view-plans-description'
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '620px' } }}
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660 } }}
 
       >
         <DialogTitle
@@ -467,7 +467,7 @@ const Tracking = () => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          Agregar un nuevo registro
+          ¡Registra tu avance!
         </DialogTitle>
         <Divider sx={{ my: '0 !important' }} />
 
