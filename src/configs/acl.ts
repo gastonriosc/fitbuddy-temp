@@ -38,7 +38,8 @@ const defineRulesFor = (role: string, subject: string) => {
         'tracking-page',
         'myLibrary-page',
         'search-page',
-        'trainerInsights-page'
+        'trainerInsights-page',
+        'insight-page'
       ]
     )
     cannot('read', [, /*'myPlans-page'*/ 'perfilAlumno'])
@@ -57,7 +58,9 @@ const defineRulesFor = (role: string, subject: string) => {
         'myStudentProfile-page',
         'myStudentProfile2-page',
         'perfilTitle',
-        'tracking-page'
+        'tracking-page',
+        'studentInsights-page',
+        'insight-page'
       ]
     )
     cannot('read', [

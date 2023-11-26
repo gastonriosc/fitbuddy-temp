@@ -90,7 +90,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Mis métricas',
       icon: 'ic:twotone-insights',
       path: '/insights/' + session?.user?._id,
-      subject: 'trainerInsights-page',
+      subject: 'insight-page',
       action: 'manage'
     },
     {

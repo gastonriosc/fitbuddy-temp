@@ -13,16 +13,14 @@ import ReactApexcharts from 'src/@core/components/react-apexcharts'
 // ** Util Import
 
 interface Props {
-  series: {
-    name: string;
-    data: number[];
-  }[];
-  total: number
+  contador: number[];
+  total: number,
+  categorias: string[]
 }
 
-const ChartNuevosUsuarios = ({ series, total }: Props) => {
+const ChartNuevosUsuarios = ({ contador, total, categorias }: Props) => {
   // ** Hook
-  const currentYear = new Date().getFullYear();
+  const series = [{ name: 'Entrenamientos', data: contador }]
   const theme = useTheme()
   const columnColors = {
     series1: '#826af9',
@@ -101,9 +99,9 @@ const ChartNuevosUsuarios = ({ series, total }: Props) => {
       colors: ['transparent']
     },
     xaxis: {
-      axisTicks: { show: false },
+      axisTicks: { show: true },
       axisBorder: { show: false },
-      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      categories: categorias,
       labels: {
         style: { colors: theme.palette.text.primary }
       }
@@ -112,9 +110,6 @@ const ChartNuevosUsuarios = ({ series, total }: Props) => {
       show: true,
       labels: {
         style: { colors: theme.palette.text.primary },
-        formatter: (value) => {
-          return value.toFixed(0);
-        },
       }
     }
   }
@@ -123,8 +118,8 @@ const ChartNuevosUsuarios = ({ series, total }: Props) => {
     <>
       <Card>
         <CardHeader
-          title={`Nuevos usuarios en ${currentYear}`}
-          subheader={`Total de ${total} nuevos usuarios en este año`}
+          title={`Entrenamientos por semama`}
+          subheader={`Total de ${total} entrenamientos`}
           titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
           subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         />
