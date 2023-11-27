@@ -1,11 +1,16 @@
 // ** React Imports
-import { forwardRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
 
-// import { useForm, Controller, SubmitHandler, FieldValues } from 'react-hook-form'
-// import NewSubsPopUp from './newSubsPopUp'
-//import CardWorkoutMensual from './cardWorkouts'
+import { Controller, useForm, SubmitHandler, FieldValues } from 'react-hook-form'
+
+// ** MUI Imports
+import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
+
+// ** Icon Imports
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -16,7 +21,8 @@ import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableR
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
-import { format, addDays, startOfWeek } from 'date-fns';
+import { format, addDays, startOfWeek, isToday } from 'date-fns';
+import TrackingPopUp from '../plans/tracking/trackingPopUp'
 
 // import { CardHeader } from '@mui/material'
 
@@ -41,105 +47,70 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Icon from 'src/@core/components/icon'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import ChartEntrenamientosSemanales from './chartEntrenamientosSem'
-
-interface CustomInputProps {
-  dates: Date[]
-  label: string
-  end: number | Date
-  start: number | Date
-  setDates?: (value: Date[]) => void
-}
-
-// import * as yup from 'yup'
-// import { yupResolver } from '@hookform/resolvers/yup'
-
-// ** Custom Components
-// import CustomChip from 'src/@core/components/mui/chip'
-// import CustomAvatar from 'src/@core/components/mui/avatar'
-
-
-// ** Types
-// import { ThemeColor } from 'src/@core/layouts/types'
-// import { UsersType } from 'src/types/apps/userTypes'
-
-
-// ** Utils Import
-// import { getInitials } from 'src/@core/utils/get-initials'
+import CustomInput from '../../views/forms/form-elements/pickers/PickersCustomInput'
 
 interface StudentInsight {
   _id: string,
+  studentId: string,
   data: {
     _id: string
     date: Date,
     weight: number
-  }
+    deleted: boolean
+  }[]
+}
+interface FormData {
+  date: Date
+  weight: number
 }
 
+const schema = yup.object().shape({
+  weight: yup.number().required("El peso es un campo obligatorio").max(400, "Maximo 400kg").min(1, "Minimo 1kg")
+})
 
 const StudentInsight = () => {
+  const today = new Date();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      date: today,
+      weight: 1,
+    },
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+  });
 
   const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
-  const [startDateRange, setStartDateRange] = useState<DateType>(null)
+  const [date, setDate] = useState<DateType>(new Date())
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
   const [insights, setInsights] = useState<string[]>([])
-  const [lunesSemanales, setLunesSemanales] = useState<string[]>([])
-  const route = useRouter()
-  const total = insights?.length
+  const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
+  const [titlePopUp, setTitlePopUp] = useState<string>('')
+  const [dataPeso, setDataPeso] = useState<StudentInsight | undefined>()
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  //! grafico de entrenamientos semanales
-  const obtenerDiasLunes = () => {
-    const fechaActual = new Date();
-    const diasLunes: string[] = [];
 
-    const lunesSiguiente = new Date(fechaActual);
-    lunesSiguiente.setDate(fechaActual.getDate() + (1 + 7 - fechaActual.getDay()) % 7);
-    lunesSiguiente.setUTCHours(3, 0, 0, 0); // Fijar la hora a las 03:00:00.000Z
-    diasLunes.push(lunesSiguiente.toISOString());
 
-    for (let i = 1; i <= 25; i++) {
-      const diaAnterior = new Date(lunesSiguiente);
-      diaAnterior.setDate(lunesSiguiente.getDate() - 7 * i);
-      diaAnterior.setUTCHours(3, 0, 0, 0); // Fijar la hora a las 03:00:00.000Z
-      diasLunes.unshift(diaAnterior.toISOString());
+  const itemsPerPage = 6;
+  if (dataPeso) {
+    console.log('dataPeso:', dataPeso);  // Verifica la estructura completa de dataPeso
+
+    if (dataPeso.data) {
+      console.log('dataPeso.data:', dataPeso.data);  // Debería imprimir el array data
+      const totalPages = Math.ceil(dataPeso.data.length / itemsPerPage) || 0;
+      console.log(totalPages);
+    } else {
+      console.error("dataPeso.data es undefined o null");
     }
+  } else {
+    console.error("dataPeso es undefined o null");
+  }
 
-    setLunesSemanales(diasLunes);
-  };
-
-  const contarFechasPorSemana = (fechasBaseDatos: string[], fechasSemanas: string[]): number[] => {
-    const contadorSemanas: number[] = Array(fechasSemanas.length).fill(0);
-
-    fechasBaseDatos.forEach((fechaBaseDatos) => {
-      const fechaBaseDatosObj = new Date(fechaBaseDatos);
-
-      fechasSemanas.some((fechaSemana, index) => {
-        const fechaSemanaObj = new Date(fechaSemana);
-        const fechaSiguiente = new Date(fechasSemanas[index + 1] || Infinity);
-
-        if (fechaBaseDatosObj >= fechaSemanaObj && fechaBaseDatosObj < fechaSiguiente) {
-          contadorSemanas[index]++;
-
-          return true; // Terminar el bucle si se encuentra la semana correspondiente
-        }
-
-        return false; // Continuar buscando en las semanas siguientes
-      });
-    });
-
-    return contadorSemanas;
-  };
-
-  const series = contarFechasPorSemana(insights, lunesSemanales)
-  const convertirFormatoFechas = (fechas: string[]): string[] => {
-    return fechas.map((fecha) => {
-      const fechaObj = new Date(fecha);
-      const dia = fechaObj.getDate().toString().padStart(2, '0');
-      const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
-
-      return `${dia}/${mes}`;
-    });
-  };
+  const route = useRouter()
 
   const handlePopUpNuevoRegistro = () => {
     setNuevoRegistro(false)
@@ -147,31 +118,11 @@ const StudentInsight = () => {
 
   const handleOnChangeRangeForDialog = (date: any) => {
     setStartDateRange(date);
-
-    // setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
-    // const isDuplicate = isDateAlreadyRecorded(date);
-    // setIsDuplicateDate(isDuplicate);
-
   };
-
-  const CustomInputForDialog = forwardRef((props: CustomInputProps, ref) => {
-    const selectedDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : '';
-
-    return (
-      <TextField
-        fullWidth
-        inputRef={ref}
-        {...props}
-        label={props.label || ''}
-        value={selectedDate}
-      />
-    );
-  });
 
   useEffect(() => {
     const fetchMyTracking = async () => {
       const id = route.query.id;
-      obtenerDiasLunes();
       try {
         const res = await fetch(
           `/api/studentInsights/?id=${id}`,
@@ -184,7 +135,9 @@ const StudentInsight = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data)
           setInsights(data.dataTracking)
+          setDataPeso(data.dataPeso)
         }
         if (res.status == 404) {
           route.replace('/404');
@@ -202,6 +155,43 @@ const StudentInsight = () => {
   }, []);
 
 
+  const createRegistro: SubmitHandler<FieldValues> = async (data) => {
+    const studentId = route.query.id
+    const { date, weight } = data;
+    const requestBody = {
+      id: studentId,
+      data: {
+        date: date,
+        weight: weight,
+        deleted: false
+      },
+    };
+    console.log(requestBody)
+    try {
+      const res = await fetch('/api/studentInsights', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+      if (res.status == 200) {
+        handlePopUpNuevoRegistro()
+        setTrackingPopUp(true)
+        setTitlePopUp('Peso registrado con éxito!')
+        const data = await res.json();
+
+      }
+      if (res.status == 404) {
+        route.replace('/404');
+      }
+      if (res.status == 500) {
+        route.replace('/500');
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <Grid >
@@ -220,16 +210,67 @@ const StudentInsight = () => {
         </Box>
 
       </Card>
+
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+        <Box sx={{ width: { xs: '100%', md: '80%' }, padding: 1, mt: 4, height: '485px' }}>
+          <ChartEntrenamientosSemanales insights={insights}></ChartEntrenamientosSemanales>
+        </Box>
+        <Box sx={{ width: { xs: '100%', md: '20%' }, padding: 1, mt: 4, height: '485px' }}>
+          <Card sx={{ height: '485px' }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>Peso</TableCell>
+                    <Box sx={{ mx: 4, my: 4 }} >
+                      <Icon icon='mdi:plus' onClick={() => setNuevoRegistro(true)} />
+                    </Box>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dataPeso?.data && dataPeso.data.length > 0 ? (
+                    dataPeso.data
+                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                      .map((dataPesoItem: any) => (
+                        <TableRow key={dataPesoItem._id}>
+                          <TableCell style={{ textAlign: 'center' }}>
+                            {dataPesoItem.date && new Date(dataPesoItem.date).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell style={{ justifyContent: 'center' }}>
+                            {dataPesoItem.weight}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={2} style={{ textAlign: 'center' }}>
+                        No hay datos disponibles
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+
+              </Table>
+            </TableContainer>
+            {/* <Box className='demo-space-y' mt={2} alignItems={'center'} justifyContent='center' display={'flex'}>
+              <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+            </Box> */}
+
+          </Card>
+        </Box >
+      </Box >
       <Box sx={{ mt: 5 }}>
-        <ChartEntrenamientosSemanales contador={series} total={total} categorias={convertirFormatoFechas(lunesSemanales)}></ChartEntrenamientosSemanales>
-      </Box>
+        <ChartEntrenamientosSemanales insights={insights}></ChartEntrenamientosSemanales>
+      </Box >
+
 
       <Dialog
         open={nuevoRegistro}
         onClose={handlePopUpNuevoRegistro}
         aria-labelledby='user-view-plans'
         aria-describedby='user-view-plans-description'
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660 } }}
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '500px' } }}
 
       >
         <DialogTitle
@@ -245,80 +286,89 @@ const StudentInsight = () => {
         </DialogTitle>
         <Divider sx={{ my: '0 !important' }} />
 
-        <Box display='column' justifyContent={'center'} >
+        <Box sx={{ justifyContent: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center' }}>
 
-          <Box display={'flex'} justifyContent={'center'} paddingTop={5}>
 
-            {/* <Typography sx={{ textAlign: 'center', mb: 2 }}>
+
+          {/* <Typography sx={{ textAlign: 'center', mb: 2 }}>
             Indique un día válido para el registro de entrenamiento.
             </Typography> */}
 
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-              <div>
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                  <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
-                    <DatePicker
-                      selected={startDateRange}
-                      onChange={handleOnChangeRangeForDialog}
-                      customInput={
-                        <CustomInputForDialog
-                          start={startDateRange as Date}
-                          label='Seleccione fecha de registro'
-                          dates={[]}
-                          end={0}
-                        />
-                      }
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <form noValidate autoComplete='off' onSubmit={handleSubmit(createRegistro)}>
 
+              <FormControl sx={{ mb: 4 }}>
+                <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '255px' } }}>
+                      <DatePicker
+                        selected={field.value}
+                        onChange={(date: Date) => field.onChange(date)}
+                        onBlur={field.onBlur}
+                        maxDate={addDays(new Date(), 0)}
+                        placeholderText="Click to select a date"
+                        customInput={
+                          <CustomInput
+                            label="Día de entrenamiento"
+                          />
+                        }
+                        dateFormat="dd/MM/yyyy"
+                        value={format(field.value, 'dd/MM/yyyy')}
+                      />
+                    </DatePickerWrapper>
+                  )}
+                />
+                {errors.date && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.date.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+              <FormControl sx={{ mb: 4 }}>
+                <Controller
+                  name='weight'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='Kg'
+                      name='weight'
+                      type='number'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.weight)}
                     />
-                  </DatePickerWrapper>
-                </Box>
+                  )}
+                />
+                {errors.weight && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.weight.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 0 }}>
+                <Button
+                  variant='contained'
+                  sx={{ '&:hover': { backgroundColor: 'success.main' } }}
+                  type='submit'
+                >
+                  Aceptar
+                </Button>
 
-              </div>
-            </Box>
-
+              </Box>
+            </form>
           </Box>
-          {/* <Typography sx={{ textAlign: 'center', mb: 5, fontSize: '11px' }}>
-            {tracking?.date && tracking?.expirationDate
-              ? (
-                <>
-                  Las fechas correspondientes al plan van del{' '}
-                  <strong>{format(new Date(tracking.date), 'dd/MM/yyyy')}</strong>{' '}
-                  al{' '}
-                  <strong>{format(new Date(tracking.expirationDate), 'dd/MM/yyyy')}</strong>
-                </>
-              )
-              : 'Fechas no disponibles'}
-          </Typography> */}
-
-          {/* {isDuplicateDate && ( */}
-          <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}  >
-            Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
-          </Typography>
-          {/* // )} */}
-
-
+          {isDuplicateDate && (
+            <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}  >
+              Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
+            </Typography>
+          )}
         </Box>
-
-
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mr: 5, mb: 10, mt: 0 }}>
-          <Button
-            variant='contained'
-            sx={{ '&:hover': { backgroundColor: 'success.main' } }}
-
-          // onClick={() => newTrackingRecord()}
-          // disabled={isButtonDisabled}
-          >
-            Aceptar
-          </Button>
-
-        </Box>
-        {/* <Box display={'flex'}>
-          <Icon icon={'mdi:alert-circle-outline'} style={{ marginLeft: 8, fontSize: '18px' }} > </Icon>
-          <Typography sx={{ ml: 1, fontSize: '12px' }}> Nota: Recuerde que <strong>no</strong> puede registrar un dia  de entrenamiento mas de una vez. </Typography>
-        </Box> */}
       </Dialog>
-
+      <TrackingPopUp trackingPopUp={trackingPopUp} setTrackingPopUp={setTrackingPopUp} title={titlePopUp}></TrackingPopUp>
     </Grid >
   )
 

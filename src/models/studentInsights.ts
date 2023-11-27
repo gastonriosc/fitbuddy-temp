@@ -8,13 +8,18 @@ const dataInsightSchema = new mongoose.Schema({
   weight: {
     type: Number,
     required: true
+  },
+  deleted: {
+    type: Boolean,
+    required: true
   }
 })
 
 const studentInsightsSchema = new mongoose.Schema({
+  studentId: mongoose.Schema.ObjectId,
   data: [dataInsightSchema]
 })
 
-const StudentInsights = mongoose.models.studentInsights || mongoose.model('StudentInsights', studentInsightsSchema)
+const StudentInsights = mongoose.models.StudentInsights || mongoose.model('StudentInsights', studentInsightsSchema)
 
 export default StudentInsights

@@ -3,23 +3,87 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { useTheme } from '@mui/material/styles'
+import { useEffect, useState } from 'react'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
 // ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import { startOfWeek, addDays, addWeeks, format } from 'date-fns';
 
 // ** Util Import
 
 interface Props {
-  contador: number[];
-  total: number,
-  categorias: string[]
+  insights: string[];
 }
 
-const ChartNuevosUsuarios = ({ contador, total, categorias }: Props) => {
+const ChartNuevosUsuarios = ({ insights }: Props) => {
   // ** Hook
+  const [lunesSemanales, setLunesSemanales] = useState<string[]>([])
+  const total = insights?.length
+
+  //! grafico de entrenamientos semanales
+  function getNextMonday(date: Date): Date {
+    const currentDayOfWeek = date.getDay();
+    const daysUntilNextMonday = currentDayOfWeek === 0 ? 1 : 8 - currentDayOfWeek;
+
+    return addDays(date, daysUntilNextMonday);
+  }
+
+  function getMondaysArray(numberOfMondays: number): string[] {
+    const currentDate = new Date();
+
+    const mondaysArray: string[] = [];
+
+    for (let i = 0; i < numberOfMondays; i++) {
+      const nextMonday = getNextMonday(addWeeks(currentDate, -i));
+      mondaysArray.unshift(format(nextMonday, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
+    }
+
+    setLunesSemanales(mondaysArray);
+  }
+
+
+
+  const contarFechasPorSemana = (fechasBaseDatos: string[], fechasSemanas: string[]): number[] => {
+    const contadorSemanas: number[] = Array(fechasSemanas.length).fill(0);
+
+    fechasBaseDatos.forEach((fechaBaseDatos) => {
+      const fechaBaseDatosObj = new Date(fechaBaseDatos);
+
+      fechasSemanas.some((fechaSemana, index) => {
+        const fechaSemanaObj = new Date(fechaSemana);
+        const fechaSiguiente = new Date(fechasSemanas[index + 1] || Infinity);
+
+        if (fechaBaseDatosObj >= fechaSemanaObj && fechaBaseDatosObj < fechaSiguiente) {
+          contadorSemanas[index]++;
+
+          return true;
+        }
+
+        return false;
+      });
+    });
+
+    return contadorSemanas;
+  };
+
+  const contador = contarFechasPorSemana(insights, lunesSemanales)
+  const convertirFormatoFechas = (fechas: string[]): string[] => {
+    return fechas.map((fecha) => {
+      const fechaObj = new Date(fecha);
+      const dia = fechaObj.getDate().toString().padStart(2, '0');
+      const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
+
+      return `${dia}/${mes}`;
+    });
+  };
+
+  useEffect(() => {
+    getMondaysArray(26)
+  }, []);
+
   const series = [{ name: 'Entrenamientos', data: contador }]
   const theme = useTheme()
   const columnColors = {
@@ -101,7 +165,7 @@ const ChartNuevosUsuarios = ({ contador, total, categorias }: Props) => {
     xaxis: {
       axisTicks: { show: true },
       axisBorder: { show: false },
-      categories: categorias,
+      categories: convertirFormatoFechas(lunesSemanales),
       labels: {
         style: { colors: theme.palette.text.primary }
       }

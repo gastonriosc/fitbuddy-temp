@@ -3,11 +3,13 @@ import { NextApiRequest, NextApiResponse } from 'next/types'
 import connect from 'src/lib/mongodb'
 import PlanModel from 'src/models/planSchema'
 import mongoose from 'mongoose'
+import StudentInsights from 'src/models/studentInsights'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connect()
   if (req.method === 'GET') {
     const id = req.query.id
+
     const objectId = new mongoose.Types.ObjectId(id)
 
     // const currentMonth = new Date().getMonth()
@@ -42,13 +44,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         }
       ])
-      if (dataTracking && dataTracking.length > 0) {
+      const dataPeso = await StudentInsights.find({ studentId: id })
+      console.log(dataPeso)
+      if (dataTracking && dataPeso) {
         const combinedDates = dataTracking.reduce((acc, curr) => acc.concat(curr.dataTracking), [])
 
         const responseData = {
-          dataTracking: combinedDates
+          dataTracking: combinedDates,
+          dataPeso: dataPeso
         }
-        console.log(responseData)
 
         return res.status(200).json(responseData)
       } else {
@@ -59,8 +63,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       return res.status(500).json({ message: 'Internal Server Error' })
     }
+  } else if (req.method === 'PUT') {
+    const { id, data } = req.body
+    const updatedTracking = await StudentInsights.findOneAndUpdate(
+      { studentId: id },
+      { $push: { data: { $each: [data] } } },
+      { new: true, upsert: true }
+    )
+
+    if (updatedTracking) {
+      return res.status(200).json(updatedTracking)
+    } else {
+      return res.status(404).json({ error: 'No se pudo actualizar el plan' })
+    }
   } else {
-    return res.status(405).json({ message: 'Método no permitido.' })
+    return res.status(500).json({ message: 'Método no permitido.' })
   }
 }
 

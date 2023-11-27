@@ -116,7 +116,7 @@ const Tracking = () => {
   const itemsPerPage = 6;
 
   const totalPages = Math.ceil(tracking?.data.length / itemsPerPage);
-  console.log(totalPages)
+
 
   useEffect(() => {
     const fetchMyTracking = async () => {

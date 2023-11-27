@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ]
 
       const tracking = await TrackingSchema.aggregate(pipeline)
-
+      console.log(tracking)
       if (tracking.length > 0) {
         return res.status(200).json(tracking[0])
       } else {
