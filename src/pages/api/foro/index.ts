@@ -24,15 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(foro)
     }
 
-    // if (req.method === 'PUT') {
-    //   const { requestId, status } = req.body
-    //   const subsRequest = await SubsRequest.findByIdAndUpdate(requestId, { status }, { new: true })
-    //   if (subsRequest) {
-    //     return res.status(200).json(subsRequest)
-    //   } else {
-    //     return res.status(404).json('no se puedo realizar el update')
-    //   }
-    // }
     if (req.method === 'GET') {
       try {
         const { id } = req.query
@@ -72,7 +63,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               studentName: '$student_info.name',
               trainerName: '$trainer_info.name',
               studentAvatar: '$student_info.avatar',
-              trainerAvatar: '$trainer_info.avatar'
+              trainerAvatar: '$trainer_info.avatar',
+              expirationDate: '$expirationDate'
             }
           }
         ])

@@ -14,15 +14,13 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import DialogContent from '@mui/material/DialogContent'
 
-//import Input from '@mui/material/Input'
-//import DialogActions from '@mui/material/DialogActions'
 
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import Divider from '@mui/material/Divider'
+import React from 'react'
 
-//import { margin } from '@mui/system'
 
 type Props = {
   foroPopUp: boolean
@@ -61,7 +59,10 @@ interface InfoPlan {
   studentName: string,
   trainerName: string,
   studentAvatar: string,
-  trainerAvatar: string
+  trainerAvatar: string,
+  expirationDate: string,
+  some: any,
+  map: any,
 }
 interface Message {
   userId: string,
@@ -74,7 +75,7 @@ interface Message {
 const Foro = (props: Props) => {
 
   //*props
-  const { foroPopUp, setForoPopUp, planId } = props
+  const { foroPopUp, setForoPopUp } = props
 
   //*state
   // const [popUp, setPopUp] = useState<boolean>(false)
@@ -96,7 +97,6 @@ const Foro = (props: Props) => {
     const fetchForo = async () => {
       const id = route.query.id;
       try {
-        // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
           `/api/foro/?id=${id}`,
           {
@@ -108,6 +108,7 @@ const Foro = (props: Props) => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data)
           setForo(data.foro)
           setInfoPlan(data.infoPlan)
         }
@@ -123,6 +124,7 @@ const Foro = (props: Props) => {
     };
 
     fetchForo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const submitMessage = async () => {
@@ -157,12 +159,6 @@ const Foro = (props: Props) => {
           return prevForo;
         });
         setMensaje('');
-
-
-        // hanldeSubscriptionRequest()
-        // setTitlePopUp('Solicitud enviada!')
-        // setTextPopUp('')
-        // setPopUp(true)
       }
       if (res.status == 400) {
         route.replace('/404')
@@ -205,18 +201,16 @@ const Foro = (props: Props) => {
                 key={index}
 
                 style={{
-                  textAlign: 'center', // Fecha centrada
-                  // color: 'white',      // Color de la fecha
-                  // marginBottom: '5px',
-                  boxShadow: '2px 4px 4px rgba(0, 0, 0, 0.2)', // Estilo de sombra para simular relieve
-                  borderRadius: '8px',                       // Bordes redondeados
+                  textAlign: 'center',
+
+                  boxShadow: '2px 4px 4px rgba(0, 0, 0, 0.2)',
+                  borderRadius: '8px',
                   padding: '6px',
-                  marginTop: '8px'                           // Espaciado interno
+                  marginTop: '8px'
                 }}
               >
                 {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
 
-                  // Mostrar fecha solo si es diferente a la fecha del mensaje anterior
                   <p>{new Date(message.date).toLocaleDateString()}</p>
                 )}
 
@@ -294,31 +288,7 @@ const Foro = (props: Props) => {
                     )}
                   </div>
                 </Box>
-                {/* <div
-                  style={{
-                    textAlign: String(session.data?.user?._id) === message?.userId ? 'right' : 'left',
-                    color: String(session.data?.user?._id) === message?.userId ? '#ADD8E6' : 'orange',
-                    display: 'flex',
-                    flexDirection: String(session.data?.user?._id) === message?.userId ? 'row-reverse' : 'row',
-                    alignItems: 'flex-start',
-                    marginBottom: '10px',
-                  }}
-                >
 
-                  <div style={{ marginLeft: '5px', marginRight: '5px', marginTop: '8px' }}>•</div>
-                  <div style={{ flex: 1 }}>
-                    {message ? (
-                      <>
-                        <ImgStyled sx={{ margin: '0 auto' }} src={session.data?.user.avatar} alt='Profile Pic' />
-                        <p>Usuario: {message.fullName}</p>
-                        <p>{new Date(message.date).toLocaleTimeString()}</p>
-                        <p>{message.message}</p>
-                      </>
-                    ) : (
-                      <p>Mensaje nulo</p>
-                    )}
-                  </div>
-                </div> */}
               </li>
             ))}
           </ul>
@@ -343,34 +313,18 @@ const Foro = (props: Props) => {
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button type='button' variant='contained' onClick={submitMessage}>
+              <Button
+                type='button'
+                variant='contained'
+                onClick={submitMessage}
+                disabled={!infoPlan?.some((plan: InfoPlan) => plan.expirationDate && new Date(plan.expirationDate) > new Date())}
+              >
                 Enviar
               </Button>
             </Box>
           </ChatFormWrapper>
         </Form>
 
-        {/* <DialogActions
-          sx={{
-            justifyContent: 'space-between',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-
-          <Input
-            fullWidth
-            placeholder='Mensaje'
-            inputProps={{ 'aria-label': 'description' }}
-            value={mensaje}
-            onChange={handleChangeMensaje}
-          />
-
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => submitMessage()}>
-            Enviar
-          </Button>
-
-        </DialogActions> */}
       </Dialog >
     </>
   )

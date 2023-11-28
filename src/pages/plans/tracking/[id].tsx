@@ -29,20 +29,12 @@ import { DateType } from 'src/types/forms/reactDatepickerTypes'
 
 import Dialog from '@mui/material/Dialog'
 
-// import FormHelperText from '@mui/material/FormHelperText'
-// import DialogActions from '@mui/material/DialogActions'
-// import CircularProgress from '@mui/material/CircularProgress'
-// import Divider from '@mui/material/Divider'
 
-// import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-
-// import CardContent from '@mui/material/CardContent'
 
 import DialogTitle from '@mui/material/DialogTitle'
 
-// import FormControl from '@mui/material/FormControl'
-// import DialogContent from '@mui/material/DialogContent'
+
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -56,21 +48,6 @@ interface CustomInputProps {
   setDates?: (value: Date[]) => void
 }
 
-// import * as yup from 'yup'
-// import { yupResolver } from '@hookform/resolvers/yup'
-
-// ** Custom Components
-// import CustomChip from 'src/@core/components/mui/chip'
-// import CustomAvatar from 'src/@core/components/mui/avatar'
-
-
-// ** Types
-// import { ThemeColor } from 'src/@core/layouts/types'
-// import { UsersType } from 'src/types/apps/userTypes'
-
-
-// ** Utils Import
-// import { getInitials } from 'src/@core/utils/get-initials'
 
 interface Tracking {
   _id: string,
@@ -83,7 +60,8 @@ interface Tracking {
     fatigue: number,
   }
   date: Date,
-  expirationDate: Date,
+  expirationDate: any,
+  some: any
 }
 
 
@@ -156,6 +134,7 @@ const Tracking = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log('data:', data.expirationDate)
           setTracking(data)
         }
         if (res.status == 404) {
@@ -228,8 +207,6 @@ const Tracking = () => {
   });
 
 
-
-
   const handleOnChangeRangeForDialog = (date: any) => {
     setStartDateRange(date);
     setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
@@ -285,7 +262,6 @@ const Tracking = () => {
 
 
 
-
   return (
     <Grid >
       <Card sx={{ padding: '5', ml: 1, mr: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px' }}>
@@ -294,9 +270,22 @@ const Tracking = () => {
         </Box>
 
         {!isTrainer ? (
-          <Button sx={{ mx: 4, my: 4 }} variant='contained' startIcon={<Icon icon='mdi:plus' />} onClick={() => setNuevoRegistro(true)}>
+          <Button
+            sx={{ mx: 4, my: 4 }}
+            variant='contained'
+            startIcon={<Icon icon='mdi:plus' />}
+            onClick={() => {
+              if (tracking && new Date(tracking.expirationDate) > new Date()) {
+                setNuevoRegistro(true);
+              }
+            }}
+
+            disabled={!tracking || new Date(tracking.expirationDate) <= new Date()}
+          >
             Registro
           </Button>
+
+
         ) : null}
 
 
