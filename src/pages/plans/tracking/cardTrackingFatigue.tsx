@@ -77,15 +77,11 @@ const CardTrackingFatigue = (props: Props) => {
       padding: { top: -10 },
       borderColor: theme.palette.divider,
       xaxis: {
-        lines: { show: true }
+        lines: { show: false }
       }
     },
     tooltip: {
-      custom(data: any) {
-        return `<div class='bar-chart'>
-          <span>${data.series[data.seriesIndex][data.dataPointIndex]}%</span>
-        </div>`
-      }
+      theme: 'dark',
     },
     yaxis: {
       labels: {

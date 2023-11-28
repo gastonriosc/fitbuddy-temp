@@ -75,7 +75,9 @@ const CardTrackingDifficult = (props: Props) => {
       parentHeightOffset: 0,
       toolbar: { show: false }
     },
-    fill: { opacity: 1 },
+    tooltip: {
+      theme: 'dark',
+    },
     dataLabels: { enabled: false },
     colors: [columnColors.series1, columnColors.series2],
     legend: {
@@ -107,7 +109,7 @@ const CardTrackingDifficult = (props: Props) => {
     grid: {
       borderColor: theme.palette.divider,
       xaxis: {
-        lines: { show: true }
+        lines: { show: false }
       }
     },
     yaxis: {
