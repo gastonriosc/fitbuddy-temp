@@ -292,7 +292,7 @@ const Tracking = () => {
       </Card>
 
 
-      {tracking ? (
+      {tracking?.data.length > 0 ? (
         <Box>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
             {/* Que le parecio el entrenamiento? */}
@@ -427,12 +427,15 @@ const Tracking = () => {
 
           </Box>
         </Box>
-      ) : (
+      ) : (isTrainer ? (
         <Box sx={{ mt: '50px', mb: '20px' }}>
-          <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
+          <Typography variant='h6' sx={{ textAlign: 'center' }}>Su alumno no ha hecho registros aún.</Typography>
         </Box>
-      )
-      }
+      ) :
+        <Box sx={{ mt: '50px', mb: '20px' }}>
+          <Typography variant='h6' sx={{ textAlign: 'center' }}>No has hecho registros de seguimiento aún.</Typography>
+        </Box>
+      )}
 
 
 
@@ -441,7 +444,7 @@ const Tracking = () => {
         onClose={handlePopUpNuevoRegistro}
         aria-labelledby='user-view-plans'
         aria-describedby='user-view-plans-description'
-        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '620px' } }}
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660 } }}
 
       >
         <DialogTitle
@@ -453,7 +456,7 @@ const Tracking = () => {
             pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          Agregar un nuevo registro
+          ¡Registra tu avance!
         </DialogTitle>
         <Divider sx={{ my: '0 !important' }} />
 

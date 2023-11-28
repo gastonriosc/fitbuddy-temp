@@ -395,7 +395,7 @@ const AlumnoProfile = () => {
             Confirmar
           </Button>
           <Button variant='outlined' color='secondary' onClick={() => handleClose()}>
-            No
+            Cancelar
           </Button>
         </DialogActions>
       </Dialog>
