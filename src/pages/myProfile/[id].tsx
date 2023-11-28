@@ -312,7 +312,7 @@ const MyProfile = () => {
   if (data && isLoading) {
     return (
       <Grid container spacing={6}>
-        <Grid item xs={12} md={4} sx={{ height: '550px' }}>
+        <Grid item xs={12} sm={12} md={12} lg={4}>
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
               {users.avatar ? (
@@ -389,11 +389,11 @@ const MyProfile = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={8} sx={{ height: '550px' }}>
-          <Grid container spacing={2} sx={{ height: '480px' }}>
+        <Grid item md={12} lg={8}>
+          <Grid container spacing={2}>
             {subs.map((sub: Subscription, index) => (
-              <Grid item xs={12} md={4} key={index} sx={{ height: '450px', mb: '20px' }}>
-                <Card sx={{ boxShadow: 'none', height: '450px', border: theme => `2px solid ${theme.palette.primary.main}` }}>
+              <Grid item sm={12} md={4} key={index} sx={{ mb: '20px' }}>
+                <Card sx={{ boxShadow: 'none', minHeight: { md: '510px', lg: '570px', xl: '480px' }, border: theme => `2px solid ${theme.palette.primary.main}` }}>
                   <CardContent
                     sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between', }}
                   >
@@ -417,16 +417,13 @@ const MyProfile = () => {
                   </CardContent>
 
                   <CardContent>
-                    <Box sx={{ mt: 4, mb: 5, height: '200px' }}>
+                    <Box sx={{ mt: 4, minHeight: { md: '290px', lg: '340px', xl: '250px' } }}>
                       <Box>
                         <ul>
                           <li><b>{sub.daysPerWeek}</b> dias por semana.</li>
                         </ul>
                       </Box>
-                      <Box
-                        sx={{ display: 'flex', mb: 2.5, alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}
-                      >
-
+                      <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}>
                         <Typography component='span' sx={{ fontSize: '0.875rem' }}>
                           {sub.description}
                         </Typography>
@@ -549,10 +546,11 @@ const MyProfile = () => {
                             name='daysPerWeek'
                             control={updateControl}
                             rules={{ required: true }}
-                            defaultValue={1}
+
+                            // defaultValue={1}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-                                label='Días por semana (entre 1 y 7)'
+                                label='Días por semana'
                                 name='daysPerWeek'
                                 type='number'
                                 value={value}

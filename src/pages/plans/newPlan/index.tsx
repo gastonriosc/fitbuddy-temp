@@ -109,8 +109,8 @@ const NewPlan = () => {
 
   const textPopUp = 'Aguade un momento, será redirigido a la seccion de Mis Alumnos.'
   const textPopUpError = 'Por favor, intente nuevamente o elimine el día de entrenamiento en caso de no tener ejercicios.'
-  const textPopUpErrorDay = 'Por favor, intente nuevamente. El plan de entrenamiento debe tener al menos un día.'
-  const textPopUpErrorDataExercise = 'Por favor, intente nuevamente. Asegúrese de que la cantidad de series, repeticiones y/o peso sea un número positivo.'
+  const textPopUpErrorDay = 'Por favor, asegurese de que el plan tenga la cantidad mínima de días correspondiente.'
+  const textPopUpErrorDataExercise = 'Por favor, intente nuevamente. Asegúrese de que la cantidad de series, repeticiones y/o peso sea el correcto.'
   const textPopUpErrorName = 'Por favor, intente nuevamente. El nombre del plan de entrenamiento no puede estar vacío.'
 
 
@@ -372,7 +372,7 @@ const NewPlan = () => {
               />
               <CardContent>
                 <Grid container spacing={6}>
-                  <Grid item sm={4} xs={12}>
+                  <Grid item xs={12} sm={7} md={9}>
                     <FormControl fullWidth>
                       <InputLabel id='search-input'>Nombre</InputLabel>
                       <Input
@@ -385,14 +385,15 @@ const NewPlan = () => {
                             setNombrePlan(value);
                           }
                         }}
-                        placeholder='Ingrese un nombre para buscar'
+                        placeholder='Ingrese un nombre para el plan'
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item sm={4} xs={12}>
+                  <Grid item xs={12} sm={5} md={3}>
                     <TextField
                       sx={{ width: '100%' }}
-                      label='Cantidad de Días del plan'
+                      label='Cantidad de días'
+                      variant='standard'
                       value={cantidadDeDias}
                       disabled
                     />

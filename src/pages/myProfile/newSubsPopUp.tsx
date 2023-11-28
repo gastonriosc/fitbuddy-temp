@@ -191,7 +191,7 @@ const NewSubsPopUp = (props: Props) => {
                 rules={{ required: true }}
                 render={({ field: { value, onChange, onBlur } }) => (
                   <TextField
-                    label='Dias por semana (entre 1 y 7)'
+                    label='Dias por semana'
                     name='daysPerWeek'
                     type='number'
                     value={value}
@@ -217,7 +217,7 @@ const NewSubsPopUp = (props: Props) => {
                     rows={6}
                     multiline
                     id='textarea-outlined-static'
-                    label='Descripcion'
+                    label='Descripción'
                     name='description'
                     value={value}
                     onBlur={onBlur}
