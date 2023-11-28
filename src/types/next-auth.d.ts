@@ -4,6 +4,7 @@ import NextAuth from 'next-auth'
 declare module 'next-auth' {
   interface Session {
     user: {
+      age: string
       weight: string
       height: string
       _id: number

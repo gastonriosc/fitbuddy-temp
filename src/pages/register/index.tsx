@@ -4,6 +4,7 @@ import { ReactNode, useState } from 'react'
 // ** Next Import
 import Link from 'next/link'
 
+
 // ** MUI Components
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -57,6 +58,8 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
   }
 }))
 
+
+
 type CountryTypes = 'Argentina'
 type GenderTypes = 'Masculino' | 'Femenino' | 'Otro'
 type RoleTypes = 'Alumno' | 'Entrenador'
@@ -74,6 +77,7 @@ interface FormData {
   passwordC: string
   height: string
   weight: string
+  age: string
 }
 
 const defaultValues = {
@@ -87,7 +91,8 @@ const defaultValues = {
   password: '',
   passwordC: '',
   height: '',
-  weight: ''
+  weight: '',
+  age: ''
 }
 
 const phoneRegExp = /^(\+?549?|0)(11|[2368]\d)(\d{4})(\d{4})$/;
@@ -100,6 +105,7 @@ const schema = yup.object().shape({
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
   height: yup.string().required("Altura es un campo obligatorio"),
   weight: yup.string().required("Peso es un campo obligatorio"),
+  age: yup.string().required("Edad es un campo obligatorio")
 
 })
 
@@ -113,6 +119,7 @@ const Register = () => {
   const [selectedRole, setSelectedRole] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
 
+
   // ** Default Values
   const countries: CountryTypes[] = ['Argentina']
   const genders: GenderTypes[] = ['Masculino', 'Femenino', 'Otro']
@@ -121,6 +128,7 @@ const Register = () => {
 
   // ** Hooks
   const router = useRouter()
+
 
   // ** Events
   const handleCountryChange = (event: SelectChangeEvent<string>) => {
@@ -156,7 +164,7 @@ const Register = () => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const registrationDate = currentDate.toISOString();
-    const { email, password, phone, country, gender, role, name, discipline, height, weight } = data
+    const { email, password, phone, country, gender, role, name, discipline, height, weight, age } = data
     let avatar = '';
     if (gender === 'Masculino') {
       avatar = '/images/animals/4.png'
@@ -171,7 +179,7 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight, registrationDate })
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight, registrationDate, age })
       })
       if (res.status == 200) {
         await signIn('credentials', { email, password, redirect: false }).then(res => {
@@ -198,6 +206,9 @@ const Register = () => {
       console.log(error)
     }
   }
+
+
+
 
   return (
     <Box className='content-center'>
@@ -246,6 +257,31 @@ const Register = () => {
                   </FormHelperText>
                 )}
               </FormControl>
+
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='age'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextField
+                      label='Edad'
+                      value={value}
+                      type='number'
+                      name='edad'
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.age)}
+                    />
+                  )}
+                />
+                {errors.age && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.age.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
+
 
               {/* Teléfono */}
               <FormControl fullWidth sx={{ mb: 4 }}>
@@ -299,11 +335,7 @@ const Register = () => {
                     <FormHelperText sx={{ color: 'error.main' }}>
                       País es un campo obligatorio
                     </FormHelperText>}
-                  {/* {errors.country && errors.country.type === "required" && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      País es un campo obligatorio
-                    </FormHelperText>
-                  )} */}
+
                 </FormControl>
 
                 {/* Género */}
@@ -348,7 +380,7 @@ const Register = () => {
                         onBlur={onBlur}
                         onChange={onChange}
                         error={Boolean(errors.height)}
-                        placeholder='1.80m'
+                        placeholder='1.80'
                       />
                     )}
                   />

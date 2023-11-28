@@ -39,6 +39,7 @@ interface Data {
   avatar: string
   height: string
   weight: string
+  age: string
 }
 
 const data: UsersType = {
@@ -60,6 +61,7 @@ const data: UsersType = {
   discipline: '',
   height: '',
   weight: '',
+  age: '',
 }
 
 const initialData: Data = {
@@ -72,6 +74,7 @@ const initialData: Data = {
   avatar: '',
   height: '',
   weight: '',
+  age: '',
 }
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -146,6 +149,7 @@ const AdminProfile = () => {
         avatar: session?.user?.avatar || '',
         height: session?.user?.height || '',
         weight: session?.user?.weight || '',
+        age: session?.user?.age || '',
       });
     }
   }, [session?.user]);
@@ -304,7 +308,7 @@ const AdminProfile = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                {/* <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type='number'
@@ -325,7 +329,16 @@ const AdminProfile = () => {
                     onChange={e => handleFormChange('weight', e.target.value)}
                     InputProps={{ startAdornment: <InputAdornment position='start'>(Kg)</InputAdornment> }}
                   />
-                </Grid> */}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type='number'
+                    label='Edad'
+                    value={formData.age}
+                    onChange={e => handleFormChange('age', e.target.value)}
+                  />
+                </Grid>
 
 
                 <Grid item xs={12}>

@@ -11,6 +11,7 @@ import Foro from './foro';
 import { useSession } from 'next-auth/react';
 import React from 'react';
 
+
 interface Plan {
   _id: string;
   nombrePlan: string;
@@ -497,6 +498,7 @@ const MyPlans = () => {
     fetchDataAndPersonal();
   }, []);
 
+  const [selectedExerciseLink, setSelectedExerciseLink] = useState('');
 
 
   if (isLoading) {
@@ -579,7 +581,9 @@ const MyPlans = () => {
                                               // Buscar el ejercicio seleccionado y obtener su linkExercise
                                               const selectedExercise = planes.find((exercise: any) => exercise.exerciseName === e.target.value);
                                               if (selectedExercise) {
-                                                handleExerciseDataChange(dayIndex, exerciseIndex, 'link', selectedExercise.linkExercise);
+                                                handleExerciseDataChange(dayIndex, exerciseIndex, 'link', selectedExercise.exerciseLink);
+                                                setSelectedExerciseLink(selectedExercise.exerciseLink);
+                                                console.log(selectedExercise.exerciseLink);
                                               }
                                             }}
                                           >
@@ -603,9 +607,6 @@ const MyPlans = () => {
                                       exercise.nombreEjercicio
                                     )}
                                   </TableCell>
-
-
-
 
                                   <TableCell>
 
@@ -653,10 +654,11 @@ const MyPlans = () => {
                                     {editingExerciseIndices[dayIndex] === exerciseIndex ? (
                                       <TextField
                                         type="text"
-                                        value={exercise.link}
-                                        onChange={(e) => handleExerciseDataChange(dayIndex, exerciseIndex, 'link', e.target.value)
-
-                                        }
+                                        value={selectedExerciseLink}
+                                        onChange={(e) => {
+                                          handleExerciseDataChange(dayIndex, exerciseIndex, 'link', e.target.value);
+                                          setSelectedExerciseLink(e.target.value);
+                                        }}
                                       />
                                     ) : (
                                       <>

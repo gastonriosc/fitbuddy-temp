@@ -57,7 +57,7 @@ interface Exercise {
   exerciseName: string;
   muscleGroup: string;
   avatar: string;
-  linkExercise: string;
+  exerciseLink: string;
 }
 
 const createData = (nombre: string, series: number, repeticiones: number, peso: number, link: string) => {
@@ -359,6 +359,8 @@ const NewPlan = () => {
   const muscleGroups = ["pecho", "piernas", /* otros grupos musculares */];
   // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
   const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
+  const [selectedExerciseLink, setSelectedExerciseLink] = useState('');
+
 
   if (isLoading) {
     return (
@@ -429,48 +431,35 @@ const NewPlan = () => {
                                   <InputLabel id={`exercise-select-label-${dayIndex}-${rowIndex}`}>
                                     Ejercicio
                                   </InputLabel>
-                                  {manualInput ? (
-                                    <Input
-                                      id={`exercise-input-${dayIndex}-${rowIndex}`}
-                                      value={nombre}
-                                      onChange={(e) => {
-                                        setNombre(e.target.value);
+                                  <Select
+                                    labelId={`exercise-select-label-${dayIndex}-${rowIndex}`}
+                                    id={`exercise-select-${dayIndex}-${rowIndex}`}
+                                    value={nombre}
+                                    onChange={(e) => {
+                                      const selectedExerciseName = e.target.value;
 
-                                        // Buscar el ejercicio seleccionado y obtener su linkExercise
-                                        const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === e.target.value);
-                                        if (selectedExercise) {
-                                          setLink(selectedExercise.linkExercise);
-                                        } else {
-                                          setLink('');
-                                        }
-                                      }}
-                                    />
-                                  ) : (
-                                    <Select
-                                      labelId={`exercise-select-label-${dayIndex}-${rowIndex}`}
-                                      id={`exercise-select-${dayIndex}-${rowIndex}`}
-                                      value={nombre}
-                                      onChange={(e) => {
-                                        setNombre(e.target.value);
+                                      setNombre(selectedExerciseName);
 
-                                        // Buscar el ejercicio seleccionado y obtener su linkExercise
-                                        const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === e.target.value);
-                                        if (selectedExercise) {
-                                          setLink(selectedExercise.linkExercise);
-                                        } else {
-                                          setLink('');
-                                        }
-                                      }}
-                                      input={<Input />}
-                                    >
-                                      {/* Dynamically render MenuItem for each exercise in the plan array */}
-                                      {plan.map((exercise: Exercise) => (
-                                        <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
-                                          {exercise.exerciseName}
-                                        </MenuItem>
-                                      ))}
-                                    </Select>
-                                  )}
+                                      const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === selectedExerciseName);
+                                      if (selectedExercise) {
+                                        setLink(selectedExercise.exerciseLink);
+                                        console.log('Selected Exercise Link:', selectedExercise.exerciseLink);
+                                        setSelectedExerciseLink(selectedExercise.exerciseLink);
+                                      } else {
+                                        setLink('');
+                                        setSelectedExerciseLink('');
+                                      }
+                                    }}
+
+                                    input={<Input />}
+                                  >
+                                    {/* Dynamically render MenuItem for each exercise in the plan array */}
+                                    {plan.map((exercise: Exercise) => (
+                                      <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                        {exercise.exerciseName}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
                                 </FormControl>
                               ) : (
                                 row.nombre
@@ -516,8 +505,8 @@ const NewPlan = () => {
                               {editingRow[dayIndex] === rowIndex ? (
                                 <TextField
                                   type='text'
-                                  value={link}
-                                  onChange={(e) => setLink(String(e.target.value))}
+                                  value={selectedExerciseLink}
+                                  onChange={(e) => setSelectedExerciseLink(e.target.value)}
                                 />
                               ) : (
                                 <>

@@ -50,6 +50,10 @@ const usersSchema = new mongoose.Schema({
   registrationDate: {
     type: Date,
     require: true
+  },
+  age: {
+    type: String,
+    default: null
   }
 })
 

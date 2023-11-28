@@ -51,6 +51,7 @@ const data: UsersType = {
   discipline: '',
   height: '',
   weight: '',
+  age: '',
 }
 
 

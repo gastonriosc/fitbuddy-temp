@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -45,6 +45,8 @@ const UserList = () => {
   const handleDisciplineChange = (e: SelectChangeEvent) => {
     setDiscipline(e.target.value)
   }
+
+
 
   return (
     <Grid container spacing={6}>
