@@ -63,7 +63,7 @@ const MyRequests = () => {
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
   const itemsPerPage = 4; // Cantidad de elementos por página
-
+  console.log(plan)
   useEffect(() => {
     const fetchMyRequests = async () => {
       const id = route.query.id;
@@ -175,7 +175,6 @@ const MyRequests = () => {
           {/* <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}> */}
           <Grid item container spacing={2}>
             {plan.length > 0 ? (
-
               plan
                 .filter((OPlan: planType) =>
                   OPlan.trainerName.toLowerCase().includes(filterName.toLowerCase()) &&
@@ -248,7 +247,8 @@ const MyRequests = () => {
                                 color='primary'
                                 title='Plan'
 
-                                href={'/plans/' + OPlan._id + '&subsReq=' + sub._id}
+                                // href={'/plans/' + OPlan._id + '&subsReq=' + OPlan.subsRequestId}
+                                href={'/plans/' + OPlan._id}
                               >
                                 <Icon icon='mdi:file-eye-outline' />
                               </Button>

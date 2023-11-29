@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, DialogActions, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
+import { Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled, ButtonProps, TextField, Dialog, DialogContent, Typography, ListSubheader, DialogActions, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { useRouter } from 'next/router';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -10,7 +10,7 @@ import Button from '@mui/material/Button';
 import Foro from './foro';
 import { useSession } from 'next-auth/react';
 import React from 'react';
-
+import { groupBy, sortBy } from 'lodash';
 
 interface Plan {
   _id: string;
@@ -97,6 +97,8 @@ const MyPlans = () => {
   const [manualInput, setManualInput] = React.useState(false);
   const [planes, setPlanes] = useState<any[]>([]);
 
+  const sortedPlan = planes.slice().sort((a, b) => a.exerciseName.localeCompare(b.exerciseName));
+  const groupedPlan = sortBy(groupBy(sortedPlan, 'muscleGroup'), ['muscleGroup']);
 
   const textPopUp = 'Pulse el botón OK para continuar'
   const textPopUpErrorDay = `Por favor, intente nuevamente. El plan de entrenamiento que desea crear o modificar debe tener una cantidad mayor o igual de días que el plan de suscripción ofrecido. (${planData?.daysPerWeek} días). `
@@ -487,10 +489,7 @@ const MyPlans = () => {
   useEffect(() => {
     const fetchDataAndPersonal = async () => {
       const libraryData = await getExerciseFromMyPersonalLibrary();
-
-      console.log(libraryData)
       setPlanes(libraryData);
-      console.log(planes)
     };
 
     fetchDataAndPersonal();
@@ -585,10 +584,15 @@ const MyPlans = () => {
                                               }
                                             }}
                                           >
-                                            {planes.map((exercise: any) => (
-                                              <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
-                                                {exercise.exerciseName}
-                                              </MenuItem>
+                                            {groupedPlan.map((group) => (
+                                              [
+                                                <ListSubheader key={group[0].muscleGroup}>{group[0].muscleGroup}</ListSubheader>,
+                                                ...group.map((exercise) => (
+                                                  <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                                    {exercise.exerciseName}
+                                                  </MenuItem>
+                                                )),
+                                              ]
                                             ))}
                                           </Select>
                                         </FormControl>

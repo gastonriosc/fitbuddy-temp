@@ -14,11 +14,12 @@ import TableCell, { TableCellProps, tableCellClasses } from '@mui/material/Table
 import Button, { ButtonProps } from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+import { groupBy, sortBy } from 'lodash';
 
 //import jsPDF from 'jspdf';
 //import 'jspdf-autotable';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, Divider, FormControl, Input, InputLabel, MenuItem, Select, Typography, ListSubheader } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import Icon from 'src/@core/components/icon';
 import { useRouter } from 'next/router';
@@ -95,7 +96,7 @@ const NewPlan = () => {
   const [manualInput, setManualInput] = React.useState(false);
   const [cantidadDeDias, setCantidadDeDias] = useState<number>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
+  console.log(plan)
 
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
@@ -103,6 +104,9 @@ const NewPlan = () => {
   const closePopUpErrorDay = () => setPopUpErrorDay(false)
   const closePopUpErrorDataExercise = () => setPopUpErrorDataExercise(false)
   const closePopUpErrorName = () => setPopUpErrorName(false)
+
+  const sortedPlan = plan.slice().sort((a, b) => a.exerciseName.localeCompare(b.exerciseName));
+  const groupedPlan = sortBy(groupBy(sortedPlan, 'muscleGroup'), ['muscleGroup']);
 
   const route = useRouter();
 
@@ -437,7 +441,7 @@ const NewPlan = () => {
                                     value={nombre}
                                     onChange={(e) => {
                                       const selectedExerciseName = e.target.value;
-
+                                      console.log(selectedExerciseName)
                                       setNombre(selectedExerciseName);
 
                                       const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === selectedExerciseName);
@@ -454,10 +458,20 @@ const NewPlan = () => {
                                     input={<Input />}
                                   >
                                     {/* Dynamically render MenuItem for each exercise in the plan array */}
-                                    {plan.map((exercise: Exercise) => (
+                                    {/* {plan.map((exercise: Exercise) => (
                                       <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
                                         {exercise.exerciseName}
                                       </MenuItem>
+                                    ))} */}
+                                    {groupedPlan.map((group) => (
+                                      [
+                                        <ListSubheader key={group[0].muscleGroup}>{group[0].muscleGroup}</ListSubheader>,
+                                        ...group.map((exercise) => (
+                                          <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                            {exercise.exerciseName}
+                                          </MenuItem>
+                                        )),
+                                      ]
                                     ))}
                                   </Select>
                                 </FormControl>
