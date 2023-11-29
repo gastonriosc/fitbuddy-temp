@@ -276,6 +276,7 @@ const Foro = (props: Props) => {
                     )}
                   </Box>
 
+
                   <div style={{ flex: 1, textAlign: 'right' }}>
                     {message ? (
                       <>
