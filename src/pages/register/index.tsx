@@ -1,5 +1,6 @@
 // ** React Imports
-import { ReactNode, useState } from 'react'
+import { ReactNode, forwardRef, useState } from 'react'
+
 
 // ** Next Import
 import Link from 'next/link'
@@ -38,6 +39,12 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/dist/client/router'
+import DatePicker from 'react-datepicker'
+
+
+// ** Icon Imports
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { format } from 'date-fns'
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -78,6 +85,7 @@ interface FormData {
   height: string
   weight: string
   age: string
+  birthdate: string
 }
 
 const defaultValues = {
@@ -95,6 +103,14 @@ const defaultValues = {
   age: ''
 }
 
+interface CustomInputProps {
+  dates: Date[]
+  label: string
+  end: number | Date
+  start: number | Date
+  setDates?: (value: Date[]) => void
+}
+
 const phoneRegExp = /^(\+?549?|0)(11|[2368]\d)(\d{4})(\d{4})$/;
 
 const schema = yup.object().shape({
@@ -103,10 +119,9 @@ const schema = yup.object().shape({
   email: yup.string().email("Debe ser un email válido").required("Email es un campo obligatorio"),
   password: yup.string().required("Contraseña es un campo obligatorio").min(5, "Debe contener 5 caracteres mínimo"),
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
-  height: yup.string().required("Altura es un campo obligatorio"),
-  weight: yup.string().required("Peso es un campo obligatorio"),
-  age: yup.string().required("Edad es un campo obligatorio")
-
+  height: yup.number().required("Altura es un campo obligatorio").positive("La altura debe ser un valor positivo"),
+  weight: yup.number().required("Peso es un campo obligatorio").positive("El peso debe ser un valor positivo"),
+  age: yup.mixed().required('Edad es un campo obligatorio')
 })
 
 const Register = () => {
@@ -118,6 +133,8 @@ const Register = () => {
   const [selectedGender, setSelectedGender] = useState('')
   const [selectedRole, setSelectedRole] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
+  const [startDateRange, setStartDateRange] = useState<Date | null>(null);
+  const [age, setAge] = useState<string>('');
 
 
   // ** Default Values
@@ -151,6 +168,7 @@ const Register = () => {
     control,
     setError,
     register,
+    setValue,
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
@@ -207,7 +225,31 @@ const Register = () => {
     }
   }
 
+  const CustomInputForDialog = forwardRef((props: CustomInputProps, ref) => {
+    const selectedDate = props.start !== null ? format(props.start, 'dd/MM/yyyy') : '';
 
+    return (
+      <TextField
+        fullWidth
+        inputRef={ref}
+        {...props}
+        label={props.label || ''}
+        value={selectedDate}
+      />
+    );
+  });
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      const today = new Date();
+      const birthDate = new Date(date);
+      const ageInMilliseconds = today.getTime() - birthDate.getTime();
+      const ageInYears = Math.floor(ageInMilliseconds / (365.25 * 24 * 60 * 60 * 1000));
+
+      setValue('age', ageInYears.toString()); // Utiliza setValue para actualizar el valor del campo 'age'
+      setStartDateRange(date);
+    }
+  };
 
 
   return (
@@ -259,11 +301,39 @@ const Register = () => {
               </FormControl>
 
               <FormControl fullWidth sx={{ mb: 4 }}>
+
+
+                <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+                  <DatePicker
+                    selected={startDateRange}
+                    onChange={(date) => handleDateChange(date)}
+                    customInput={
+                      <CustomInputForDialog
+                        start={startDateRange as Date}
+                        label='Fecha de Nacimiento'
+                        dates={[]}
+                        end={0}
+                      />
+                    }
+                    showYearDropdown
+                    dateFormatCalendar="MMMM"
+
+                    maxDate={new Date()}
+                    yearDropdownItemNumber={100}
+                    scrollableYearDropdown
+                    showMonthDropdown
+                  />
+                </DatePickerWrapper>
+              </FormControl>
+
+
+
+              <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='age'
                   control={control}
                   rules={{ required: true }}
-                  render={({ field: { value, onChange, onBlur } }) => (
+                  render={({ field: { onChange, onBlur, value } }) => (
                     <TextField
                       label='Edad'
                       value={value}
