@@ -1,45 +1,37 @@
 // ** React Imports
-
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router';
 
 // ** Context Imports
-import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from '@mui/system'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
-import { Box } from '@mui/material'
 
 // ** Customs
-import ChartIngresosMensualesEntrenador from '../insights/chartIngresosMensuales'
-import ChartIngresosAnualesEntrenador from '../insights/chartIngresosAnuales'
-import ChartNuevosUsuarios from './chartNuevosUsuarios'
-
-interface User {
-  role: string,
-  registrationDate: Date
-}
+import ChartIngresosAnualesEntrenador from './chartIngresosAnuales'
+import ChartIngresosMensualesEntrenador from './chartIngresosMensuales'
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface amount {
   amount: number;
   date: Date
 }
 
-const AdminInsights = () => {
-
-  // ** Hook
+const TrainerInsights = () => {
   const [isLoading, setIsLoading] = useState(true);
   const route = useRouter();
-  const [newUsers, setNewUsers] = useState<User[]>();
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
 
-  //! MONTOS MENSUALES
+
+
+  //!MENSUAL
   const [montosMensuales, setMontosMensuales] = useState<amount[] | undefined>()
   const getLastDayOfMonth = (year: number, month: number): number => {
     return new Date(year, month + 1, 0).getDate();
   };
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
   const lastDayOfMonth = getLastDayOfMonth(currentYear, currentMonth);
   const daysOfMonth = Array.from({ length: lastDayOfMonth }, (_, index) => index + 1);
 
@@ -54,7 +46,7 @@ const AdminInsights = () => {
   const totalMensual = (montosMensuales ?? [])
     .reduce((acc, item) => acc + item.amount, 0);
 
-  //! MONTOS ANUALES
+  //!ANUAL
   const [montosAnuales, setMontosAnuales] = useState<amount[] | undefined>();
   const obtenerDatosAnuales = (montosAnuales: amount[] | undefined) => {
     const meses = [
@@ -75,47 +67,16 @@ const AdminInsights = () => {
   const dataAnual = obtenerDatosAnuales(montosAnuales);
   const totalAnual = (montosAnuales ?? []).reduce((acc, item) => acc + item.amount, 0);
 
-  //! USUARIOS ANUALES
-  const monthlyStats = {
-    Entrenadores: Array(12).fill(0),
-    Alumnos: Array(12).fill(0),
-  };
 
-  newUsers?.forEach((user: User) => {
-    const registrationDate = new Date(user.registrationDate);
-
-    const userMonth = registrationDate.getMonth() + 1;
-    const userYear = registrationDate.getFullYear();
-
-    if (userYear === currentYear && userMonth <= currentMonth) {
-      if (user.role === 'Entrenador') {
-        monthlyStats.Entrenadores[userMonth - 1]++;
-      } else if (user.role === 'Alumno') {
-        monthlyStats.Alumnos[userMonth - 1]++;
-      }
-    }
-  });
-
-  const series = [
-    {
-      name: 'Entrenadores',
-      data: monthlyStats.Entrenadores,
-    },
-    {
-      name: 'Alumnos',
-      data: monthlyStats.Alumnos,
-    },
-  ];
-  const totalEntrenadores = monthlyStats.Entrenadores.reduce((acc, count) => acc + count, 0);
-  const totalAlumnos = monthlyStats.Alumnos.reduce((acc, count) => acc + count, 0);
-  const totalUsuarios = totalEntrenadores + totalAlumnos;
 
   useEffect(() => {
     const fetchMyRequests = async () => {
 
+      const id = route.query.id
+
       try {
         const res = await fetch(
-          `/api/adminInsights/`,
+          `/api/insights/?id=` + id,
           {
             method: 'GET',
             headers: {
@@ -125,7 +86,6 @@ const AdminInsights = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          setNewUsers(data.newUsers);
           setMontosMensuales(data.montosMensuales)
           setMontosAnuales(data.montosAnuales)
           setIsLoading(false);
@@ -144,20 +104,17 @@ const AdminInsights = () => {
     fetchMyRequests();
   }, []);
 
-  if (!isLoading) {
 
+  if (!isLoading) {
     return (
-      <Grid >
-        <Box>
+      <Grid>
+        <Box sx={{ mb: 5 }}>
           <ChartIngresosMensualesEntrenador direction='ltr' data={dataMensual} total={totalMensual}></ChartIngresosMensualesEntrenador>
         </Box>
-        <Box sx={{ mt: 5 }}>
-          <ChartNuevosUsuarios series={series} total={totalUsuarios}></ChartNuevosUsuarios>
-        </Box>
-        <Box sx={{ mt: 5 }}>
+        <Box>
           <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual}></ChartIngresosAnualesEntrenador>
         </Box>
-      </Grid>
+      </Grid >
     )
   } else {
     return (
@@ -168,10 +125,10 @@ const AdminInsights = () => {
   }
 }
 
-AdminInsights.acl = {
+TrainerInsights.acl = {
   action: 'manage',
-  subject: 'adminInsights-page'
+  subject: 'trainerInsights-page'
 }
 
 
-export default AdminInsights
+export default TrainerInsights

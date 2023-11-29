@@ -389,9 +389,8 @@ const MyPlans = () => {
 
       if (res.status === 200) {
         const updatedPlan = await res.json();
-        console.log('plan actualizado:', updatedPlan);
-        setTitlePopUp('Plan actualizado con éxito!');
-        setPopUp(true);
+        setTitlePopUp('Plan actualizado con éxito!')
+        setPopUp(true)
       } else {
         console.error('Error al actualizar el plan');
       }
@@ -469,7 +468,6 @@ const MyPlans = () => {
 
       if (res.status == 200) {
         const data = await res.json();
-        console.log(data.exercisesData)
 
         return data.exercisesData || [];
       }
