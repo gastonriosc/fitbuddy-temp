@@ -338,6 +338,7 @@ const EntrenadorProfile = () => {
                     fullWidth
                     type='number'
                     label='Edad'
+                    disabled={true}
                     value={formData.age}
                     onChange={e => handleFormChange('age', e.target.value)}
                   />
