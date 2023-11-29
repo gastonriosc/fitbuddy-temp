@@ -297,13 +297,25 @@ const LoginPage = () => {
             </Box>
             <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Entrenador: <strong>facutissera@gmail.com</strong> / Pass: <strong>admin</strong>
+                Administrador: <strong>facutissera@gmail.com</strong> / Pass: <strong>admin</strong>
               </Typography>
               <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
                 Entrenador: <strong>juantargon@gmail.com</strong> / Pass: <strong>entrenador</strong>
               </Typography>
               <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
                 Alumno: <strong>gastonriosc@gmail.com</strong> / Pass: <strong>alumno</strong>
+              </Typography>
+            </Alert>
+            <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.warningLight, '& .MuiAlert-message': { p: 0 } }}>
+              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}><strong>No usar</strong></Typography>
+              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}>
+                Entrenador: <strong>franciscoaquino@gmail.com</strong>
+              </Typography>
+              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}>
+                Entrenador: <strong>juantargon@gmail.com</strong>
+              </Typography>
+              <Typography variant='caption' sx={{ display: 'block', color: 'warning' }}>
+                Alumno: <strong>gastonriosc@gmail.com</strong>
               </Typography>
             </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
