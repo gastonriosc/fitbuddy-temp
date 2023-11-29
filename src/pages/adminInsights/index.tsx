@@ -106,7 +106,6 @@ const AdminInsights = () => {
       data: monthlyStats.Alumnos,
     },
   ];
-
   const totalEntrenadores = monthlyStats.Entrenadores.reduce((acc, count) => acc + count, 0);
   const totalAlumnos = monthlyStats.Alumnos.reduce((acc, count) => acc + count, 0);
   const totalUsuarios = totalEntrenadores + totalAlumnos;

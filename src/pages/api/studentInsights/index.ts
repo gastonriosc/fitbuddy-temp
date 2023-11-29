@@ -4,6 +4,7 @@ import connect from 'src/lib/mongodb'
 import PlanModel from 'src/models/planSchema'
 import mongoose from 'mongoose'
 import StudentInsights from 'src/models/studentInsights'
+import User from 'src/models/userSchema'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connect()
@@ -44,14 +45,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         }
       ])
-      const dataPeso = await StudentInsights.find({ studentId: id })
+      const userPeso = await User.findById(id, 'weight')
+      const dataPeso = await StudentInsights.aggregate([
+        { $match: { studentId: objectId } },
+        { $unwind: '$data' },
+        { $match: { 'data.deleted': false } },
+        { $group: { _id: '$_id', data: { $push: '$data' } } }
+      ])
+
       console.log(dataPeso)
-      if (dataTracking && dataPeso) {
+
+      if (dataTracking && dataPeso.length > 0) {
         const combinedDates = dataTracking.reduce((acc, curr) => acc.concat(curr.dataTracking), [])
 
         const responseData = {
           dataTracking: combinedDates,
-          dataPeso: dataPeso
+          dataPeso: dataPeso[0],
+          userPeso: userPeso
         }
 
         return res.status(200).json(responseData)
@@ -65,16 +75,50 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   } else if (req.method === 'PUT') {
     const { id, data } = req.body
-    const updatedTracking = await StudentInsights.findOneAndUpdate(
-      { studentId: id },
-      { $push: { data: { $each: [data] } } },
-      { new: true, upsert: true }
-    )
+    const existingRecord = await StudentInsights.findOne({
+      studentId: id,
+      'data._id': data.id
+    })
 
-    if (updatedTracking) {
-      return res.status(200).json(updatedTracking)
+    if (existingRecord) {
+      // Si existe, actualizar el documento
+      const updatedTracking = await StudentInsights.findOneAndUpdate(
+        {
+          studentId: id,
+          'data._id': data.id
+        },
+        {
+          $set: {
+            'data.$.date': data.date,
+            'data.$.weight': data.weight,
+            'data.$.deleted': data.deleted
+          }
+        },
+        { new: true }
+      )
+
+      if (updatedTracking) {
+        const filteredData = updatedTracking.data.filter(item => !item.deleted)
+        updatedTracking.data = filteredData
+
+        return res.status(200).json(updatedTracking)
+      } else {
+        return res.status(404).json({ error: 'No se pudo actualizar el registro' })
+      }
     } else {
-      return res.status(404).json({ error: 'No se pudo actualizar el plan' })
+      const updatedTracking = await StudentInsights.findOneAndUpdate(
+        { studentId: id },
+        { $push: { data: { $each: [data] } } },
+        { new: true, upsert: true }
+      )
+      if (updatedTracking) {
+        const filteredData = updatedTracking.data.filter(item => !item.deleted)
+        updatedTracking.data = filteredData
+
+        return res.status(200).json(updatedTracking)
+      } else {
+        return res.status(404).json({ error: 'No se pudo actualizar el registro' })
+      }
     }
   } else {
     return res.status(500).json({ message: 'Método no permitido.' })

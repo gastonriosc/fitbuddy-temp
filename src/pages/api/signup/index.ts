@@ -1,6 +1,7 @@
 import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import User from 'src/models/userSchema'
+import StudentInsights from 'src/models/studentInsights'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -12,7 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(409).json('Email ya registrado')
     }
     const user = await User.create(req.body)
-
+    if (user.role == 'Alumno') {
+      await StudentInsights.create({ studentId: user._id })
+    }
     if (user) {
       return res.status(200).json(user)
     } else {
