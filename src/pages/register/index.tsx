@@ -121,7 +121,10 @@ const schema = yup.object().shape({
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
   height: yup.number().required("Altura es un campo obligatorio").positive("La altura debe ser un valor positivo"),
   weight: yup.number().required("Peso es un campo obligatorio").positive("El peso debe ser un valor positivo"),
-  age: yup.mixed().required('Edad es un campo obligatorio')
+  age: yup.mixed().required('Edad es un campo obligatorio'),
+  country: yup.string().required("Seleccione un pais"),
+  gender: yup.string().required("Seleccione un genero"),
+  role: yup.string().required("Seleccione un rol"),
 })
 
 const Register = () => {
@@ -305,6 +308,7 @@ const Register = () => {
 
                 <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
                   <DatePicker
+                    name='age'
                     selected={startDateRange}
                     onChange={(date) => handleDateChange(date)}
                     customInput={
@@ -328,7 +332,7 @@ const Register = () => {
 
 
 
-              <FormControl fullWidth sx={{ mb: 4 }}>
+              {/* <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
                   name='age'
                   control={control}
@@ -350,7 +354,7 @@ const Register = () => {
                     {errors.age.message}
                   </FormHelperText>
                 )}
-              </FormControl>
+              </FormControl> */}
 
 
               {/* Teléfono */}
@@ -387,44 +391,74 @@ const Register = () => {
                 {/* País */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="country-select-label">País</InputLabel>
-                  <Select {...register("country", { required: true })}
-                    labelId='country-select-label'
-                    id='country-select'
-                    value={selectedCountry}
-                    label="País"
+                  <Controller
                     name='country'
-                    onChange={handleCountryChange}
-                  >
-                    {countries.map((country, index) => (
-                      <MenuItem key={index} value={country}>
-                        {country}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors.country && errors.country.type === "required" &&
+                    control={control}
+                    rules={{
+                      validate: (value) => value !== ''
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Select {...register("country", { required: true })}
+                        label="País"
+                        name='country'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={(e) => {
+                          onChange(e);
+                          handleCountryChange(e);
+                        }}
+                        error={Boolean(errors.country)}
+                      >
+                        {countries.map((country, index) => (
+                          <MenuItem key={index} value={country}>
+                            {country}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.country && (
                     <FormHelperText sx={{ color: 'error.main' }}>
-                      País es un campo obligatorio
-                    </FormHelperText>}
+                      {errors.country.message}
+                    </FormHelperText>
+                  )}
 
                 </FormControl>
 
                 {/* Género */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="gender-select-label">Género</InputLabel>
-                  <Select {...register("gender")}
-                    labelId='gender-select-label'
-                    id='gender-select'
-                    value={selectedGender}
-                    label="Género"
+                  <Controller
                     name='gender'
-                    onChange={handleGenderChange}
-                  >
-                    {genders.map((gender, index) => (
-                      <MenuItem key={index} value={gender}>
-                        {gender}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    control={control}
+                    rules={{
+                      validate: (value) => value !== ''
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Select {...register("gender", { required: true })}
+                        label="Genero"
+                        name='gender'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={(e) => {
+                          onChange(e);
+                          handleGenderChange(e);
+                        }}
+                        error={Boolean(errors.gender)}
+                      >
+                        {genders.map((gender, index) => (
+                          <MenuItem key={index} value={gender}>
+                            {gender}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.gender && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.gender.message}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Box>
 
@@ -439,7 +473,9 @@ const Register = () => {
                   <Controller
                     name='height'
                     control={control}
-                    rules={{ required: true }}
+                    rules={{
+                      validate: (value) => value !== ''
+                    }}
                     render={({ field: { value, onChange, onBlur } }) => (
                       <TextField
                         label='Altura'
@@ -493,20 +529,37 @@ const Register = () => {
                 {/* Role */}
                 <FormControl fullWidth sx={{ mb: 4 }}>
                   <InputLabel id="role-select-label">Rol</InputLabel>
-                  <Select {...register("role")}
-                    labelId='role-select-label'
-                    id='role-select'
-                    value={selectedRole}
-                    label="Rol"
+                  <Controller
                     name='role'
-                    onChange={handleRoleChange}
-                  >
-                    {roles.map((role, index) => (
-                      <MenuItem key={index} value={role}>
-                        {role}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                    control={control}
+                    rules={{
+                      validate: (value) => value !== ''
+                    }}
+                    render={({ field: { value, onChange, onBlur } }) => (
+                      <Select {...register("role", { required: true })}
+                        label="Rol"
+                        name='role'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={(e) => {
+                          onChange(e);
+                          handleRoleChange(e);
+                        }}
+                        error={Boolean(errors.role)}
+                      >
+                        {roles.map((role, index) => (
+                          <MenuItem key={index} value={role}>
+                            {role}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    )}
+                  />
+                  {errors.role && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.role.message}
+                    </FormHelperText>
+                  )}
                 </FormControl>
 
                 {/* Disciplina */}
@@ -675,7 +728,7 @@ const Register = () => {
           </BoxWrapper>
         </CardContent>
       </Card>
-    </Box>
+    </Box >
   )
 }
 

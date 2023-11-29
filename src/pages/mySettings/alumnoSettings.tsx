@@ -27,7 +27,7 @@ import { CircularProgress, IconButton } from '@mui/material'
 import CustomChip from 'src/@core/components/mui/chip'
 import { UsersType } from 'src/types/apps/userTypes'
 import Checkbox from '@mui/material/Checkbox'
-
+import { differenceInYears } from 'date-fns'
 
 interface Data {
   email: string
@@ -126,6 +126,8 @@ const AlumnoProfile = () => {
   } = useForm({ defaultValues: { checkbox: false } })
 
   const handleClose = () => setOpen(false)
+  const fechaNacimiento = new Date(formData.age);
+  const edad = differenceInYears(new Date(), fechaNacimiento);
 
   // const handleSecondDialogClose = () => setSecondDialogOpen(false)
 
@@ -316,7 +318,7 @@ const AlumnoProfile = () => {
                     value={formData.height}
                     placeholder='1.80'
                     onChange={e => handleFormChange('height', e.target.value)}
-                    InputProps={{ startAdornment: <InputAdornment position='start'></InputAdornment> }}
+                    InputProps={{ startAdornment: <InputAdornment position='start'>(m)</InputAdornment> }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -337,7 +339,7 @@ const AlumnoProfile = () => {
                     label='Edad'
                     disabled={true}
 
-                    value={formData.age}
+                    value={edad.toString()}
                     onChange={e => handleFormChange('age', e.target.value)}
                   />
                 </Grid>

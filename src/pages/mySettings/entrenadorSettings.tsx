@@ -27,6 +27,7 @@ import { useSession } from 'next-auth/react'
 import { CircularProgress, IconButton } from '@mui/material'
 import CustomChip from 'src/@core/components/mui/chip'
 import { UsersType } from 'src/types/apps/userTypes'
+import { differenceInYears } from 'date-fns'
 
 interface Data {
   email: string
@@ -121,6 +122,9 @@ const EntrenadorProfile = () => {
   } = useForm({ defaultValues: { checkbox: false } })
 
   const handleClose = () => setOpen(false)
+
+  const fechaNacimiento = new Date(formData.age);
+  const edad = differenceInYears(new Date(), fechaNacimiento);
 
   // const handleSecondDialogClose = () => setSecondDialogOpen(false)
 
@@ -319,7 +323,7 @@ const EntrenadorProfile = () => {
                     value={formData.height}
                     placeholder='1.80'
                     onChange={e => handleFormChange('height', e.target.value)}
-                    InputProps={{ startAdornment: <InputAdornment position='start'></InputAdornment> }}
+                    InputProps={{ startAdornment: <InputAdornment position='start'>(m)</InputAdornment> }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -339,8 +343,8 @@ const EntrenadorProfile = () => {
                     type='number'
                     label='Edad'
                     disabled={true}
-                    value={formData.age}
-                    onChange={e => handleFormChange('age', e.target.value)}
+                    value={edad.toString()}
+
                   />
                 </Grid>
 
