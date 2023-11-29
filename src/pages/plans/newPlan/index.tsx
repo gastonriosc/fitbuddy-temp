@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card';
@@ -360,9 +361,7 @@ const NewPlan = () => {
     }
   };
 
-  const muscleGroups = ["pecho", "piernas", /* otros grupos musculares */];
-  // Filtra los ejercicios que pertenecen a los grupos musculares seleccionados
-  const filteredExercises = plan.filter((exercise) => muscleGroups.includes(exercise.muscleGroup));
+
   const [selectedExerciseLink, setSelectedExerciseLink] = useState('');
 
 
@@ -429,51 +428,65 @@ const NewPlan = () => {
                       <TableBody>
                         {day.map((row, rowIndex) => (
                           <StyledTableRow key={rowIndex}>
-                            <StyledTableCell component='th' scope='row'>
+                            <StyledTableCell component="th" scope="row">
                               {editingRow[dayIndex] === rowIndex ? (
                                 <FormControl fullWidth>
-                                  <InputLabel id={`exercise-select-label-${dayIndex}-${rowIndex}`}>
-                                    Ejercicio
-                                  </InputLabel>
-                                  <Select
-                                    labelId={`exercise-select-label-${dayIndex}-${rowIndex}`}
-                                    id={`exercise-select-${dayIndex}-${rowIndex}`}
-                                    value={nombre}
-                                    onChange={(e) => {
-                                      const selectedExerciseName = e.target.value;
-                                      console.log(selectedExerciseName)
-                                      setNombre(selectedExerciseName);
+                                  {manualInput ? (
+                                    <MenuItem>
+                                      <TextField
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
+                                        label="Ejercicio"
+                                        fullWidth
+                                      />
+                                    </MenuItem>
+                                  ) : (
+                                    <div>
+                                      <InputLabel id={`exercise-select-label-${dayIndex}-${rowIndex}`}>
+                                        Ejercicio
+                                      </InputLabel>
+                                      <Select
+                                        labelId={`exercise-select-label-${dayIndex}-${rowIndex}`}
+                                        id={`exercise-select-${dayIndex}-${rowIndex}`}
+                                        value={nombre}
+                                        onChange={(e) => {
+                                          const selectedExerciseName = e.target.value;
+                                          console.log(selectedExerciseName);
 
-                                      const selectedExercise = plan.find((exercise: Exercise) => exercise.exerciseName === selectedExerciseName);
-                                      if (selectedExercise) {
-                                        setLink(selectedExercise.exerciseLink);
-                                        console.log('Selected Exercise Link:', selectedExercise.exerciseLink);
-                                        setSelectedExerciseLink(selectedExercise.exerciseLink);
-                                      } else {
-                                        setLink('');
-                                        setSelectedExerciseLink('');
-                                      }
-                                    }}
+                                          // Solo actualiza el nombre si no estás en modo manualInput
+                                          if (!manualInput) {
+                                            setNombre(selectedExerciseName);
+                                          }
 
-                                    input={<Input />}
-                                  >
-                                    {/* Dynamically render MenuItem for each exercise in the plan array */}
-                                    {/* {plan.map((exercise: Exercise) => (
-                                      <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
-                                        {exercise.exerciseName}
-                                      </MenuItem>
-                                    ))} */}
-                                    {groupedPlan.map((group) => (
-                                      [
-                                        <ListSubheader key={group[0].muscleGroup}>{group[0].muscleGroup}</ListSubheader>,
-                                        ...group.map((exercise) => (
-                                          <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
-                                            {exercise.exerciseName}
-                                          </MenuItem>
-                                        )),
-                                      ]
-                                    ))}
-                                  </Select>
+                                          const selectedExercise = plan.find(
+                                            (exercise) => exercise.exerciseName === selectedExerciseName
+                                          );
+                                          if (selectedExercise) {
+                                            setLink(selectedExercise.exerciseLink);
+                                            console.log('Selected Exercise Link:', selectedExercise.exerciseLink);
+                                            setSelectedExerciseLink(selectedExercise.exerciseLink);
+                                          } else {
+                                            setLink('');
+                                            setSelectedExerciseLink('');
+                                          }
+                                        }}
+                                        input={manualInput ? <TextField /> : <Input />}
+                                      >
+                                        {groupedPlan.map((group: any) => (
+                                          [
+                                            <ListSubheader style={{ color: 'orange' }} key={group[0].muscleGroup}>
+                                              {group[0].muscleGroup}
+                                            </ListSubheader>,
+                                            ...group.map((exercise: any) => (
+                                              <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
+                                                {exercise.exerciseName}
+                                              </MenuItem>
+                                            )),
+                                          ]
+                                        ))}
+                                      </Select>
+                                    </div>
+                                  )}
                                 </FormControl>
                               ) : (
                                 row.nombre

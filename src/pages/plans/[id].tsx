@@ -584,10 +584,11 @@ const MyPlans = () => {
                                               }
                                             }}
                                           >
-                                            {groupedPlan.map((group) => (
+                                            {groupedPlan.map((group: any) => (
                                               [
-                                                <ListSubheader key={group[0].muscleGroup}>{group[0].muscleGroup}</ListSubheader>,
-                                                ...group.map((exercise) => (
+
+                                                <ListSubheader style={{ color: 'orange' }} key={group[0].muscleGroup}>{group[0].muscleGroup}</ListSubheader>,
+                                                ...group.map((exercise: any) => (
                                                   <MenuItem key={exercise.exerciseName} value={exercise.exerciseName}>
                                                     {exercise.exerciseName}
                                                   </MenuItem>
@@ -656,7 +657,7 @@ const MyPlans = () => {
                                     {editingExerciseIndices[dayIndex] === exerciseIndex ? (
                                       <TextField
                                         type="text"
-                                        value={selectedExerciseLink}
+                                        value={exercise.link}
                                         onChange={(e) => {
                                           handleExerciseDataChange(dayIndex, exerciseIndex, 'link', e.target.value);
                                           setSelectedExerciseLink(e.target.value);
