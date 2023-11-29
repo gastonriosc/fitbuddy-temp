@@ -46,14 +46,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       ])
       const userPeso = await User.findById(id, 'weight')
-      const dataPeso = await StudentInsights.aggregate([
-        { $match: { studentId: objectId } },
-        { $unwind: '$data' },
-        { $match: { 'data.deleted': false } },
-        { $group: { _id: '$_id', data: { $push: '$data' } } }
-      ])
-
-      console.log(dataPeso)
+      const dataPeso = await StudentInsights.find({ studentId: id })
+      if (dataPeso[0].data.length > 0) {
+        const filteredData = dataPeso[0].data.filter(item => !item.deleted)
+        dataPeso[0].data = filteredData
+      }
 
       if (dataTracking && dataPeso.length > 0) {
         const combinedDates = dataTracking.reduce((acc, curr) => acc.concat(curr.dataTracking), [])
