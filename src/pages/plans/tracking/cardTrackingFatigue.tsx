@@ -99,7 +99,7 @@ const CardTrackingFatigue = (props: Props) => {
         style: { colors: theme.palette.text.disabled }
       },
       categories: [
-        'Facil', 'Moderado', 'Intenso', 'Muy intenso'
+        'Poco', 'Moderado', 'Considerable', 'Extremo'
       ]
     }
   }
