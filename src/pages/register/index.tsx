@@ -26,7 +26,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller, SubmitHandler } from 'react-hook-form'
+import { useForm, Controller, SubmitHandler, clearErrors } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Configs
@@ -121,7 +121,7 @@ const schema = yup.object().shape({
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
   height: yup.number().required("Altura es un campo obligatorio").positive("La altura debe ser un valor positivo"),
   weight: yup.number().required("Peso es un campo obligatorio").positive("El peso debe ser un valor positivo"),
-  age: yup.string().required('Edad es un campo obligatorio'),
+  age: yup.string().required('Fecha de nacimiento es un campo obligatorio'),
   country: yup.string().required("Seleccione un pais"),
   gender: yup.string().required("Seleccione un genero"),
   role: yup.string().required("Seleccione un rol"),
@@ -173,6 +173,7 @@ const Register = () => {
     register,
     setValue,
     handleSubmit,
+    clearErrors,
     formState: { errors }
   } = useForm<FormData>({
     defaultValues,
@@ -252,6 +253,7 @@ const Register = () => {
 
       setValue('age', ageInYears.toString()); // Utiliza setValue para actualizar el valor del campo 'age'
       setStartDateRange(date);
+      clearErrors('age');
     }
   };
 
@@ -342,11 +344,16 @@ const Register = () => {
                       </DatePickerWrapper>
                     )}
                   />
+                  {errors.age && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.age.message}
+                    </FormHelperText>
+                  )}
                 </FormControl>
 
 
 
-                <FormControl fullWidth sx={{ mb: 4 }}>
+                {/* <FormControl fullWidth sx={{ mb: 4 }}>
                   <Controller
                     name='age'
                     control={control}
@@ -357,6 +364,7 @@ const Register = () => {
                         value={value}
                         type='number'
                         name='edad'
+                        disabled={true}
                         onBlur={onBlur}
                         onChange={onChange}
                         error={Boolean(errors.age)}
@@ -368,7 +376,7 @@ const Register = () => {
                       {errors.age.message}
                     </FormHelperText>
                   )}
-                </FormControl>
+                </FormControl> */}
               </Box>
 
               {/* Teléfono */}
