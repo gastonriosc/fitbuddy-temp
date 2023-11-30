@@ -39,7 +39,7 @@ interface Data {
   avatar: string
   height: string
   weight: string
-  age: string
+  birthdate: Date
 }
 
 const data: UsersType = {
@@ -74,7 +74,6 @@ const initialData: Data = {
   avatar: '',
   height: '',
   weight: '',
-  age: ''
 }
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -126,7 +125,7 @@ const AlumnoProfile = () => {
   } = useForm({ defaultValues: { checkbox: false } })
 
   const handleClose = () => setOpen(false)
-  const fechaNacimiento = new Date(formData.age);
+  const fechaNacimiento = new Date(formData.birthdate);
   const edad = differenceInYears(new Date(), fechaNacimiento);
 
   // const handleSecondDialogClose = () => setSecondDialogOpen(false)
@@ -151,7 +150,7 @@ const AlumnoProfile = () => {
         avatar: session?.user?.avatar || '',
         height: session?.user?.height || '',
         weight: session?.user?.weight || '',
-        age: session?.user?.age || ''
+        birthdate: session?.user?.birthdate || ''
       });
     }
   }, [session?.user]);

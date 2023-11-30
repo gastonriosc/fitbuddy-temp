@@ -40,7 +40,7 @@ interface Data {
   avatar: string
   height: string
   weight: string
-  age: string
+  birthdate: Date
 }
 
 const data: UsersType = {
@@ -62,7 +62,7 @@ const data: UsersType = {
   discipline: '',
   height: '',
   weight: '',
-  age: '',
+
 }
 
 const initialData: Data = {
@@ -76,7 +76,7 @@ const initialData: Data = {
   avatar: '',
   height: '',
   weight: '',
-  age: '',
+
 }
 
 const ImgStyled = styled('img')(({ theme }) => ({
@@ -123,7 +123,7 @@ const EntrenadorProfile = () => {
 
   const handleClose = () => setOpen(false)
 
-  const fechaNacimiento = new Date(formData.age);
+  const fechaNacimiento = new Date(formData.birthdate);
   const edad = differenceInYears(new Date(), fechaNacimiento);
 
   // const handleSecondDialogClose = () => setSecondDialogOpen(false)
@@ -153,7 +153,7 @@ const EntrenadorProfile = () => {
         avatar: session.user.avatar || '',
         height: session?.user?.height || '',
         weight: session?.user?.weight || '',
-        age: session?.user?.age || '',
+        birthdate: session?.user?.birthdate || '',
       });
     }
   }, [session?.user]);

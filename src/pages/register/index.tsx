@@ -85,7 +85,7 @@ interface FormData {
   height: string
   weight: string
   age: string
-  birthdate: string
+  birthdate: Date
 }
 
 const defaultValues = {
@@ -121,7 +121,7 @@ const schema = yup.object().shape({
   passwordC: yup.string().required("Por favor repita la contraseña").oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
   height: yup.number().required("Altura es un campo obligatorio").positive("La altura debe ser un valor positivo"),
   weight: yup.number().required("Peso es un campo obligatorio").positive("El peso debe ser un valor positivo"),
-  age: yup.mixed().required('Edad es un campo obligatorio'),
+  age: yup.string().required('Edad es un campo obligatorio'),
   country: yup.string().required("Seleccione un pais"),
   gender: yup.string().required("Seleccione un genero"),
   role: yup.string().required("Seleccione un rol"),
@@ -185,7 +185,8 @@ const Register = () => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const registrationDate = currentDate.toISOString();
-    const { email, password, phone, country, gender, role, name, discipline, height, weight, age } = data
+    const { email, password, phone, country, gender, role, name, discipline, height, weight, birthdate } = data
+    console.log('data', data)
     let avatar = '';
     if (gender === 'Masculino') {
       avatar = '/images/animals/4.png'
@@ -200,7 +201,7 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight, registrationDate, age })
+        body: JSON.stringify({ email, password, phone, country, gender, role, name, discipline, avatar, height, weight, registrationDate, birthdate })
       })
       if (res.status == 200) {
         await signIn('credentials', { email, password, redirect: false }).then(res => {
@@ -303,59 +304,72 @@ const Register = () => {
                 )}
               </FormControl>
 
-              <FormControl fullWidth sx={{ mb: 4 }}>
+              <Box sx={{
+                display: 'flex',
+                gap: { xs: '1px', md: '1px', lg: '10px' },
+                width: '100%',
+                flexDirection: { xs: 'column', md: 'column', lg: 'row' }
+              }}>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='birthdate'
+                    control={control}
+                    render={({ field }) => (
+                      <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+                        <DatePicker
+                          name='birthdate'
+                          selected={startDateRange}
+                          onChange={(date) => {
+                            field.onChange(date);
+                            handleDateChange(date);
+                          }}
+                          customInput={
+                            <CustomInputForDialog
+                              start={startDateRange as Date}
+                              label='Fecha de Nacimiento'
+                              dates={[]}
+                              end={0}
+                            />
+                          }
+                          showYearDropdown
+                          dateFormatCalendar="MMMM"
 
-
-                <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
-                  <DatePicker
-                    name='age'
-                    selected={startDateRange}
-                    onChange={(date) => handleDateChange(date)}
-                    customInput={
-                      <CustomInputForDialog
-                        start={startDateRange as Date}
-                        label='Fecha de Nacimiento'
-                        dates={[]}
-                        end={0}
-                      />
-                    }
-                    showYearDropdown
-                    dateFormatCalendar="MMMM"
-
-                    maxDate={new Date()}
-                    yearDropdownItemNumber={100}
-                    scrollableYearDropdown
-                    showMonthDropdown
+                          maxDate={new Date()}
+                          yearDropdownItemNumber={100}
+                          scrollableYearDropdown
+                          showMonthDropdown
+                        />
+                      </DatePickerWrapper>
+                    )}
                   />
-                </DatePickerWrapper>
-              </FormControl>
+                </FormControl>
 
 
 
-              {/* <FormControl fullWidth sx={{ mb: 4 }}>
-                <Controller
-                  name='age'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <TextField
-                      label='Edad'
-                      value={value}
-                      type='number'
-                      name='edad'
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      error={Boolean(errors.age)}
-                    />
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='age'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextField
+                        label='Edad'
+                        value={value}
+                        type='number'
+                        name='edad'
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.age)}
+                      />
+                    )}
+                  />
+                  {errors.age && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.age.message}
+                    </FormHelperText>
                   )}
-                />
-                {errors.age && (
-                  <FormHelperText sx={{ color: 'error.main' }}>
-                    {errors.age.message}
-                  </FormHelperText>
-                )}
-              </FormControl> */}
-
+                </FormControl>
+              </Box>
 
               {/* Teléfono */}
               <FormControl fullWidth sx={{ mb: 4 }}>
