@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
-import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { DialogActions, DialogContent, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
@@ -90,10 +90,18 @@ const Tracking = () => {
   const [tracking, setTracking] = useState<Tracking | any>()
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
-  const [endDateRange, setEndDateRange] = useState<DateType>(null)
+  const [endDateRange] = useState<DateType>(null)
   const [startDateRange, setStartDateRange] = useState<DateType>(null)
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
+  const [invalidDateError, setInvalidDateError] = useState(false);
+
+  const closePopUpDelete = () => setPopUpDelete(false)
+  const [popUpDelete, setPopUpDelete] = useState<boolean>(false)
+  const [titlePopUpDelete, setTitlePopUpDelete] = useState<string>()
+
+  const [confirmDeleteRecord, setConfirmDeleteRecord] = useState(null);
+
 
   const labelsDifficult: { [index: string]: string } = {
     1: 'Fácil',
@@ -181,6 +189,7 @@ const Tracking = () => {
         setTracking(data)
         setTitlePopUp('Seguimiento registrado con éxito!')
         setTrackingPopUp(true)
+
       } else {
         setNuevoRegistro(false)
         setTitlePopUp('Error al guardar el seguimiento')
@@ -207,13 +216,21 @@ const Tracking = () => {
   });
 
 
-  const handleOnChangeRangeForDialog = (date: any) => {
+  const handleOnChangeRangeForDialog = (date: Date) => {
     setStartDateRange(date);
     setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
     const isDuplicate = isDateAlreadyRecorded(date);
     setIsDuplicateDate(isDuplicate);
 
+    const currentDate = new Date();
+
+    if (date > currentDate) {
+      setInvalidDateError(true);
+    } else {
+      setInvalidDateError(false);
+    }
   };
+
 
   const filterByDateRange = (item: any) => {
     const itemDate = new Date(item.date);
@@ -225,11 +242,12 @@ const Tracking = () => {
       adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
     }
 
-    return (
+    const isWithinRange =
       startDateRange === null ||
       adjustedEndDate === null ||
-      (itemDate >= (startDateRange as Date) && itemDate < adjustedEndDate)
-    );
+      (itemDate >= (startDateRange as Date) && itemDate < adjustedEndDate);
+
+    return { isWithinRange, itemDate };
   };
 
   function getIncludedDates(tracking: Tracking) {
@@ -250,16 +268,53 @@ const Tracking = () => {
     return [];
   }
 
-  const isDateAlreadyRecorded = (selectedDate: any) => {
-    if (!tracking) {
-      return false;
+  const isDateAlreadyRecorded = (date: DateType) => {
+    if (tracking) {
+      const isDuplicate = tracking.data.some((item: any) => {
+        const itemDate = new Date(item.date);
+
+        return itemDate.toDateString() === date?.toDateString();
+      });
+
+      return isDuplicate;
     }
 
-    const selectedDateString = selectedDate.toISOString();
+    return false;
+  }
 
-    return tracking.data.some((record: any) => record.date === selectedDateString);
+
+  const handleDeleteRecord = (record: any) => {
+    setConfirmDeleteRecord(record);
+    setTitlePopUpDelete('¿Está seguro que desea eliminar este registro?');
+    setPopUpDelete(true);
   };
 
+  const handleConfirmedDelete = async () => {
+    try {
+      const res = await fetch('/api/tracking', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: route.query.id,
+          data: confirmDeleteRecord,
+        }),
+      });
+
+      if (res.status === 200) {
+        const updatedData = tracking?.data.filter((item: any) => item !== confirmDeleteRecord);
+        setTracking({ ...tracking, data: updatedData });
+      } else {
+        console.error('Error deleting record');
+      }
+    } catch (error) {
+      console.error('Error in the request:', error);
+    }
+
+    setPopUpDelete(false);
+    setConfirmDeleteRecord(null);
+  };
 
 
   return (
@@ -284,13 +339,8 @@ const Tracking = () => {
           >
             Registro
           </Button>
-
-
         ) : null}
-
-
       </Card>
-
 
       {tracking?.data.length > 0 ? (
         <Box>
@@ -307,11 +357,13 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
@@ -324,6 +376,10 @@ const Tracking = () => {
                                 <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
                               </Box>
                             </TableCell>
+                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
+                            </TableCell>
+
                           </TableRow>
                         ))}
                     </TableBody>
@@ -351,11 +407,14 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
@@ -367,6 +426,9 @@ const Tracking = () => {
                                 <Rating readOnly value={trackingItem.difficult} max={4} name='read-only' />
                                 <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.difficult]}</Typography>
                               </Box>
+                            </TableCell>
+                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -395,11 +457,14 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
+
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
+                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
@@ -408,13 +473,17 @@ const Tracking = () => {
                             </TableCell>
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                                <Rating readOnly value={trackingItem.fatigue} max={4} name='read-only' />
-                                <Typography sx={{ ml: 1 }}>{labelsFatigue[trackingItem.fatigue]}</Typography>
+                                <Rating readOnly value={trackingItem.difficult} max={4} name='read-only' />
+                                <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.difficult]}</Typography>
                               </Box>
+                            </TableCell>
+                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
                             </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>
+
 
                   </Table>
                 </TableContainer>
@@ -436,8 +505,6 @@ const Tracking = () => {
           <Typography variant='h6' sx={{ textAlign: 'center' }}>No has hecho registros de seguimiento aún.</Typography>
         </Box>
       )}
-
-
 
       <Dialog
         open={nuevoRegistro}
@@ -464,10 +531,6 @@ const Tracking = () => {
 
           <Box display={'flex'} justifyContent={'center'} paddingTop={5}>
 
-            {/* <Typography sx={{ textAlign: 'center', mb: 2 }}>
-            Indique un día válido para el registro de entrenamiento.
-            </Typography> */}
-
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
               <div>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
@@ -493,22 +556,16 @@ const Tracking = () => {
               </div>
             </Box>
           </Box>
-          {/* <Typography sx={{ textAlign: 'center', mb: 5, fontSize: '11px' }}>
-            {tracking?.date && tracking?.expirationDate
-              ? (
-                <>
-                  Las fechas correspondientes al plan van del{' '}
-                  <strong>{format(new Date(tracking.date), 'dd/MM/yyyy')}</strong>{' '}
-                  al{' '}
-                  <strong>{format(new Date(tracking.expirationDate), 'dd/MM/yyyy')}</strong>
-                </>
-              )
-              : 'Fechas no disponibles'}
-          </Typography> */}
+
 
           {isDuplicateDate && (
             <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}  >
               Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
+            </Typography>
+          )}
+          {invalidDateError && (
+            <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}>
+              La fecha seleccionada no puede ser mayor a la fecha actual.
             </Typography>
           )}
           <Typography sx={{ textAlign: 'center', mt: '25px' }}>
@@ -600,17 +657,53 @@ const Tracking = () => {
             variant='contained'
             sx={{ '&:hover': { backgroundColor: 'success.main' } }}
             onClick={() => newTrackingRecord()}
-            disabled={isButtonDisabled}
+            disabled={isButtonDisabled || invalidDateError}
           >
             Aceptar
           </Button>
-
         </Box>
-        {/* <Box display={'flex'}>
-          <Icon icon={'mdi:alert-circle-outline'} style={{ marginLeft: 8, fontSize: '18px' }} > </Icon>
-          <Typography sx={{ ml: 1, fontSize: '12px' }}> Nota: Recuerde que <strong>no</strong> puede registrar un dia  de entrenamiento mas de una vez. </Typography>
-        </Box> */}
+
       </Dialog>
+      <Dialog fullWidth open={popUpDelete} onClose={closePopUpDelete} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
+        <DialogContent
+          sx={{
+            pb: theme => `${theme.spacing(6)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              '& svg': { mb: 6, color: 'error.main' }
+            }}
+          >
+            <Icon icon='line-md:alert' fontSize='5.5rem' />
+            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUpDelete}</Typography>
+            {/* <Typography>{textPopUpDelete}</Typography> */}
+          </Box>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: 'center',
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+
+          <Button variant='contained' color='error' onClick={handleConfirmedDelete}>
+            Eliminar
+          </Button>
+          <Button variant='contained' color='primary' onClick={() => setPopUpDelete(false)}>
+            Volver
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <TrackingPopUp trackingPopUp={trackingPopUp} setTrackingPopUp={setTrackingPopUp} title={titlePopUp}></TrackingPopUp>
     </Grid >
   )

@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ]
 
       const tracking = await TrackingSchema.aggregate(pipeline)
-      console.log(tracking)
+
       if (tracking.length > 0) {
         return res.status(200).json(tracking[0])
       } else {
@@ -59,6 +59,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         return res.status(404).json({ error: 'No se pudo actualizar el plan' })
       }
+    } else if (req.method === 'DELETE') {
+      const { id, data } = req.body
+
+      try {
+        const updatedTracking = await TrackingSchema.findByIdAndUpdate(id, { $pull: { data: data } }, { new: true })
+
+        if (updatedTracking) {
+          return res.status(200).json(updatedTracking)
+        } else {
+          return res.status(404).json({ error: 'No se pudo eliminar el registro' })
+        }
+      } catch (error) {
+        console.error(error)
+
+        return res.status(500).json({ status: 'Error interno del servidor' })
+      }
+    } else {
+      return res.status(405).json({ error: 'Método no permitido' })
     }
   } catch (error) {
     console.error(error)
