@@ -339,7 +339,7 @@ const AlumnoProfile = () => {
                     disabled={true}
 
                     value={edad.toString()}
-                    onChange={e => handleFormChange('age', e.target.value)}
+
                   />
                 </Grid>
 

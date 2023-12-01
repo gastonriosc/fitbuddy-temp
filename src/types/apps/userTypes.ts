@@ -21,6 +21,7 @@ export type UsersType = {
   height: string
   weight: string
   age: string
+  birthdate: string
 }
 
 export type ProjectListDataType = {

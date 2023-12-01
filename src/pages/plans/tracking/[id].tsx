@@ -364,12 +364,12 @@ const Tracking = () => {
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
-                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
                             <TableCell style={{ textAlign: 'center' }}>
-                              {new Date(trackingItem.date).toLocaleDateString()}
+                              {new Date(trackingItem.date).toLocaleDateString('es')}
                             </TableCell>
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
@@ -414,13 +414,13 @@ const Tracking = () => {
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
-                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
                             <TableCell style={{ textAlign: 'center' }}>
-                              {new Date(trackingItem.date).toLocaleDateString()}
+                              {new Date(trackingItem.date).toLocaleDateString('es')}
                             </TableCell>
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
@@ -465,12 +465,12 @@ const Tracking = () => {
                     <TableBody>
                       {tracking?.data
                         .filter(filterByDateRange)
-                        .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                         .map((trackingItem: any) => (
                           <TableRow key={trackingItem}>
                             <TableCell style={{ textAlign: 'center' }}>
-                              {new Date(trackingItem.date).toLocaleDateString()}
+                              {new Date(trackingItem.date).toLocaleDateString('es')}
                             </TableCell>
                             <TableCell style={{ justifyContent: 'center' }}>
                               <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>

@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
-
+import { differenceInYears } from 'date-fns'
 
 // ** Icon Imports
 
@@ -66,6 +66,10 @@ const MyStudentProfile = () => {
   const route = useRouter();
   const [users, setUsers] = useState<UsersType>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const fechaNacimiento = new Date(users.birthdate);
+  const edad = differenceInYears(new Date(), fechaNacimiento);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -184,9 +188,13 @@ const MyStudentProfile = () => {
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Altura:</Typography>
                   <Typography variant='body2'>{users.height}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Peso:</Typography>
                   <Typography variant='body2'>{users.weight}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Edad:</Typography>
+                  <Typography variant='body2'>{edad}</Typography>
                 </Box>
               </Box>
             </CardContent>
