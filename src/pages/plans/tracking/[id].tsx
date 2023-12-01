@@ -357,8 +357,9 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
+                        {!isTrainer && <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>}
                       </TableRow>
+
                     </TableHead>
                     <TableBody>
                       {tracking?.data
@@ -376,9 +377,9 @@ const Tracking = () => {
                                 <Typography sx={{ ml: 1 }}>{labels[trackingItem.number]}</Typography>
                               </Box>
                             </TableCell>
-                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                            {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
                               <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
-                            </TableCell>
+                            </TableCell>}
 
                           </TableRow>
                         ))}
@@ -407,7 +408,7 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
+                        {!isTrainer && <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -427,9 +428,9 @@ const Tracking = () => {
                                 <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.difficult]}</Typography>
                               </Box>
                             </TableCell>
-                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                            {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
                               <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
-                            </TableCell>
+                            </TableCell>}
                           </TableRow>
                         ))}
                     </TableBody>
@@ -457,7 +458,7 @@ const Tracking = () => {
                       <TableRow>
                         <TableCell style={{ textAlign: 'center' }}>Historial</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>Puntuación</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>
+                        {!isTrainer && <TableCell style={{ textAlign: 'center' }}>Acciones</TableCell>}
 
                       </TableRow>
                     </TableHead>
@@ -477,9 +478,9 @@ const Tracking = () => {
                                 <Typography sx={{ ml: 1 }}>{labelsDifficult[trackingItem.difficult]}</Typography>
                               </Box>
                             </TableCell>
-                            <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
+                            {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
                               <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
-                            </TableCell>
+                            </TableCell>}
                           </TableRow>
                         ))}
                     </TableBody>
