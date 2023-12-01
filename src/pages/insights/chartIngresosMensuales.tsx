@@ -71,7 +71,12 @@ const ChartIngresosMensualesEntrenador = ({ direction, data, total }: Props) => 
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
             <LineChart height={350} data={data} style={{ direction }} margin={{ left: -0 }}>
-              <CartesianGrid />
+              <CartesianGrid
+                stroke="#6D6D6D"
+                strokeDasharray="5"
+                vertical={false}
+                horizontal
+              />
               <XAxis dataKey='name' reversed={direction === 'rtl'} />
               <YAxis orientation={direction === 'rtl' ? 'right' : 'left'} />
               <Tooltip content={CustomTooltip} />

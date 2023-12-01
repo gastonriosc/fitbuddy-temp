@@ -71,10 +71,11 @@ const ChartNuevosUsuarios = ({ series, total }: Props) => {
     // ],
     grid: {
       show: true,
+
       borderColor: '#6D6D6D',
       strokeDashArray: 5,
       padding: {
-        top: -15,
+        top: -5,
         left: 10,
         right: 10
       }
