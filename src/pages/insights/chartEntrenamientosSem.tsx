@@ -182,7 +182,7 @@ const ChartNuevosUsuarios = ({ insights }: Props) => {
     <>
       <Card>
         <CardHeader
-          title={`Entrenamientos por semama`}
+          title={`Entrenamientos por semana`}
           subheader={`Total de ${total} entrenamientos`}
           titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
           subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}

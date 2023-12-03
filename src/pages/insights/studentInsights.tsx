@@ -271,10 +271,10 @@ const StudentInsight = () => {
         </Card>
         <Box sx={{}}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'column', lg: 'row' } }}>
-            <Box sx={{ width: { xs: '100%', md: '100%', lg: '80%' }, padding: 1, mt: 4 }}>
+            <Box sx={{ width: { xs: '100%', md: '100%', lg: '75%' }, padding: 1, mt: 4 }}>
               <ChartRegistroPesos direction='ltr' data={series.data} dataPeso={userPeso}></ChartRegistroPesos>
             </Box>
-            <Box sx={{ width: { xs: '100%', md: '100%', lg: '20%' }, padding: 1, mt: 4, height: '463px' }}>
+            <Box sx={{ width: { xs: '100%', md: '100%', lg: '25%' }, padding: 1, mt: 4, height: '463px' }}>
               <Card sx={{ height: '463px' }}>
                 <TableContainer>
                   <Table>
