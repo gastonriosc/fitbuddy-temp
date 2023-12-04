@@ -475,9 +475,11 @@ const Register = () => {
                         name='height'
                         type='number'
                         onBlur={onBlur}
-                        onChange={onChange}
                         error={Boolean(errors.height)}
                         placeholder='1.80'
+                        onChange={(e) => {
+                          onChange(e.target.value === '' ? undefined : e.target.value);
+                        }}
                       />
                     )}
                   />
@@ -501,9 +503,11 @@ const Register = () => {
                         type='number'
                         name='weight'
                         onBlur={onBlur}
-                        onChange={onChange}
                         error={Boolean(errors.weight)}
                         placeholder='Kg'
+                        onChange={(e) => {
+                          onChange(e.target.value === '' ? undefined : e.target.value);
+                        }}
                       />
                     )}
                   />

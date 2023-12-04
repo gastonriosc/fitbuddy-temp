@@ -38,9 +38,9 @@ const NewSubsPopUp = (props: Props) => {
   const { subs, setSubs } = props;
   const schema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    amount: yup.number().required("Precio es un campo numérico y obligatorio").min(0, "Precio debe ser mayor a 0"),
-    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    daysPerWeek: yup.number().required("Es obligatorio completar la cantidad de dias a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7")
+    amount: yup.number().integer("El precio no puede contener números decimales").required("Precio es un campo obligatorio").min(0, "El precio no puede ser negativo"),
+    description: yup.string().required("Descripción es un campo obligatorio").max(300, "Debe tener 300 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    daysPerWeek: yup.number().integer("La cantidad de días no puede contener decimales").required("Es obligatorio completar la cantidad de días a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7")
   })
 
   const {
@@ -50,9 +50,9 @@ const NewSubsPopUp = (props: Props) => {
   } = useForm<FormData>({
     defaultValues: {
       name: '',
-      amount: 0,
+      amount: undefined,
       description: '',
-      daysPerWeek: 1,
+      daysPerWeek: undefined,
     },
     mode: 'onBlur',
     resolver: yupResolver(schema),
@@ -173,8 +173,10 @@ const NewSubsPopUp = (props: Props) => {
                     type='number'
                     value={value}
                     onBlur={onBlur}
-                    onChange={onChange}
                     error={Boolean(errors.amount)}
+                    onChange={(e) => {
+                      onChange(e.target.value === '' ? undefined : e.target.value);
+                    }}
                   />
                 )}
               />
@@ -196,8 +198,10 @@ const NewSubsPopUp = (props: Props) => {
                     type='number'
                     value={value}
                     onBlur={onBlur}
-                    onChange={onChange}
                     error={Boolean(errors.daysPerWeek)}
+                    onChange={(e) => {
+                      onChange(e.target.value === '' ? undefined : e.target.value);
+                    }}
                   />
                 )}
               />

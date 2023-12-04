@@ -52,10 +52,20 @@ interface ColorsType {
 interface Subscription {
   _id: string
   name: string
-  amount: string
+  amount: number
   description: string
   daysPerWeek: number
   deleted: boolean
+  intensity: string
+  following: string
+}
+
+interface FormData {
+  _id: number | string
+  name: string
+  amount: number
+  description: string
+  daysPerWeek: number
   intensity: string
   following: string
 }
@@ -90,15 +100,6 @@ const statusColors: ColorsType = {
 }
 
 const MyProfile = () => {
-  interface FormData {
-    _id: number | string
-    name: string
-    amount: number
-    description: string
-    daysPerWeek: number
-    intensity: string
-    following: string
-  }
 
   const schema = yup.object().shape({
     description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
@@ -106,9 +107,9 @@ const MyProfile = () => {
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    amount: yup.number().required("Precio es un campo numérico y obligatorio").min(0, "Precio debe ser mayor a 0"),
+    amount: yup.number().integer("El precio no puede contener números decimales").required("Precio es un campo obligatorio").min(0, "El precio no puede ser negativo"),
     description: yup.string().required("Descripción es un campo obligatorio").max(300, "Debe tener 300 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    daysPerWeek: yup.number().required("Es obligatorio completar la cantidad de dias a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7"),
+    daysPerWeek: yup.number().integer("La cantidad de días no puede contener decimales").required("Es obligatorio completar la cantidad de días a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7"),
     intensity: yup.string().required("Es obligatorio completar la intensidad que tiene el entrenamiento."),
     following: yup.string().required("Es obligatorio completar el seguimiento que se ofrece con dicho plan.")
   })
@@ -141,7 +142,7 @@ const MyProfile = () => {
   const edad = differenceInYears(new Date(), fechaNacimiento);
 
   const handlePlansClose = () => setOpenPlans(false)
-  const handleEditClick = (sub: any) => {
+  const handleEditClick = (sub: Subscription) => {
     setValue("name", sub.name)
     setValue("amount", sub.amount)
     setValue("description", sub.description)
@@ -154,11 +155,11 @@ const MyProfile = () => {
 
   const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
   const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
-  const handleOpenDeleteSubscriptionPopUp = (sub: any) => {
+  const handleOpenDeleteSubscriptionPopUp = (sub: Subscription) => {
     setDeletedSubs(sub)
     setOpenDeleteSubs(true)
   }
-  const handleSendSubsRequest = (sub: any) => {
+  const handleSendSubsRequest = (sub: Subscription) => {
     setSendSubsRequest(sub)
     setOpenSuscriptionRequest(true)
   }
@@ -187,9 +188,9 @@ const MyProfile = () => {
   } = useForm<FormData>({
     defaultValues: {
       name: '',
-      amount: 0,
+      amount: undefined,
       description: '',
-      daysPerWeek: 1.,
+      daysPerWeek: undefined,
       intensity: '',
       following: '',
     },
@@ -521,7 +522,7 @@ const MyProfile = () => {
                       }}
                     >
                       <form noValidate autoComplete='off' onSubmit={updateHandleSubmit(updateSubscription)}>
-
+                        {/* Nombre */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='name'
@@ -529,7 +530,6 @@ const MyProfile = () => {
                             rules={{ required: true }}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-
                                 label='Nombre'
                                 name='name'
                                 value={value}
@@ -546,20 +546,23 @@ const MyProfile = () => {
                           )}
                         </FormControl>
 
+                        {/* Precio */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='amount'
                             control={updateControl}
                             rules={{ required: true }}
-                            render={({ field: { onChange, onBlur, value } }) => (
+                            render={({ field: { value, onChange, onBlur } }) => (
                               <TextField
                                 label='Precio'
+                                value={value}
                                 name='amount'
                                 type='number'
-                                value={value}
                                 onBlur={onBlur}
-                                onChange={onChange}
                                 error={Boolean(updateErrors.amount)}
+                                onChange={(e) => {
+                                  onChange(e.target.value === '' ? undefined : e.target.value);
+                                }}
                               />
                             )}
                           />
@@ -569,23 +572,24 @@ const MyProfile = () => {
                             </FormHelperText>
                           )}
                         </FormControl>
+
+                        {/* Dias por semana */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='daysPerWeek'
                             control={updateControl}
                             rules={{ required: true }}
-
-                            // defaultValue={1}
-                            render={({ field: { onChange, onBlur, value } }) => (
+                            render={({ field: { value, onChange, onBlur } }) => (
                               <TextField
                                 label='Días por semana'
                                 name='daysPerWeek'
                                 type='number'
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={onChange}
                                 error={Boolean(updateErrors.daysPerWeek)}
-                                inputProps={{ min: 1, max: 7 }}
+                                onChange={(e) => {
+                                  onChange(e.target.value === '' ? undefined : e.target.value);
+                                }}
                               />
                             )}
                           />
@@ -596,6 +600,7 @@ const MyProfile = () => {
                           )}
                         </FormControl>
 
+                        {/* Intensidad */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='intensity'
@@ -629,6 +634,7 @@ const MyProfile = () => {
                           )}
                         </FormControl>
 
+                        {/* Seguimiento */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='following'
