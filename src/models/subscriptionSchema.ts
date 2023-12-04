@@ -21,6 +21,14 @@ const subscriptionSchema = new mongoose.Schema({
     type: Number,
     require: true
   },
+  intensity: {
+    type: String,
+    require: true
+  },
+  following: {
+    type: String,
+    require: true
+  },
   deleted: {
     type: Boolean,
     require: true
