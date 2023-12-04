@@ -416,7 +416,7 @@ const MyProfile = () => {
           <Grid container spacing={2}>
             {subs.map((sub: Subscription, index) => (
               <Grid item sm={12} md={4} key={index} sx={{ mb: '20px' }}>
-                <Card sx={{ boxShadow: 'none', minHeight: { md: '510px', lg: '570px', xl: '500px' }, border: theme => `2px solid ${theme.palette.primary.main}` }}>
+                <Card sx={{ boxShadow: 'none', minHeight: { md: '560px', lg: '570px', xl: '500px' }, border: theme => `2px solid ${theme.palette.primary.main}` }}>
                   <CardContent
                     sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between', }}
                   >
@@ -440,7 +440,7 @@ const MyProfile = () => {
                   </CardContent>
 
                   <CardContent>
-                    <Box sx={{ mt: 4, minHeight: { md: '290px', lg: '400px', xl: '320px' } }}>
+                    <Box sx={{ mt: 4, minHeight: { md: '335px', lg: '400px', xl: '320px' } }}>
                       <Box>
                         <ul>
                           <li><b  >{sub.daysPerWeek}</b> dias por semana.</li>
