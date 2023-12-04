@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next/types'
 import connect from 'src/lib/mongodb'
 import PlanModel from 'src/models/planSchema'
 import mongoose from 'mongoose'
+import SubsRequest from 'src/models/subsRequestSchema'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await connect()
@@ -69,11 +70,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         }
       ])
+      const subsMasSolicitadas = await SubsRequest.aggregate([
+        {
+          $match: {
+            trainerId: objectId
+          }
+        },
+        {
+          $lookup: {
+            from: 'subscriptions',
+            localField: 'subscriptionId',
+            foreignField: '_id',
+            as: 'subscription_info'
+          }
+        },
+        {
+          $unwind: '$subscription_info'
+        },
+        {
+          $project: {
+            date: 1,
+            subscriptionId: 1,
+            subsName: '$subscription_info.name'
+          }
+        }
+      ])
 
-      if (montosMensuales && montosAnuales) {
+      if (montosMensuales && montosAnuales && subsMasSolicitadas) {
         const responseData = {
           montosMensuales: montosMensuales,
-          montosAnuales: montosAnuales
+          montosAnuales: montosAnuales,
+          subsMasSolicitadas: subsMasSolicitadas
         }
 
         return res.status(200).json(responseData)

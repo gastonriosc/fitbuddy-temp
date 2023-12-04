@@ -17,7 +17,7 @@ import Icon from 'src/@core/components/icon'
 import CustomChip from 'src/@core/components/mui/chip'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
-import CustomInput from '../../views/forms/form-elements/pickers/PickersCustomInput'
+import CustomInput from '../../../views/forms/form-elements/pickers/PickersCustomInput'
 
 
 interface Props {

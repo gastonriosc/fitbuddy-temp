@@ -12,8 +12,8 @@ import { Box } from '@mui/material'
 import { DateType } from 'src/types/forms/reactDatepickerTypes';
 
 // ** Customs
-import ChartIngresosMensualesEntrenador from '../insights/chartIngresosMensuales'
-import ChartIngresosAnualesEntrenador from '../insights/chartIngresosAnuales'
+import ChartIngresosMensualesEntrenador from '../insights/charts/chartIngresosMensuales'
+import ChartIngresosAnualesEntrenador from '../insights/charts/chartIngresosAnuales'
 import ChartNuevosUsuarios from './chartNuevosUsuarios'
 
 interface User {

@@ -3,12 +3,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { Controller, useForm, SubmitHandler, FieldValues } from 'react-hook-form'
-import ChartRegistroPesos from './chartRegistroPesos'
+import ChartRegistroPesos from './charts/chartRegistroPesos'
 
 // ** MUI Imports
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
-import { useTheme } from '@mui/material/styles'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 
@@ -25,7 +24,7 @@ import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableR
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
-import { format, addDays, startOfWeek, isToday } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import TrackingPopUp from '../plans/tracking/trackingPopUp'
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -51,9 +50,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-import ChartEntrenamientosSemanales from './chartEntrenamientosSem'
+import ChartEntrenamientosSemanales from './charts/chartEntrenamientosSem'
 import CustomInput from '../../views/forms/form-elements/pickers/PickersCustomInput'
-import ChartNuevo from './chartNuevo'
 
 interface StudentInsightItem {
   _id: string;
@@ -93,8 +91,6 @@ const StudentInsight = () => {
   });
 
   const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
-  const [date, setDate] = useState<DateType>(new Date())
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
   const [insights, setInsights] = useState<string[]>([])
   const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)

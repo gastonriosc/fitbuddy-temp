@@ -10,7 +10,7 @@ import { ApexOptions } from 'apexcharts'
 
 // ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
-import { startOfWeek, addDays, addWeeks, format } from 'date-fns';
+import { addDays, addWeeks, format } from 'date-fns';
 
 // ** Util Import
 
