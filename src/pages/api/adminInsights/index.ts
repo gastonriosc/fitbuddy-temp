@@ -49,14 +49,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ])
       const montosAnuales = await PlanModel.aggregate([
         {
-          $match: {
-            date: {
-              $gte: startDateA,
-              $lte: endDateA
-            }
-          }
-        },
-        {
           $lookup: {
             from: 'subsrequests',
             localField: 'subsRequestId',

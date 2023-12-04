@@ -7,6 +7,7 @@ import { Box } from '@mui/system'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
+import { DateType } from 'src/types/forms/reactDatepickerTypes';
 
 // ** Customs
 import ChartIngresosAnualesEntrenador from './chartIngresosAnuales'
@@ -21,7 +22,11 @@ interface amount {
 const TrainerInsights = () => {
   const [isLoading, setIsLoading] = useState(true);
   const route = useRouter();
+  const [year, setYear] = useState<DateType>(new Date());
 
+  const updateYear = (newYear: DateType) => {
+    setYear(newYear);
+  };
 
 
 
@@ -48,7 +53,7 @@ const TrainerInsights = () => {
 
   //!ANUAL
   const [montosAnuales, setMontosAnuales] = useState<amount[] | undefined>();
-  const obtenerDatosAnuales = (montosAnuales: amount[] | undefined) => {
+  const obtenerDatosAnuales = (montosAnuales: amount[] | undefined, year: number | undefined) => {
     const meses = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -56,6 +61,7 @@ const TrainerInsights = () => {
 
     const dataAnual = meses.map((mes, index) => {
       const totalMes = (montosAnuales ?? [])
+        .filter((item) => new Date(item.date).getFullYear() === year)
         .filter((item) => new Date(item.date).getMonth() === index)
         .reduce((acc, item) => acc + item.amount, 0);
 
@@ -64,8 +70,8 @@ const TrainerInsights = () => {
 
     return dataAnual;
   };
-  const dataAnual = obtenerDatosAnuales(montosAnuales);
-  const totalAnual = (montosAnuales ?? []).reduce((acc, item) => acc + item.amount, 0);
+  const dataAnual = obtenerDatosAnuales(montosAnuales, year?.getFullYear());
+  const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === year?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
 
 
 
@@ -112,7 +118,7 @@ const TrainerInsights = () => {
           <ChartIngresosMensualesEntrenador direction='ltr' data={dataMensual} total={totalMensual}></ChartIngresosMensualesEntrenador>
         </Box>
         <Box>
-          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual}></ChartIngresosAnualesEntrenador>
+          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual} year={year} updateYear={updateYear}></ChartIngresosAnualesEntrenador>
         </Box>
       </Grid >
     )

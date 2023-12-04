@@ -9,6 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
 import { Box } from '@mui/material'
+import { DateType } from 'src/types/forms/reactDatepickerTypes';
 
 // ** Customs
 import ChartIngresosMensualesEntrenador from '../insights/chartIngresosMensuales'
@@ -34,6 +35,13 @@ const AdminInsights = () => {
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
+  const [year, setYear] = useState<DateType>(new Date());
+
+  const updateYear = (newYear: DateType) => {
+    setYear(newYear);
+  };
+
+  console.log('year desde index:', year)
 
   //! MONTOS MENSUALES
   const [montosMensuales, setMontosMensuales] = useState<amount[] | undefined>()
@@ -56,7 +64,7 @@ const AdminInsights = () => {
 
   //! MONTOS ANUALES
   const [montosAnuales, setMontosAnuales] = useState<amount[] | undefined>();
-  const obtenerDatosAnuales = (montosAnuales: amount[] | undefined) => {
+  const obtenerDatosAnuales = (montosAnuales: amount[] | undefined, year: number | undefined) => {
     const meses = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -64,6 +72,7 @@ const AdminInsights = () => {
 
     const dataAnual = meses.map((mes, index) => {
       const totalMes = (montosAnuales ?? [])
+        .filter((item) => new Date(item.date).getFullYear() === year)
         .filter((item) => new Date(item.date).getMonth() === index)
         .reduce((acc, item) => acc + item.amount, 0);
 
@@ -72,8 +81,9 @@ const AdminInsights = () => {
 
     return dataAnual;
   };
-  const dataAnual = obtenerDatosAnuales(montosAnuales);
-  const totalAnual = (montosAnuales ?? []).reduce((acc, item) => acc + item.amount, 0);
+  const dataAnual = obtenerDatosAnuales(montosAnuales, year?.getFullYear());
+  const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === year?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
+  console.log(montosAnuales)
 
   //! USUARIOS ANUALES
   const monthlyStats = {
@@ -155,7 +165,7 @@ const AdminInsights = () => {
           <ChartNuevosUsuarios series={series} total={totalUsuarios}></ChartNuevosUsuarios>
         </Box>
         <Box sx={{ mt: 5 }}>
-          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual}></ChartIngresosAnualesEntrenador>
+          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual} year={year} updateYear={updateYear}></ChartIngresosAnualesEntrenador>
         </Box>
       </Grid>
     )

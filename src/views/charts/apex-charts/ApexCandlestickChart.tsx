@@ -22,6 +22,8 @@ import { DateType } from 'src/types/forms/reactDatepickerTypes'
 
 // ** Component Import
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import DatePicker from 'react-datepicker'
+import CustomInput from './PickersCustomInput'
 
 const candlestickColors = {
   series1: '#28c76f',

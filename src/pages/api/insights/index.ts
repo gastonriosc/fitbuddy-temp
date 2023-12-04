@@ -15,8 +15,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const startDateM = new Date(currentYear, currentMonth, 1)
     const endDateM = new Date(currentYear, currentMonth + 1, 0)
-    const startDateA = new Date(currentYear, 0, 1)
-    const endDateA = new Date(currentYear, 11, 31)
 
     try {
       const montosMensuales = await PlanModel.aggregate([
@@ -50,11 +48,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const montosAnuales = await PlanModel.aggregate([
         {
           $match: {
-            trainerId: objectId,
-            date: {
-              $gte: startDateA,
-              $lte: endDateA
-            }
+            trainerId: objectId
           }
         },
         {
