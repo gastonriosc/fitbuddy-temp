@@ -35,13 +35,16 @@ const AdminInsights = () => {
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const [year, setYear] = useState<DateType>(new Date());
+  const [yearIngresos, setYearIngresos] = useState<DateType>(new Date());
+  const [yearUsuarios, setYearUsuarios] = useState<DateType>(new Date());
 
-  const updateYear = (newYear: DateType) => {
-    setYear(newYear);
+  const updateYearIngresos = (newYear: DateType) => {
+    setYearIngresos(newYear);
   };
 
-  console.log('year desde index:', year)
+  const updateYearUsuarios = (newYear: DateType) => {
+    setYearUsuarios(newYear);
+  };
 
   //! MONTOS MENSUALES
   const [montosMensuales, setMontosMensuales] = useState<amount[] | undefined>()
@@ -81,41 +84,48 @@ const AdminInsights = () => {
 
     return dataAnual;
   };
-  const dataAnual = obtenerDatosAnuales(montosAnuales, year?.getFullYear());
-  const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === year?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
+  const dataAnual = obtenerDatosAnuales(montosAnuales, yearIngresos?.getFullYear());
+  const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === yearIngresos?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
   console.log(montosAnuales)
 
   //! USUARIOS ANUALES
+  console.log(newUsers)
   const monthlyStats = {
     Entrenadores: Array(12).fill(0),
     Alumnos: Array(12).fill(0),
   };
 
-  newUsers?.forEach((user: User) => {
-    const registrationDate = new Date(user.registrationDate);
+  const obtenerNuevosUsuarios = (users: User[] | undefined, year: DateType | undefined) => {
+    users?.forEach((user: User) => {
+      const registrationDate = new Date(user.registrationDate);
 
-    const userMonth = registrationDate.getMonth() + 1;
-    const userYear = registrationDate.getFullYear();
+      const userMonth = registrationDate.getMonth() + 1;
+      const userYear = registrationDate.getFullYear();
 
-    if (userYear === currentYear && userMonth <= currentMonth) {
-      if (user.role === 'Entrenador') {
-        monthlyStats.Entrenadores[userMonth - 1]++;
-      } else if (user.role === 'Alumno') {
-        monthlyStats.Alumnos[userMonth - 1]++;
+      if (userYear === year?.getFullYear() && userMonth <= currentMonth) {
+        if (user.role === 'Entrenador') {
+          monthlyStats.Entrenadores[userMonth - 1]++;
+        } else if (user.role === 'Alumno') {
+          monthlyStats.Alumnos[userMonth - 1]++;
+        }
       }
-    }
-  });
+    });
 
-  const series = [
-    {
-      name: 'Entrenadores',
-      data: monthlyStats.Entrenadores,
-    },
-    {
-      name: 'Alumnos',
-      data: monthlyStats.Alumnos,
-    },
-  ];
+    const series = [
+      {
+        name: 'Entrenadores',
+        data: monthlyStats.Entrenadores,
+      },
+      {
+        name: 'Alumnos',
+        data: monthlyStats.Alumnos,
+      },
+    ];
+
+    return series
+  }
+
+  const seriesUsuarios = obtenerNuevosUsuarios(newUsers, yearUsuarios)
   const totalEntrenadores = monthlyStats.Entrenadores.reduce((acc, count) => acc + count, 0);
   const totalAlumnos = monthlyStats.Alumnos.reduce((acc, count) => acc + count, 0);
   const totalUsuarios = totalEntrenadores + totalAlumnos;
@@ -162,10 +172,10 @@ const AdminInsights = () => {
           <ChartIngresosMensualesEntrenador direction='ltr' data={dataMensual} total={totalMensual}></ChartIngresosMensualesEntrenador>
         </Box>
         <Box sx={{ mt: 5 }}>
-          <ChartNuevosUsuarios series={series} total={totalUsuarios}></ChartNuevosUsuarios>
+          <ChartNuevosUsuarios series={seriesUsuarios} total={totalUsuarios} year={yearUsuarios} updateYear={updateYearUsuarios}></ChartNuevosUsuarios>
         </Box>
         <Box sx={{ mt: 5 }}>
-          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual} year={year} updateYear={updateYear}></ChartIngresosAnualesEntrenador>
+          <ChartIngresosAnualesEntrenador direction='ltr' data={dataAnual} total={totalAnual} year={yearIngresos} updateYear={updateYearIngresos}></ChartIngresosAnualesEntrenador>
         </Box>
       </Grid>
     )

@@ -3,12 +3,17 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { useTheme } from '@mui/material/styles'
+import Box from '@mui/material/Box'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
 // ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import DatePicker from 'react-datepicker'
+import { DateType } from 'src/types/forms/reactDatepickerTypes'
+import CustomInput from '../../views/forms/form-elements/pickers/PickersCustomInput'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
 // ** Util Import
 
@@ -18,11 +23,14 @@ interface Props {
     data: number[];
   }[];
   total: number
+  year: DateType
+  updateYear: (newYear: DateType) => void;
 }
 
-const ChartNuevosUsuarios = ({ series, total }: Props) => {
+const ChartNuevosUsuarios = ({ series, total, year, updateYear }: Props) => {
   // ** Hook
-  const currentYear = new Date().getFullYear();
+  const titleYear = year?.getFullYear()
+
   const theme = useTheme()
   const columnColors = {
     series1: '#826af9',
@@ -124,10 +132,26 @@ const ChartNuevosUsuarios = ({ series, total }: Props) => {
     <>
       <Card>
         <CardHeader
-          title={`Nuevos usuarios en ${currentYear}`}
+          title={`Nuevos usuarios en ${titleYear}`}
           subheader={`Total de ${total} nuevos usuarios en este año`}
           titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
           subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
+          action={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+                <DatePicker
+                  showYearPicker
+                  selected={year}
+                  id='year-picker'
+                  dateFormat='yyyy'
+                  maxDate={new Date()}
+                  onChange={(date: Date) => updateYear(date)}
+                  customInput={<CustomInput label='Selecciona el año' />}
+                />
+              </DatePickerWrapper>
+            </Box>
+
+          }
         />
         <CardContent>
           <ReactApexcharts type='bar' height={290} options={options} series={series} />
