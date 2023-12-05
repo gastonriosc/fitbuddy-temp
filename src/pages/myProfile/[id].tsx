@@ -452,7 +452,7 @@ const MyProfile = () => {
                   </CardContent>
 
                   <CardContent>
-                    <Box sx={{ mt: 4, minHeight: { md: '335px', lg: '400px', xl: '320px' } }}>
+                    <Box sx={{ mt: 4, minHeight: { md: '335px', lg: '385px', xl: '320px' } }}>
                       <Box>
                         <ul>
                           <li><b  >{sub.daysPerWeek}</b> dias por semana.</li>
