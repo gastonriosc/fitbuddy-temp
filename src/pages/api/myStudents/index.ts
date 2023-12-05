@@ -60,6 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               subscriptionId: 1,
               date: 1,
               amount: 1,
+              disease: 1,
               studentName: '$student_info.name',
               subscriptionName: '$subscription_info.name',
               avatar: '$student_info.avatar'

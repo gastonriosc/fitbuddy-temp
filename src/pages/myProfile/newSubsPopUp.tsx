@@ -19,10 +19,14 @@ import DialogActions from '@mui/material/DialogActions'
 import Icon from 'src/@core/components/icon'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { InputLabel, MenuItem, Select } from '@mui/material'
 
 type Props = {
   addSubscription: boolean
   setAddSubscription: (val: boolean) => void
+  subs: any
+  setSubs: (val: any) => void
+
 }
 
 const NewSubsPopUp = (props: Props) => {
@@ -33,14 +37,18 @@ const NewSubsPopUp = (props: Props) => {
     amount: number
     description: string
     daysPerWeek: number
+    intensity: string
+    following: string
   }
 
-  const { subs, setSubs } = props;
+  const { setSubs } = props;
   const schema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
     amount: yup.number().integer("El precio no puede contener números decimales").required("Precio es un campo obligatorio").min(0, "El precio no puede ser negativo"),
     description: yup.string().required("Descripción es un campo obligatorio").max(300, "Debe tener 300 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    daysPerWeek: yup.number().integer("La cantidad de días no puede contener decimales").required("Es obligatorio completar la cantidad de días a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7")
+    daysPerWeek: yup.number().integer("La cantidad de días no puede contener decimales").required("Es obligatorio completar la cantidad de días a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7"),
+    intensity: yup.string().required("Intensidad es un campo obligatorio"),
+    following: yup.string().required("Seguimiento es un campo obligatorio")
   })
 
   const {
@@ -53,6 +61,8 @@ const NewSubsPopUp = (props: Props) => {
       amount: undefined,
       description: '',
       daysPerWeek: undefined,
+      intensity: '',
+      following: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(schema),
@@ -75,14 +85,14 @@ const NewSubsPopUp = (props: Props) => {
   const createSubscription: SubmitHandler<FieldValues> = async (data) => {
     const trainerId = route.query.id
     const deleted = false;
-    const { name, amount, description, daysPerWeek } = data;
+    const { name, amount, description, daysPerWeek, intensity, following } = data;
     try {
       const res = await fetch('/api/subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, amount, description, trainerId, daysPerWeek, deleted })
+        body: JSON.stringify({ name, amount, description, trainerId, daysPerWeek, intensity, following, deleted })
       })
       if (res.status == 200) {
         handleAddSubscriptionClose();
@@ -208,6 +218,74 @@ const NewSubsPopUp = (props: Props) => {
               {errors.daysPerWeek && (
                 <FormHelperText sx={{ color: 'error.main' }}>
                   {errors.daysPerWeek.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+
+            {/* Intensidad */}
+            <FormControl fullWidth sx={{ mb: 4 }}>
+              <Controller
+                name='intensity'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <InputLabel>Intensidad </InputLabel>
+                    <Select
+                      label='Intensidad'
+                      name='intensity'
+                      type='string'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.intensity)}
+                    >
+                      {/* Opciones de MenuItem */}
+                      <MenuItem value='baja'>Baja</MenuItem>
+                      <MenuItem value='media'>Media</MenuItem>
+                      <MenuItem value='alta'>Alta</MenuItem>
+
+                    </Select>
+                  </>
+                )}
+              />
+              {errors.intensity && (
+                <FormHelperText sx={{ color: 'error.main' }}>
+                  {errors.intensity.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+
+            {/* Seguimiento */}
+            <FormControl fullWidth sx={{ mb: 4 }}>
+              <Controller
+                name='following'
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <InputLabel>Seguimiento </InputLabel>
+
+                    <Select
+                      label='Seguimiento'
+                      name='following'
+                      type='string'
+                      value={value}
+                      onBlur={onBlur}
+                      onChange={onChange}
+                      error={Boolean(errors.following)}
+                    >
+                      {/* Opciones de MenuItem */}
+                      <MenuItem value='bajo'>Bajo</MenuItem>
+                      <MenuItem value='intermedio'>Intermedio</MenuItem>
+                      <MenuItem value='alto'>Alto</MenuItem>
+                    </Select>
+                  </>
+                )}
+              />
+              {errors.following && (
+                <FormHelperText sx={{ color: 'error.main' }}>
+                  {errors.following.message}
                 </FormHelperText>
               )}
             </FormControl>

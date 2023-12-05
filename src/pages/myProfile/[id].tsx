@@ -58,6 +58,7 @@ interface Subscription {
   deleted: boolean
   intensity: string
   following: string
+  disease: string
 }
 
 interface FormData {
@@ -68,6 +69,7 @@ interface FormData {
   daysPerWeek: number
   intensity: string
   following: string
+  disease: string
 }
 
 const data: UsersType = {
@@ -103,6 +105,7 @@ const MyProfile = () => {
 
   const schema = yup.object().shape({
     description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    disease: yup.string().required("Dolencias es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
   })
 
   const updateSchema = yup.object().shape({
@@ -149,6 +152,7 @@ const MyProfile = () => {
     setValue("daysPerWeek", sub.daysPerWeek)
     setValue("intensity", sub.intensity)
     setValue("following", sub.following)
+    setValue("disease", sub.disease)
     setEditSubscription(sub);
     setOpenPlans(true);
   };
@@ -175,6 +179,7 @@ const MyProfile = () => {
   } = useForm<FormData>({
     defaultValues: {
       description: '',
+      disease: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(schema),
@@ -193,6 +198,7 @@ const MyProfile = () => {
       daysPerWeek: undefined,
       intensity: '',
       following: '',
+      disease: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(updateSchema),
@@ -232,7 +238,7 @@ const MyProfile = () => {
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
-    let name, amount, description, daysPerWeek, intensity, following;
+    let name, amount, description, daysPerWeek, intensity, following, disease;
     let deleted;
 
     if (openPlans) {
@@ -242,6 +248,7 @@ const MyProfile = () => {
       daysPerWeek = data.daysPerWeek
       intensity = data.intensity
       following = data.following
+      disease = data.disease
       deleted = false;
 
     }
@@ -252,6 +259,7 @@ const MyProfile = () => {
       daysPerWeek = deletedSubs?.daysPerWeek
       intensity = deletedSubs?.intensity
       following = deletedSubs?.following
+      disease = deletedSubs?.disease
       deleted = true;
     }
 
@@ -270,7 +278,7 @@ const MyProfile = () => {
           setPopUp(true)
           if (subsId) {
 
-            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, daysPerWeek: daysPerWeek, intensity: intensity, following: following, deleted: deleted };
+            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, daysPerWeek: daysPerWeek, disease: disease, intensity: intensity, following: following, deleted: deleted };
             setSubs((prevSubs) => prevSubs.map((sub) => (sub._id === editedSubscription._id ? editedSubscription : sub)));
           }
 
@@ -297,10 +305,13 @@ const MyProfile = () => {
 
   const sendSubscriptionRequest: SubmitHandler<FieldValues> = async (data) => {
     const { description } = data;
+    console.log(description)
     const status = "pendiente"
     const trainerId = route.query.id
     const studentId = session?.user._id
     const subscriptionId = sendSubsRequest?._id
+    const { disease } = data
+    console.log(disease)
     const amount = sendSubsRequest?.amount
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
@@ -311,7 +322,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, date: formattedDate })
+        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, disease, date: formattedDate })
       })
       if (res.status == 200) {
         hanldeSubscriptionRequest()
@@ -762,7 +773,7 @@ const MyProfile = () => {
                         rows={6}
                         multiline
                         id='textarea-outlined-static'
-                        label='Descripción'
+                        label='¿Qué objetivos buscás alcanzar?'
                         placeholder='¿Qué objetivos buscás alcanzar?'
                         name='description'
                         value={value}
@@ -775,6 +786,32 @@ const MyProfile = () => {
                   {errors.description && (
                     <FormHelperText sx={{ color: 'error.main' }}>
                       {errors.description.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='disease'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextField
+                        rows={2}
+                        multiline
+                        id='textarea-outlined-static'
+                        label='Dolencias'
+                        placeholder='Por favor, indique si tiene alguna dolencia, lesión, o enfermedad que debamos tener en cuenta.'
+                        name='disease'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.disease)}
+                      />
+                    )}
+                  />
+                  {errors.disease && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.disease.message}
                     </FormHelperText>
                   )}
                 </FormControl>
