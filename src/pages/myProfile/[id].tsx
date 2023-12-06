@@ -455,7 +455,7 @@ const MyProfile = () => {
                     <Box sx={{ mt: 4, minHeight: { md: '335px', lg: '385px', xl: '320px' } }}>
                       <Box>
                         <ul>
-                          <li><b  >{sub.daysPerWeek}</b> dias por semana.</li>
+                          <li><b>{sub.daysPerWeek}{sub.daysPerWeek == 1 ? " día" : " días"}</b> por semana.</li>
                         </ul>
                         <ul>
                           <li>Intensidad: <b> {sub?.intensity?.toUpperCase()} </b> </li>
