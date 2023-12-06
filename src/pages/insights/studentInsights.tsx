@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // ** React Imports
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -184,6 +185,18 @@ const StudentInsight = () => {
     const studentId = route.query.id
     const { date, weight } = data;
     let requestBody;
+
+    const isDuplicate = dataPeso?.data.some((item: any) => {
+      return formatDate(new Date(item.date)) === formatDate(date);
+    });
+
+    if (isDuplicate) {
+      setIsDuplicateDate(true);
+
+      return;
+    } else {
+      setIsDuplicateDate(false);
+    }
     if (openDeleteRegistro) {
       requestBody = {
         id: studentId,
@@ -244,6 +257,8 @@ const StudentInsight = () => {
     }
   }
 
+
+
   if (isLoading) {
     return (
       <Grid >
@@ -282,7 +297,7 @@ const StudentInsight = () => {
                     <TableBody>
                       {dataPeso?.data ? (
                         dataPeso.data
-                          .sort((a, b) => new Date(b.date) - new Date(a.date))
+                          .sort((a: any, b: any) => new Date(b.date) - new Date(a.date))
                           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                           .map((dataPesoItem: StudentInsightItem) => (
                             <TableRow key={dataPesoItem._id}>
@@ -350,7 +365,7 @@ const StudentInsight = () => {
           </DialogTitle>
           <Divider sx={{ my: '0 !important' }} />
 
-          <Box sx={{ justifyContent: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center' }}>
+          <Box sx={{ justifyContent: 'center', justifyItems: 'center', alignContent: 'center', marginTop: '30px', alignItems: 'center' }}>
 
 
 
@@ -389,6 +404,7 @@ const StudentInsight = () => {
                       {errors.date.message}
                     </FormHelperText>
                   )}
+
                 </FormControl>
                 <FormControl sx={{ mb: 4 }}>
                   <Controller
@@ -415,23 +431,26 @@ const StudentInsight = () => {
                     </FormHelperText>
                   )}
                 </FormControl>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 0 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mr: 5, mb: 10, mt: 5 }}>
                   <Button
                     variant='contained'
                     sx={{ '&:hover': { backgroundColor: 'success.main' } }}
                     type='submit'
+
                   >
                     Aceptar
                   </Button>
-
                 </Box>
+
               </form>
+
             </Box>
             {isDuplicateDate && (
-              <Typography sx={{ textAlign: 'center', mt: 3, color: 'error.main', fontSize: '12px' }}  >
+              <Typography sx={{ textAlign: 'center', color: 'error.main', fontSize: '12px' }}  >
                 Esta fecha ya está registrada. Por favor, seleccione otra en la que no haya registros de entrenamiento.
               </Typography>
             )}
+
           </Box>
         </Dialog>
         <TrackingPopUp trackingPopUp={trackingPopUp} setTrackingPopUp={setTrackingPopUp} title={titlePopUp}></TrackingPopUp>
