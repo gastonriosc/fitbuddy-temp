@@ -144,93 +144,43 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
 
   return (
     <>
-      <Box
-        sx={{
-          minWidth: '70%',
-          maxWidth: '70%'
-
-        }}
+      <Dialog
+        open={reportPopUp}
+        onClose={handleReport}
+        aria-labelledby='user-view-plans'
+        aria-describedby='user-view-plans-description'
+        sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 650 } }}
       >
-        <Box
+        <DialogTitle
+          id='user-view-plans'
           sx={{
             textAlign: 'center',
             fontSize: '1.5rem !important',
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(8.5)} !important`],
-
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          REPORTE FINAL
-        </Box>
-        <Box
+          Reporte final
+        </DialogTitle>
+        <DialogContent
           sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flex: '1', // Para que tome el espacio restante
+            flexWrap: ['wrap', 'nowrap'],
+            pt: theme => `${theme.spacing(2)} !important`,
+            pb: theme => `${theme.spacing(8)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
           }}
         >
-          {trackingInfo ? (
-            <Box width={'100%'}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', lg: 'row' },
-                  width: '100%',
-
-                }}
-              >
-                <CardTrackingReport tracking={trackingInfo}></CardTrackingReport>
-                <CardTrackingDifficultReport tracking={trackingInfo}></CardTrackingDifficultReport>
-                <CardTrackingFatigueReport tracking={trackingInfo}></CardTrackingFatigueReport>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              <CircularProgress size={50} thickness={6} color='primary' />
-            </Box>
-          )}
-        </Box>
-
-      </Box>
-
-
-
-      {/* <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 512 } }}>
-        <DialogContent
-          sx={{
-            pb: theme => `${theme.spacing(6)} !important`,
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              '& svg': { mb: 6, color: 'success.main' }
-            }}
-          >
-            <Icon icon='mdi:check-circle-outline' fontSize='5.5rem' />
-            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+          <Box>
+            <p>{averageNumber}</p>
+            <p>{averageDifficult}</p>
+            <p>{averageFatigue}</p>
           </Box>
         </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: 'center',
-            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
-          }}
-        >
 
-          <Button variant='outlined' color='success' onClick={closePopUp}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog> */}
+      </Dialog>
     </>
   )
 }
