@@ -60,17 +60,11 @@ const defineRulesFor = (role: string, subject: string) => {
         'perfilTitle',
         'tracking-page',
         'studentInsights-page',
-        'insight-page'
+        'insight-page',
+        'myRequestss-page'
       ]
     )
-    cannot('read', [
-      'newPlan-page',
-      'perfilEntrenador',
-      'myStudents-page',
-      'myRequests-page',
-      'myLibrary-page',
-      'planesTitle'
-    ])
+    cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myLibrary-page', 'planesTitle'])
   } else if (role === 'Administrador') {
     can(['manage'], ['mySettings-page', 'perfilAdmin', 'adminInsights-page'])
   } else {

@@ -16,9 +16,10 @@ import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Icon from 'src/@core/components/icon';
 
-import RequestPopUp from './requestPopUp';
-import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+// import RequestPopUp from './requestPopUp';
+import { CardHeader, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import CustomChip from 'src/@core/components/mui/chip'
+import RequestPopUp from '../requestPopUp';
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -46,9 +47,15 @@ interface subsRequest {
   avatar: string;
   amount: number
   disease: string
+  trainerName: string
+  trainerAvatar: string
+  subscriptionPrice: number
+  subscriptionIntensity: string
+  subscriptionFollowing: string
+  subscriptionDaysPerWeek: string
 }
 
-const MyRequests = () => {
+const MyRequestss = () => {
 
   const route = useRouter();
   const [subsRequest, setSubsRequest] = useState<[]>([]);
@@ -62,14 +69,10 @@ const MyRequests = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
-  const itemsPerPage = 3; // Cantidad de elementos por página
-  const aceptarSubsRequest = (sub: subsRequest) => {
-    setRequestPopUp(true);
-    setTypeAction('aceptar');
-    setSubsRequestId(sub._id);
-    setTitle('aceptada');
+  const [filterTrainerName, setFilterTrainerName] = useState<string>('');
 
-  };
+  const itemsPerPage = 3; // Cantidad de elementos por página
+
 
   const rechazarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
@@ -83,9 +86,8 @@ const MyRequests = () => {
       const id = route.query.id;
 
       try {
-        // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
-          `/api/subsRequests/?id=${id}`,
+          `/api/subsRequestsStudent/?id=${id}`,
           {
             method: 'GET',
             headers: {
@@ -95,10 +97,10 @@ const MyRequests = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data)
           setSubsRequest(data.subsRequest);
           setNameSubs(data.nameSubs);
           setIsLoading(true);
-          console.log(data);
         }
         if (res.status == 404) {
           route.replace('/404')
@@ -112,7 +114,7 @@ const MyRequests = () => {
     };
 
     fetchMyRequests();
-  }, []); // Actualizar cuando cambie la página actual
+  }, []);
 
 
   const totalPages = Math.ceil(subsRequest.length / itemsPerPage);
@@ -139,9 +141,9 @@ const MyRequests = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs: any, index) => (
-                        <MenuItem key={index} value={subs.name}>
-                          {subs.name.toUpperCase()}
+                      {subsRequest.map((subs: subsRequest, index) => (
+                        <MenuItem key={index} value={subs.subscriptionName}>
+                          {subs.subscriptionName.toUpperCase()}
                         </MenuItem>
                       ))}
                     </Select>
@@ -171,14 +173,21 @@ const MyRequests = () => {
                 </Grid>
                 <Grid item sm={4} xs={12}>
                   <FormControl fullWidth>
-                    <InputLabel id='search-input'>Nombre</InputLabel>
-                    <Input
+                    <InputLabel >Profesor</InputLabel>
+
+                    <Select
+                      label='Profesor'
                       fullWidth
-                      value={filterName}
-                      id='search-input'
-                      onChange={(e) => setFilterName(e.target.value)}
-                      placeholder='Ingrese un nombre para buscar'
-                    />
+                      value={filterTrainerName}
+                      onChange={(e) => setFilterTrainerName(e.target.value)}
+                    >
+                      <MenuItem value=''>SIN FILTRO</MenuItem>
+                      {subsRequest.map((subs: subsRequest, index) => (
+                        <MenuItem key={index} value={subs.trainerName}>
+                          {subs.trainerName.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </FormControl>
                 </Grid>
               </Grid>
@@ -190,7 +199,8 @@ const MyRequests = () => {
             subsRequest
               .filter((sub: subsRequest) =>
                 sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase()) &&
+                sub.trainerName.toLowerCase().includes(filterTrainerName.toLowerCase())
               )
               .sort((a: any, b: any) => {
                 const dateA = new Date(a.date);
@@ -206,10 +216,15 @@ const MyRequests = () => {
               .map((sub: subsRequest, index) => (
                 <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
                   <Grid container spacing={6}>
-                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <StyledGrid2 item xs={12} md={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                      <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                         <Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />
+                        <Icon icon='mdi-arrow-expand' sx={{ marginRight: '10px' }} />
+                        <Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '130px', height: '130px', marginTop: '5px' }} />
                       </CardContent>
+
+
+
                     </StyledGrid2>
                     <StyledGrid1 item xs={12} md={10}>
                       <Box sx={{ display: { md: 'flex' } }} >
@@ -247,7 +262,33 @@ const MyRequests = () => {
                             </Box>
                           </Box>
                           <Typography variant='body1' sx={{ mb: 2 }}>
-                            {sub.description}
+                            <ul>
+                              <li>
+                                Profesor: <b>{sub.trainerName}</b>
+
+                              </li>
+                              <li>
+                                Descripción de la solicitud: <b>{sub.description}</b>
+                              </li>
+                              <li>
+                                Características del plan solicitado:
+                                <ul>
+                                  <li>
+                                    <b>Nombre:</b> {sub.subscriptionName}
+                                  </li>
+                                  <li>
+                                    <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
+                                  </li>
+                                  <li>
+                                    <b>Seguimiento:</b> {sub.subscriptionFollowing}
+                                  </li>
+                                  <li>
+                                    <b>Intensidad:</b> {sub.subscriptionIntensity}
+                                  </li>
+                                </ul>
+                              </li>
+
+                            </ul>
                           </Typography>
                           <Typography sx={{ mb: 2, fontSize: '13px' }}>
                             <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
@@ -264,16 +305,7 @@ const MyRequests = () => {
 
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='success'
-                              title='Aceptar'
-                              onClick={() => aceptarSubsRequest(sub)}
-                            >
-                              <Icon icon='line-md:confirm' />
-                            </Button>
-                          </Box>
+
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                             <Button
                               variant='contained'
@@ -281,19 +313,10 @@ const MyRequests = () => {
                               title='Rechazar'
                               onClick={() => rechazarSubsRequest(sub)}
                             >
-                              <Icon icon='line-md:cancel' />
+                              Cancelar mi solicitud
                             </Button>
                           </Box>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='primary'
-                              title='Perfil'
-                              href={'/myProfile/myStudentProfile/' + sub.studentId}
-                            >
-                              <Icon icon='mdi:eye' />
-                            </Button>
-                          </Box>
+
                         </CardContent>
                       </Box>
 
@@ -310,14 +333,7 @@ const MyRequests = () => {
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-          </Button>
-          <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-          </Button>
-        </div> */}
+
         < RequestPopUp
           requestPopUp={requestPopUp}
           setRequestPopUp={setRequestPopUp}
@@ -337,9 +353,10 @@ const MyRequests = () => {
   }
 };
 
-MyRequests.acl = {
+MyRequestss.acl = {
   action: 'manage',
-  subject: 'myRequests-page',
+  subject: 'myRequestss-page',
+
 };
 
-export default MyRequests;
+export default MyRequestss;
