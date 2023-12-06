@@ -71,7 +71,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               disease: 1,
               studentName: '$student_info.name',
               subscriptionName: '$subscription_info.name',
-              avatar: '$student_info.avatar'
+              avatar: '$student_info.avatar',
+              subscriptionDaysPerWeek: '$subscription_info.daysPerWeek',
+              subscriptionFollowing: '$subscription_info.following',
+              subscriptionPrice: '$subscription_info.price',
+              subscriptionIntensity: '$subscription_info.intensity',
+              subscriptionDescription: '$subscription_info.description'
             }
           }
         ])

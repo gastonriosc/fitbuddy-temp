@@ -61,7 +61,7 @@ const defineRulesFor = (role: string, subject: string) => {
         'tracking-page',
         'studentInsights-page',
         'insight-page',
-        'myRequestss-page'
+        'myRequests-page'
       ]
     )
     cannot('read', ['newPlan-page', 'perfilEntrenador', 'myStudents-page', 'myLibrary-page', 'planesTitle'])

@@ -41,13 +41,6 @@ const navigation = (): VerticalNavItemsType => {
       subject: 'myRequests-page',
       action: 'manage'
     },
-    {
-      title: 'Solicitudes Pendientes',
-      icon: 'mdi:inbox',
-      path: '/myRequests/myPendingRequests/' + session?.user?._id,
-      subject: 'myRequestss-page',
-      action: 'manage'
-    },
 
     {
       title: 'Mis Alumnos',

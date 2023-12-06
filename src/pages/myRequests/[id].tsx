@@ -19,6 +19,7 @@ import Icon from 'src/@core/components/icon';
 import RequestPopUp from './requestPopUp';
 import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import CustomChip from 'src/@core/components/mui/chip'
+import { useSession } from 'next-auth/react';
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -46,6 +47,12 @@ interface subsRequest {
   avatar: string;
   amount: number
   disease: string
+  subscriptionDaysPerWeek: number
+  subscriptionFollowing: string
+  subscriptionIntensity: string
+  trainerName: string
+  trainerAvatar: string
+
 }
 
 const MyRequests = () => {
@@ -62,7 +69,10 @@ const MyRequests = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
-  const itemsPerPage = 3; // Cantidad de elementos por página
+
+  const session = useSession();
+
+  const itemsPerPage = 2; // Cantidad de elementos por página
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');
@@ -70,6 +80,8 @@ const MyRequests = () => {
     setTitle('aceptada');
 
   };
+
+  const esEntrenador = session && session.data && session.data.user && session.data.user.role === 'Entrenador';
 
   const rechazarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
@@ -79,40 +91,56 @@ const MyRequests = () => {
   };
 
   useEffect(() => {
-    const fetchMyRequests = async () => {
+    const fetchData = async () => {
       const id = route.query.id;
 
       try {
-        // ** Llamada a la API para obtener datos paginados
-        const res = await fetch(
-          `/api/subsRequests/?id=${id}`,
-          {
+        if (session?.data?.user.role === 'Entrenador') {
+          // Llamada a la API específica para Entrenador
+          const res1 = await fetch(`/api/subsRequests/?id=${id}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
+          });
+
+          if (res1.status === 200) {
+            const data1 = await res1.json();
+            setSubsRequest(data1.subsRequest);
+            setNameSubs(data1.nameSubs);
+            setIsLoading(true);
+          } else if (res1.status === 404) {
+            route.replace('/404');
+          } else if (res1.status === 500) {
+            route.replace('/500');
           }
-        );
-        if (res.status == 200) {
-          const data = await res.json();
-          setSubsRequest(data.subsRequest);
-          setNameSubs(data.nameSubs);
-          setIsLoading(true);
-          console.log(data);
-        }
-        if (res.status == 404) {
-          route.replace('/404')
-        }
-        if (res.status == 500) {
-          route.replace('/500')
+        } else if (session?.data?.user.role === 'Alumno') {
+          // Llamada a la API específica para Alumno
+          const res2 = await fetch(`/api/subsRequestsStudent/?id=${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (res2.status === 200) {
+            const data2 = await res2.json();
+            setSubsRequest(data2.subsRequest);
+            setNameSubs(data2.nameSubs);
+            setIsLoading(true);
+          } else if (res2.status === 404) {
+            route.replace('/404');
+          } else if (res2.status === 500) {
+            route.replace('/500');
+          }
         }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchMyRequests();
-  }, []); // Actualizar cuando cambie la página actual
+    fetchData();
+  }, [session, route.query.id]); // Dependencias para ejecutar cuando cambie la sesión o la ID de la ruta
 
 
   const totalPages = Math.ceil(subsRequest.length / itemsPerPage);
@@ -139,9 +167,9 @@ const MyRequests = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs: any, index) => (
-                        <MenuItem key={index} value={subs.name}>
-                          {subs.name.toUpperCase()}
+                      {subsRequest.map((subs: subsRequest, index) => (
+                        <MenuItem key={index} value={subs.subscriptionName}>
+                          {subs.subscriptionName.toUpperCase()}
                         </MenuItem>
                       ))}
                     </Select>
@@ -188,10 +216,18 @@ const MyRequests = () => {
 
           {subsRequest.length > 0 ? (
             subsRequest
-              .filter((sub: subsRequest) =>
-                sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
-              )
+              .filter((sub: subsRequest) => {
+                const lowercaseFilterName = filterName.toLowerCase();
+                const lowercaseFilterPlan = filterPlan.toLowerCase();
+
+                if (esEntrenador) {
+                  return sub.studentName.toLowerCase().includes(lowercaseFilterName) &&
+                    sub.subscriptionName.toLowerCase().includes(lowercaseFilterPlan);
+                } else {
+                  return sub.trainerName.toLowerCase().includes(lowercaseFilterName) &&
+                    sub.subscriptionName.toLowerCase().includes(lowercaseFilterPlan);
+                }
+              })
               .sort((a: any, b: any) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
@@ -208,7 +244,8 @@ const MyRequests = () => {
                   <Grid container spacing={6}>
                     <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
                       <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />
+                        {esEntrenador && (<Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />)}
+                        {!esEntrenador && (<Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '130px', height: '130px' }} />)}
                       </CardContent>
                     </StyledGrid2>
                     <StyledGrid1 item xs={12} md={10}>
@@ -217,8 +254,10 @@ const MyRequests = () => {
                           <Box sx={{ display: 'flex' }}>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
-                                {sub.studentName}
+                                {esEntrenador && sub.studentName}
+                                {!esEntrenador && sub.trainerName}
                               </Typography>
+
                             </Box>
                             <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
@@ -247,7 +286,30 @@ const MyRequests = () => {
                             </Box>
                           </Box>
                           <Typography variant='body1' sx={{ mb: 2 }}>
-                            {sub.description}
+                            <ul>
+
+                              <li>
+                                Descripción de la solicitud: <b>{sub.description}</b>
+                              </li>
+                              <li>
+                                Características del plan solicitado:
+                                <ul>
+                                  <li>
+                                    <b>Nombre:</b> {sub.subscriptionName}
+                                  </li>
+                                  <li>
+                                    <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
+                                  </li>
+                                  <li>
+                                    <b>Seguimiento:</b> {sub.subscriptionFollowing}
+                                  </li>
+                                  <li>
+                                    <b>Intensidad:</b> {sub.subscriptionIntensity}
+                                  </li>
+                                </ul>
+                              </li>
+
+                            </ul>
                           </Typography>
                           <Typography sx={{ mb: 2, fontSize: '13px' }}>
                             <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
@@ -265,34 +327,48 @@ const MyRequests = () => {
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='success'
-                              title='Aceptar'
-                              onClick={() => aceptarSubsRequest(sub)}
-                            >
-                              <Icon icon='line-md:confirm' />
-                            </Button>
+                            {esEntrenador && (
+                              <Button
+                                variant='contained'
+                                color='success'
+                                title='Aceptar'
+                                onClick={() => aceptarSubsRequest(sub)}
+                              >
+                                <Icon icon='line-md:confirm' />
+                              </Button>
+                            )}
+
                           </Box>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
+                            {esEntrenador && (<Button
                               variant='contained'
                               color='error'
                               title='Rechazar'
                               onClick={() => rechazarSubsRequest(sub)}
                             >
                               <Icon icon='line-md:cancel' />
-                            </Button>
+                            </Button>)}
+
+                            {!esEntrenador && (<Button
+                              variant='contained'
+                              color='error'
+                              title='Rechazar'
+                              onClick={() => rechazarSubsRequest(sub)}
+                            >
+                              Cancelar mi solicitud
+                            </Button>)}
                           </Box>
+
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
+                            {esEntrenador && (<Button
                               variant='contained'
                               color='primary'
                               title='Perfil'
                               href={'/myProfile/myStudentProfile/' + sub.studentId}
                             >
                               <Icon icon='mdi:eye' />
-                            </Button>
+                            </Button>)}
+
                           </Box>
                         </CardContent>
                       </Box>
