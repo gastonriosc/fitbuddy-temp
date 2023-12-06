@@ -103,9 +103,9 @@ const statusColors: ColorsType = {
 
 const MyProfile = () => {
 
-  const schema = yup.object().shape({
+  const requestSchema = yup.object().shape({
     description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    disease: yup.string().required("Dolencias es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    disease: yup.string().max(350, "Debe tener 350 caracteres máximo")
   })
 
   const updateSchema = yup.object().shape({
@@ -182,7 +182,7 @@ const MyProfile = () => {
       disease: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(schema),
+    resolver: yupResolver(requestSchema),
   });
 
   const {
@@ -750,7 +750,7 @@ const MyProfile = () => {
             >
               Solicitud de suscripción
               <Typography sx={{ textAlign: 'center', fontSize: '0.9rem !important', mt: '10px' }}>
-                Indicale tus preferencias al profesor!
+                ¡Indicale tus preferencias al profesor!
               </Typography>
             </DialogTitle>
             <DialogContent
@@ -770,10 +770,10 @@ const MyProfile = () => {
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextField
-                        rows={6}
+                        rows={4}
                         multiline
                         id='textarea-outlined-static'
-                        label='¿Qué objetivos buscás alcanzar?'
+                        label='Objetivos'
                         placeholder='¿Qué objetivos buscás alcanzar?'
                         name='description'
                         value={value}
@@ -796,11 +796,11 @@ const MyProfile = () => {
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextField
-                        rows={2}
+                        rows={4}
                         multiline
                         id='textarea-outlined-static'
-                        label='Dolencias'
-                        placeholder='Por favor, indique si tiene alguna dolencia, lesión, o enfermedad que debamos tener en cuenta.'
+                        label='Observaciones'
+                        placeholder='Por favor, indique si tiene alguna dolencia, lesión, o enfermedad que el entrenador deba tener en cuenta.'
                         name='disease'
                         value={value}
                         onBlur={onBlur}
