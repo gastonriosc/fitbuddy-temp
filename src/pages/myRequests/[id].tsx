@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
 import Icon from 'src/@core/components/icon';
+
 import RequestPopUp from './requestPopUp';
 import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import CustomChip from 'src/@core/components/mui/chip'
@@ -43,6 +44,7 @@ interface subsRequest {
   subscriptionName: string;
   avatar: string;
   amount: number
+  disease: string
 }
 
 const MyRequests = () => {
@@ -95,6 +97,7 @@ const MyRequests = () => {
           setSubsRequest(data.subsRequest);
           setNameSubs(data.nameSubs);
           setIsLoading(true);
+          console.log(data);
         }
         if (res.status == 404) {
           route.replace('/404')
@@ -245,6 +248,19 @@ const MyRequests = () => {
                           <Typography variant='body1' sx={{ mb: 2 }}>
                             {sub.description}
                           </Typography>
+                          <Typography sx={{ mb: 2, fontSize: '13px' }}>
+                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
+                              label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                  <Icon icon='mdi:pencil' fontSize='1rem' />
+                                  <span><b>Observaciones:</b>  </span>
+                                </Box>
+                              }
+                            />
+                            {sub.disease ? sub.disease : "No presenta"}
+                          </Typography>
+
+
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>

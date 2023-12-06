@@ -1,10 +1,8 @@
 // ** React Imports
 import { ReactNode, forwardRef, useState } from 'react'
 
-
 // ** Next Import
 import Link from 'next/link'
-
 
 // ** MUI Components
 import Button from '@mui/material/Button'
@@ -41,7 +39,6 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/dist/client/router'
 import DatePicker from 'react-datepicker'
 
-
 // ** Icon Imports
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { format } from 'date-fns'
@@ -70,7 +67,7 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
 type CountryTypes = 'Argentina'
 type GenderTypes = 'Masculino' | 'Femenino' | 'Otro'
 type RoleTypes = 'Alumno' | 'Entrenador'
-type DisciplineTypes = 'Musculación'
+type DisciplineTypes = 'Musculación' | 'Aeróbico'
 
 interface FormData {
   name: string
@@ -98,8 +95,8 @@ const defaultValues = {
   email: '',
   password: '',
   passwordC: '',
-  height: '',
-  weight: '',
+  height: undefined,
+  weight: undefined,
   age: ''
 }
 
@@ -125,6 +122,13 @@ const schema = yup.object().shape({
   country: yup.string().required("Seleccione un pais"),
   gender: yup.string().required("Seleccione un genero"),
   role: yup.string().required("Seleccione un rol"),
+
+  // https://github.com/jquense/yup#schemawhenkeys-string--string-builder-object--values-any-schema--schema-schema
+  // discipline: yup.string().when('role', {
+  //    is: 'Entrenador',
+  //    then: yup.string().required('Seleccione una disciplina'),
+  //    otherwise: yup.string().notRequired(),
+  // })
 })
 
 const Register = () => {
@@ -182,7 +186,6 @@ const Register = () => {
   })
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // data = {email: 'juantargon@gmail.com', password: 'entrenador'}
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const registrationDate = currentDate.toISOString();
@@ -306,78 +309,45 @@ const Register = () => {
                 )}
               </FormControl>
 
-              <Box sx={{
-                display: 'flex',
-                gap: { xs: '1px', md: '1px', lg: '10px' },
-                width: '100%',
-                flexDirection: { xs: 'column', md: 'column', lg: 'row' }
-              }}>
-                <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='birthdate'
-                    control={control}
-                    render={({ field }) => (
-                      <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
-                        <DatePicker
-                          name='birthdate'
-                          selected={startDateRange}
-                          onChange={(date) => {
-                            field.onChange(date);
-                            handleDateChange(date);
-                          }}
-                          customInput={
-                            <CustomInputForDialog
-                              start={startDateRange as Date}
-                              label='Fecha de Nacimiento'
-                              dates={[]}
-                              end={0}
-                            />
-                          }
-                          showYearDropdown
-                          dateFormatCalendar="MMMM"
+              {/* Fecha de nacimiento */}
+              <FormControl fullWidth sx={{ mb: 4 }}>
+                <Controller
+                  name='birthdate'
+                  control={control}
+                  render={({ field }) => (
+                    <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+                      <DatePicker
+                        name='birthdate'
+                        selected={startDateRange}
+                        onChange={(date) => {
+                          field.onChange(date);
+                          handleDateChange(date);
+                        }}
+                        customInput={
+                          <CustomInputForDialog
+                            start={startDateRange as Date}
+                            label='Fecha de Nacimiento'
+                            dates={[]}
+                            end={0}
+                          />
+                        }
+                        showYearDropdown
+                        dateFormatCalendar="MMMM"
 
-                          maxDate={new Date()}
-                          yearDropdownItemNumber={100}
-                          scrollableYearDropdown
-                          showMonthDropdown
-                        />
-                      </DatePickerWrapper>
-                    )}
-                  />
-                  {errors.age && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.age.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-
-
-
-                {/* <FormControl fullWidth sx={{ mb: 4 }}>
-                  <Controller
-                    name='age'
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <TextField
-                        label='Edad'
-                        value={value}
-                        type='number'
-                        name='edad'
-                        disabled={true}
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        error={Boolean(errors.age)}
+                        maxDate={new Date()}
+                        yearDropdownItemNumber={100}
+                        scrollableYearDropdown
+                        showMonthDropdown
                       />
-                    )}
-                  />
-                  {errors.age && (
-                    <FormHelperText sx={{ color: 'error.main' }}>
-                      {errors.age.message}
-                    </FormHelperText>
+                    </DatePickerWrapper>
                   )}
-                </FormControl> */}
-              </Box>
+                />
+                {errors.age && (
+                  <FormHelperText sx={{ color: 'error.main' }}>
+                    {errors.age.message}
+                  </FormHelperText>
+                )}
+              </FormControl>
 
               {/* Teléfono */}
               <FormControl fullWidth sx={{ mb: 4 }}>
@@ -504,11 +474,12 @@ const Register = () => {
                         value={value}
                         name='height'
                         type='number'
-
                         onBlur={onBlur}
-                        onChange={onChange}
                         error={Boolean(errors.height)}
                         placeholder='1.80'
+                        onChange={(e) => {
+                          onChange(e.target.value === '' ? undefined : e.target.value);
+                        }}
                       />
                     )}
                   />
@@ -532,9 +503,11 @@ const Register = () => {
                         type='number'
                         name='weight'
                         onBlur={onBlur}
-                        onChange={onChange}
                         error={Boolean(errors.weight)}
                         placeholder='Kg'
+                        onChange={(e) => {
+                          onChange(e.target.value === '' ? undefined : e.target.value);
+                        }}
                       />
                     )}
                   />

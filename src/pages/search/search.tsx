@@ -36,7 +36,30 @@ interface SearchProps {
   genderFilter: string;
   disciplineFilter: string;
   searchTerm: any;
+  daysPerWeek: string;
+  following: string;
+  intensity: string;
 }
+
+interface SubscriptionData {
+  daysPerWeek: number;
+  intensity: string;
+  following: string;
+}
+
+interface TrainerData {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  discipline: string;
+  gender: string;
+  country: string;
+  avatar: string;
+  subscriptions: SubscriptionData[];
+}
+
 
 const renderClient = (row: UsersType) => {
   if (row.avatar) {
@@ -56,8 +79,8 @@ const renderClient = (row: UsersType) => {
 
 
 // El componente Search recibe tres propiedades como argumentos (genderFilter, disciplineFilter y searchTerm), que se utilizan para filtrar los usuarios.
-const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => {
-  const [users, setUsers] = useState<UsersType[]>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
+const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, following, intensity }: SearchProps) => {
+  const [users, setUsers] = useState<TrainerData[]>([]);   //Users es un array del tipo UsersType[]. Podria tambien solamente ser del tipo []
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const session = useSession()
 
@@ -65,8 +88,9 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
     setIsLoading(true)
     const fetchAlumnoUsers = async () => {              //Funcion asincrona que hace la llamada a la API de students.
       try {
-        const response = await fetch('/api/students');
+        const response = await fetch('/api/trainerSearch');
         const data = await response.json();
+        console.log(data)
         setUsers(data);          //Cargamos users con la data que viene de la solicitud a la API.
         setIsLoading(false)
       } catch (error) {
@@ -166,18 +190,27 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm }: SearchProps) => 
 
   const getRowId = (user: any) => user._id;                                 // La función getRowId  se utiliza para identificar de manera única cada fila de datos dentro de la tabla. Cuando el usuario interactúa con la tabla (por ejemplo, seleccionando una fila o actualizando los datos), el componente necesita saber qué fila específica está siendo afectada
 
-  const filterUsersByName = (users: UsersType[], name: string) => {
+  const filterUsersByName = (users: TrainerData[], name: string) => {
     return users.filter(
       (user) =>
         user.name.toLowerCase().includes(name.toLowerCase())
     );
   };
 
-  const filteredUsers = users.filter(                                     //Users es el array cargado que viene con los datos de la consulta a la API.
+  const filteredUsers = users.filter(
     (user) =>
-      (!genderFilter || user.gender === genderFilter) &&                  // Si no hay filtro de género o el género coincide
-      (!disciplineFilter || user.discipline === disciplineFilter) &&      // Si no hay filtro de disciplina o la disciplina coincide
-      (!searchTerm || filterUsersByName([user], searchTerm).length > 0)   // Si no hay término de búsqueda o el nombre coincide. Para verificar si el nombre coincide, utiliza la función filterUsersByName para filtrar un array que solo contiene el usuario actual ([user]), comparando con el searchTerm, que es lo que va comparando a medida que se va escribiendo.
+      (!genderFilter || user.gender === genderFilter) &&
+      (!disciplineFilter || user.discipline === disciplineFilter) &&
+      (!searchTerm || filterUsersByName([user], searchTerm).length > 0) &&
+      (
+        (!daysPerWeek && !intensity && !following) ||
+        user.subscriptions.some(
+          (subscription) =>
+            (!daysPerWeek || subscription.daysPerWeek.toString() === daysPerWeek) &&
+            (!intensity || subscription.intensity === intensity) &&
+            (!following || subscription.following === following)
+        )
+      )
   );
 
   return (

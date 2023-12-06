@@ -42,6 +42,7 @@ import { UsersType } from 'src/types/apps/userTypes'
 
 // ** Utils Import
 import { getInitials } from 'src/@core/utils/get-initials'
+import { InputLabel, MenuItem, Select } from '@mui/material'
 
 
 interface ColorsType {
@@ -51,10 +52,24 @@ interface ColorsType {
 interface Subscription {
   _id: string
   name: string
-  amount: string
+  amount: number
   description: string
   daysPerWeek: number
   deleted: boolean
+  intensity: string
+  following: string
+  disease: string
+}
+
+interface FormData {
+  _id: number | string
+  name: string
+  amount: number
+  description: string
+  daysPerWeek: number
+  intensity: string
+  following: string
+  disease: string
 }
 
 const data: UsersType = {
@@ -77,6 +92,7 @@ const data: UsersType = {
   height: '',
   weight: '',
   birthdate: '',
+
 }
 
 const statusColors: ColorsType = {
@@ -86,23 +102,19 @@ const statusColors: ColorsType = {
 }
 
 const MyProfile = () => {
-  interface FormData {
-    _id: number | string
-    name: string
-    amount: number
-    description: string
-    daysPerWeek: number
-  }
 
-  const schema = yup.object().shape({
+  const requestSchema = yup.object().shape({
     description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    disease: yup.string().max(350, "Debe tener 350 caracteres máximo")
   })
 
   const updateSchema = yup.object().shape({
     name: yup.string().required("Nombre es un campo obligatorio").max(20, "Debe tener 20 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    amount: yup.number().required("Precio es un campo numérico y obligatorio").min(0, "Precio debe ser mayor a 0"),
-    description: yup.string().required("Descripción es un campo obligatorio").max(350, "Debe tener 350 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
-    daysPerWeek: yup.number().required("Es obligatorio completar la cantidad de dias a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7")
+    amount: yup.number().integer("El precio no puede contener números decimales").required("Precio es un campo obligatorio").min(0, "El precio no puede ser negativo"),
+    description: yup.string().required("Descripción es un campo obligatorio").max(300, "Debe tener 300 caracteres máximo").min(4, "Debe tener 4 caracteres minimo"),
+    daysPerWeek: yup.number().integer("La cantidad de días no puede contener decimales").required("Es obligatorio completar la cantidad de días a entrenar por semana").min(1, "La cantidad de días debe ser mayor o igual a 1").max(7, "La cantidad de días debe ser menor o igual a 7"),
+    intensity: yup.string().required("Es obligatorio completar la intensidad que tiene el entrenamiento."),
+    following: yup.string().required("Es obligatorio completar el seguimiento que se ofrece con dicho plan.")
   })
 
 
@@ -133,22 +145,25 @@ const MyProfile = () => {
   const edad = differenceInYears(new Date(), fechaNacimiento);
 
   const handlePlansClose = () => setOpenPlans(false)
-  const handleEditClick = (sub: any) => {
+  const handleEditClick = (sub: Subscription) => {
     setValue("name", sub.name)
     setValue("amount", sub.amount)
     setValue("description", sub.description)
     setValue("daysPerWeek", sub.daysPerWeek)
+    setValue("intensity", sub.intensity)
+    setValue("following", sub.following)
+    setValue("disease", sub.disease)
     setEditSubscription(sub);
     setOpenPlans(true);
   };
 
   const hanldeSubscriptionRequest = () => setOpenSuscriptionRequest(false)
   const hadleCloseDeleteSubscriptionPopUp = () => setOpenDeleteSubs(false)
-  const handleOpenDeleteSubscriptionPopUp = (sub: any) => {
+  const handleOpenDeleteSubscriptionPopUp = (sub: Subscription) => {
     setDeletedSubs(sub)
     setOpenDeleteSubs(true)
   }
-  const handleSendSubsRequest = (sub: any) => {
+  const handleSendSubsRequest = (sub: Subscription) => {
     setSendSubsRequest(sub)
     setOpenSuscriptionRequest(true)
   }
@@ -164,9 +179,10 @@ const MyProfile = () => {
   } = useForm<FormData>({
     defaultValues: {
       description: '',
+      disease: ''
     },
     mode: 'onBlur',
-    resolver: yupResolver(schema),
+    resolver: yupResolver(requestSchema),
   });
 
   const {
@@ -177,9 +193,12 @@ const MyProfile = () => {
   } = useForm<FormData>({
     defaultValues: {
       name: '',
-      amount: 0,
+      amount: undefined,
       description: '',
-      daysPerWeek: 1.,
+      daysPerWeek: undefined,
+      intensity: '',
+      following: '',
+      disease: ''
     },
     mode: 'onBlur',
     resolver: yupResolver(updateSchema),
@@ -219,7 +238,7 @@ const MyProfile = () => {
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
-    let name, amount, description, daysPerWeek;
+    let name, amount, description, daysPerWeek, intensity, following, disease;
     let deleted;
 
     if (openPlans) {
@@ -227,13 +246,20 @@ const MyProfile = () => {
       amount = data.amount
       description = data.description
       daysPerWeek = data.daysPerWeek
+      intensity = data.intensity
+      following = data.following
+      disease = data.disease
       deleted = false;
+
     }
     else {
       name = deletedSubs?.name
       amount = deletedSubs?.amount
       description = deletedSubs?.description
       daysPerWeek = deletedSubs?.daysPerWeek
+      intensity = deletedSubs?.intensity
+      following = deletedSubs?.following
+      disease = deletedSubs?.disease
       deleted = true;
     }
 
@@ -243,7 +269,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ subsId, name, amount, description, daysPerWeek, deleted })
+        body: JSON.stringify({ subsId, name, amount, description, daysPerWeek, intensity, following, deleted })
       })
       if (res.status == 200) {
         if (openPlans) {
@@ -252,7 +278,7 @@ const MyProfile = () => {
           setPopUp(true)
           if (subsId) {
 
-            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, daysPerWeek: daysPerWeek, deleted: deleted };
+            const editedSubscription = { _id: subsId?.toString(), name: name, amount: amount, description: description, daysPerWeek: daysPerWeek, disease: disease, intensity: intensity, following: following, deleted: deleted };
             setSubs((prevSubs) => prevSubs.map((sub) => (sub._id === editedSubscription._id ? editedSubscription : sub)));
           }
 
@@ -279,10 +305,13 @@ const MyProfile = () => {
 
   const sendSubscriptionRequest: SubmitHandler<FieldValues> = async (data) => {
     const { description } = data;
+    console.log(description)
     const status = "pendiente"
     const trainerId = route.query.id
     const studentId = session?.user._id
     const subscriptionId = sendSubsRequest?._id
+    const { disease } = data
+    console.log(disease)
     const amount = sendSubsRequest?.amount
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
@@ -293,7 +322,7 @@ const MyProfile = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, date: formattedDate })
+        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, disease, date: formattedDate })
       })
       if (res.status == 200) {
         hanldeSubscriptionRequest()
@@ -399,7 +428,7 @@ const MyProfile = () => {
           <Grid container spacing={2}>
             {subs.map((sub: Subscription, index) => (
               <Grid item sm={12} md={4} key={index} sx={{ mb: '20px' }}>
-                <Card sx={{ boxShadow: 'none', minHeight: { md: '510px', lg: '570px', xl: '480px' }, border: theme => `2px solid ${theme.palette.primary.main}` }}>
+                <Card sx={{ boxShadow: 'none', minHeight: { md: '560px', lg: '570px', xl: '500px' }, border: theme => `2px solid ${theme.palette.primary.main}` }}>
                   <CardContent
                     sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'space-between', }}
                   >
@@ -423,10 +452,16 @@ const MyProfile = () => {
                   </CardContent>
 
                   <CardContent>
-                    <Box sx={{ mt: 4, minHeight: { md: '290px', lg: '340px', xl: '250px' } }}>
+                    <Box sx={{ mt: 4, minHeight: { md: '335px', lg: '385px', xl: '320px' } }}>
                       <Box>
                         <ul>
-                          <li><b>{sub.daysPerWeek}</b> dias por semana.</li>
+                          <li><b>{sub.daysPerWeek}{sub.daysPerWeek == 1 ? " día" : " días"}</b> por semana.</li>
+                        </ul>
+                        <ul>
+                          <li>Intensidad: <b> {sub?.intensity?.toUpperCase()} </b> </li>
+                        </ul>
+                        <ul>
+                          <li>Seguimiento: <b> {sub?.following?.toUpperCase()} </b> </li>
                         </ul>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}>
@@ -437,15 +472,14 @@ const MyProfile = () => {
                     </Box>
 
                   </CardContent>
-                  <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <CardContent sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', position: 'relative' }}>
+                    <Box sx={{ marginLeft: 'auto' }}>
                       {isTrainerSession ? (
-                        <Box sx={{ display: 'flex', gap: '10px' }}>
+                        <Box sx={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
                           <Button variant='contained' title='Editar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleEditClick(sub)}>
                             <Icon icon='mdi:pencil' />
                           </Button>
-                          <Button variant='contained' color='error' title='Borrar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenDeleteSubscriptionPopUp(sub)} >
+                          <Button variant='contained' color='error' title='Borrar' sx={{ width: '50px', height: '50px', borderRadius: '50%', padding: 0, minWidth: 'auto' }} onClick={() => handleOpenDeleteSubscriptionPopUp(sub)}>
                             <Icon icon='mdi:delete' />
                           </Button>
                         </Box>
@@ -499,7 +533,7 @@ const MyProfile = () => {
                       }}
                     >
                       <form noValidate autoComplete='off' onSubmit={updateHandleSubmit(updateSubscription)}>
-
+                        {/* Nombre */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='name'
@@ -507,7 +541,6 @@ const MyProfile = () => {
                             rules={{ required: true }}
                             render={({ field: { onChange, onBlur, value } }) => (
                               <TextField
-
                                 label='Nombre'
                                 name='name'
                                 value={value}
@@ -524,20 +557,23 @@ const MyProfile = () => {
                           )}
                         </FormControl>
 
+                        {/* Precio */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='amount'
                             control={updateControl}
                             rules={{ required: true }}
-                            render={({ field: { onChange, onBlur, value } }) => (
+                            render={({ field: { value, onChange, onBlur } }) => (
                               <TextField
                                 label='Precio'
+                                value={value}
                                 name='amount'
                                 type='number'
-                                value={value}
                                 onBlur={onBlur}
-                                onChange={onChange}
                                 error={Boolean(updateErrors.amount)}
+                                onChange={(e) => {
+                                  onChange(e.target.value === '' ? undefined : e.target.value);
+                                }}
                               />
                             )}
                           />
@@ -547,23 +583,24 @@ const MyProfile = () => {
                             </FormHelperText>
                           )}
                         </FormControl>
+
+                        {/* Dias por semana */}
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
                             name='daysPerWeek'
                             control={updateControl}
                             rules={{ required: true }}
-
-                            // defaultValue={1}
-                            render={({ field: { onChange, onBlur, value } }) => (
+                            render={({ field: { value, onChange, onBlur } }) => (
                               <TextField
                                 label='Días por semana'
                                 name='daysPerWeek'
                                 type='number'
                                 value={value}
                                 onBlur={onBlur}
-                                onChange={onChange}
                                 error={Boolean(updateErrors.daysPerWeek)}
-                                inputProps={{ min: 1, max: 7 }}
+                                onChange={(e) => {
+                                  onChange(e.target.value === '' ? undefined : e.target.value);
+                                }}
                               />
                             )}
                           />
@@ -573,6 +610,75 @@ const MyProfile = () => {
                             </FormHelperText>
                           )}
                         </FormControl>
+
+                        {/* Intensidad */}
+                        <FormControl fullWidth sx={{ mb: 4 }}>
+                          <Controller
+                            name='intensity'
+                            control={updateControl}
+                            rules={{ required: true }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <>
+                                <InputLabel>Intensidad </InputLabel>
+                                <Select
+                                  label='Intensidad'
+                                  name='intensity'
+                                  type='string'
+                                  value={value}
+                                  onBlur={onBlur}
+                                  onChange={onChange}
+                                  error={Boolean(updateErrors.intensity)}
+                                >
+                                  {/* Opciones de MenuItem */}
+                                  <MenuItem value='baja'>Baja</MenuItem>
+                                  <MenuItem value='media'>Media</MenuItem>
+                                  <MenuItem value='alta'>Alta</MenuItem>
+
+                                </Select>
+                              </>
+                            )}
+                          />
+                          {updateErrors.intensity && (
+                            <FormHelperText sx={{ color: 'error.main' }}>
+                              {updateErrors.intensity.message}
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+
+                        {/* Seguimiento */}
+                        <FormControl fullWidth sx={{ mb: 4 }}>
+                          <Controller
+                            name='following'
+                            control={updateControl}
+                            rules={{ required: true }}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                              <>
+                                <InputLabel>Seguimiento </InputLabel>
+
+                                <Select
+                                  label='Seguimiento'
+                                  name='following'
+                                  type='string'
+                                  value={value}
+                                  onBlur={onBlur}
+                                  onChange={onChange}
+                                  error={Boolean(updateErrors.following)}
+                                >
+                                  {/* Opciones de MenuItem */}
+                                  <MenuItem value='bajo'>Bajo</MenuItem>
+                                  <MenuItem value='intermedio'>Intermedio</MenuItem>
+                                  <MenuItem value='alto'>Alto</MenuItem>
+                                </Select>
+                              </>
+                            )}
+                          />
+                          {updateErrors.following && (
+                            <FormHelperText sx={{ color: 'error.main' }}>
+                              {updateErrors.following.message}
+                            </FormHelperText>
+                          )}
+                        </FormControl>
+
 
                         <FormControl fullWidth sx={{ mb: 4 }}>
                           <Controller
@@ -624,7 +730,7 @@ const MyProfile = () => {
           </Grid>
 
           {/* componente que realiza la nueva suscripcion */}
-          <NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen} subs={subs} setSubs={setSubs}></NewSubsPopUp>
+          < NewSubsPopUp addSubscription={newSubsPopUpOpen} setAddSubscription={setNewSubsPopUpOpen} subs={subs} setSubs={setSubs} />
 
           <Dialog
             open={openSubscriptionRequest}
@@ -644,7 +750,7 @@ const MyProfile = () => {
             >
               Solicitud de suscripción
               <Typography sx={{ textAlign: 'center', fontSize: '0.9rem !important', mt: '10px' }}>
-                Indicale tus preferencias al profesor!
+                ¡Indicale tus preferencias al profesor!
               </Typography>
             </DialogTitle>
             <DialogContent
@@ -664,10 +770,10 @@ const MyProfile = () => {
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextField
-                        rows={6}
+                        rows={4}
                         multiline
                         id='textarea-outlined-static'
-                        label='Descripción'
+                        label='Objetivos'
                         placeholder='¿Qué objetivos buscás alcanzar?'
                         name='description'
                         value={value}
@@ -680,6 +786,32 @@ const MyProfile = () => {
                   {errors.description && (
                     <FormHelperText sx={{ color: 'error.main' }}>
                       {errors.description.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+                <FormControl fullWidth sx={{ mb: 4 }}>
+                  <Controller
+                    name='disease'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextField
+                        rows={4}
+                        multiline
+                        id='textarea-outlined-static'
+                        label='Observaciones'
+                        placeholder='Por favor, indique si tiene alguna dolencia, lesión, o enfermedad que el entrenador deba tener en cuenta.'
+                        name='disease'
+                        value={value}
+                        onBlur={onBlur}
+                        onChange={onChange}
+                        error={Boolean(errors.disease)}
+                      />
+                    )}
+                  />
+                  {errors.disease && (
+                    <FormHelperText sx={{ color: 'error.main' }}>
+                      {errors.disease.message}
                     </FormHelperText>
                   )}
                 </FormControl>

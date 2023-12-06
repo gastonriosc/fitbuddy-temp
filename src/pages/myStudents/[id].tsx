@@ -14,7 +14,7 @@ import Grid, { GridProps } from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import CustomChip from 'src/@core/components/mui/chip'
 import Icon from 'src/@core/components/icon';
-import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
+import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import RequestPopUp from '../myRequests/requestPopUp';
 
 // Styled Grid component
@@ -42,6 +42,7 @@ interface subsRequest {
   subscriptionName: string;
   avatar: string;
   amount: number
+  disease: string
 }
 
 const MyStudents = () => {
@@ -224,6 +225,17 @@ const MyStudents = () => {
                           </Box>
                           <Typography variant='body1' sx={{ mb: 2 }}>
                             {sub.description}
+                          </Typography>
+                          <Typography sx={{ mb: 2, fontSize: '13px' }}>
+                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
+                              label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                  <Icon icon='mdi:pencil' fontSize='1rem' />
+                                  <span><b>Observaciones:</b>  </span>
+                                </Box>
+                              }
+                            />
+                            {sub.disease ? sub.disease : "No presenta"}
                           </Typography>
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>

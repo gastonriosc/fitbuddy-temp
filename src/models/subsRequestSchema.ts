@@ -28,6 +28,10 @@ const subsRequestSchema = new mongoose.Schema({
   amount: {
     type: Number,
     require: true
+  },
+  disease: {
+    type: String,
+    require: true
   }
 })
 

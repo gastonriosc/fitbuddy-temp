@@ -84,7 +84,7 @@ const StudentInsight = () => {
   } = useForm<FormData>({
     defaultValues: {
       date: today,
-      weight: 1,
+      weight: undefined,
     },
     mode: 'onBlur',
     resolver: yupResolver(schema),
@@ -136,9 +136,6 @@ const StudentInsight = () => {
     setNuevoRegistro(false)
   }
 
-  // const handleOnChangeRangeForDialog = (date: any) => {
-  //   setStartDateRange(date);
-  // };
   const borrarRegistroPeso = (registroId: StudentInsightItem) => {
     setRegistroABorrar(registroId)
     setOpenDeleteRegistro(true)
@@ -337,7 +334,7 @@ const StudentInsight = () => {
           onClose={handlePopUpNuevoRegistro}
           aria-labelledby='user-view-plans'
           aria-describedby='user-view-plans-description'
-          sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '500px' } }}
+          sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '520px' } }}
 
         >
           <DialogTitle
@@ -405,8 +402,10 @@ const StudentInsight = () => {
                         type='number'
                         value={value}
                         onBlur={onBlur}
-                        onChange={onChange}
                         error={Boolean(errors.weight)}
+                        onChange={(e) => {
+                          onChange(e.target.value === '' ? undefined : e.target.value);
+                        }}
                       />
                     )}
                   />
