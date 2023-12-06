@@ -65,8 +65,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       }
     ])
-    console.log(trainers)
-
     if (trainers && trainers.length > 0) {
       console.log(trainers)
 

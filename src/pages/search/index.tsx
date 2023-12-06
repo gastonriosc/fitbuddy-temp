@@ -24,7 +24,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 // ** Custom Table Components Imports
 
 import Search from './search'
-import { Input } from '@mui/material'
 
 
 const UserList = () => {

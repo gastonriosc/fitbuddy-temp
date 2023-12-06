@@ -202,18 +202,15 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, follo
       (!genderFilter || user.gender === genderFilter) &&
       (!disciplineFilter || user.discipline === disciplineFilter) &&
       (!searchTerm || filterUsersByName([user], searchTerm).length > 0) &&
-      (!daysPerWeek ||
+      (
+        (!daysPerWeek && !intensity && !following) ||
         user.subscriptions.some(
-          (subscription) => subscription.daysPerWeek.toString() === daysPerWeek
-        )) &&
-      (!intensity ||
-        user.subscriptions.some(
-          (subscription) => subscription.intensity === intensity
-        )) &&
-      (!following ||
-        user.subscriptions.some(
-          (subscription) => subscription.following === following
-        ))
+          (subscription) =>
+            (!daysPerWeek || subscription.daysPerWeek.toString() === daysPerWeek) &&
+            (!intensity || subscription.intensity === intensity) &&
+            (!following || subscription.following === following)
+        )
+      )
   );
 
   return (
