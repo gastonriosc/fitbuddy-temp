@@ -45,10 +45,12 @@ const RequestPopUp = (props: Props) => {
     if (type === 'aceptar') {
       status = 'aceptada';
     }
-    else {
+    else if (type === 'rechazar') {
       status = 'rechazada';
     }
-    debugger
+    else if (type === 'cancelar') {
+      status = 'cancelada';
+    }
     try {
       const res = await fetch('/api/subsRequests', {
         method: 'PUT',

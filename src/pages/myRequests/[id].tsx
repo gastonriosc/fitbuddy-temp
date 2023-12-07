@@ -90,6 +90,13 @@ const MyRequests = () => {
     setTitle('rechazada');
   };
 
+  const cancelarSubsRequest = (sub: subsRequest) => {
+    setRequestPopUp(true);
+    setTypeAction('cancelar');
+    setSubsRequestId(sub._id);
+    setTitle('cancelada');
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const id = route.query.id;
@@ -241,11 +248,11 @@ const MyRequests = () => {
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((sub: subsRequest, index) => (
                 <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
-                  <Grid container spacing={6}>
-                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <Grid container spacing={0}>
+                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center', pt: 3, pl: 2 }}>
                       <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {esEntrenador && (<Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />)}
-                        {!esEntrenador && (<Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '130px', height: '130px' }} />)}
+                        {esEntrenador && (<Img alt='Avatar' src={sub.avatar} sx={{ width: '170px', height: '170px' }} />)}
+                        {!esEntrenador && (<Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '170px', height: '170px' }} />)}
                       </CardContent>
                     </StyledGrid2>
                     <StyledGrid1 item xs={12} md={10}>
@@ -259,11 +266,11 @@ const MyRequests = () => {
                               </Typography>
 
                             </Box>
-                            <Box>
+                            {/* <Box>
                               <Typography variant='h5' sx={{ mb: 2 }}>
                                 <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
                               </Typography>
-                            </Box>
+                            </Box> */}
                             <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
@@ -289,7 +296,7 @@ const MyRequests = () => {
                             <ul>
 
                               <li>
-                                Descripción de la solicitud: <b>{sub.description}</b>
+                                <b>Descripción de la solicitud:</b> {sub.description}
                               </li>
                               <li>
                                 Características del plan solicitado:
@@ -352,8 +359,8 @@ const MyRequests = () => {
                             {!esEntrenador && (<Button
                               variant='contained'
                               color='error'
-                              title='Rechazar'
-                              onClick={() => rechazarSubsRequest(sub)}
+                              title='Cancelar'
+                              onClick={() => cancelarSubsRequest(sub)}
                             >
                               Cancelar mi solicitud
                             </Button>)}
