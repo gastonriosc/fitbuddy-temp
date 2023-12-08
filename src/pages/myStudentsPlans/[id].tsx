@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -20,7 +21,7 @@ import CustomChip from 'src/@core/components/mui/chip'
 
 // import RequestPopUp from '../myRequests/requestPopUp';
 import { CardHeader, Divider, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
-import { sub } from 'date-fns';
+import ReportPopUp from '../plans/reporte/report';
 
 
 // Styled Grid component
@@ -62,6 +63,11 @@ const MyRequests = () => {
   const [filterOption, setFilterOption] = useState('asc');
   const [nameSubs, setNameSubs] = useState([])
   const itemsPerPage = 4; // Cantidad de elementos por página
+
+  const [planId, setPlanId] = useState<string>(null as any)
+  const [reportPopUp, setReportPopUp] = useState<boolean>(false)
+
+
   useEffect(() => {
     const fetchMyRequests = async () => {
       const id = route.query.id;
@@ -96,6 +102,12 @@ const MyRequests = () => {
 
     fetchMyRequests();
   }, []); // Actualizar cuando cambie la página actual
+
+
+  const handleReport = (planId: string) => {
+    setPlanId(planId)
+    setReportPopUp(true)
+  }
 
 
   const totalPages = Math.ceil(plan.length / itemsPerPage);
@@ -194,7 +206,7 @@ const MyRequests = () => {
                   //<Grid item lg={6} xs={12} md={4} key={index} padding={2}  >
 
                   <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
-                    <Card >
+                    <Card sx={{ opacity: new Date(OPlan.expirationDate) <= new Date() ? 0.7 : 1 }} >
                       <StyledGrid2 >
                         <Box display={'flex'} justifyContent={'center'}>
                           <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
@@ -260,6 +272,19 @@ const MyRequests = () => {
                                 <Icon icon='mdi:eye' />
                               </Button>
                             </Box>
+                            {new Date(OPlan.expirationDate) <= new Date() ? (
+                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                                <Button
+                                  variant='contained'
+                                  color='primary'
+                                  title='Reporte final'
+
+                                  onClick={() => handleReport(OPlan._id)}
+                                >
+                                  <Icon icon='bxs:report' />
+                                </Button>
+                              </Box>
+                            ) : null}
                           </CardContent>
                         </Box>
                       </StyledGrid1>
@@ -273,10 +298,11 @@ const MyRequests = () => {
               </Card>
             )}
           </Grid>
-          {/* </Card> */}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
+          <ReportPopUp reportPopUp={reportPopUp} handleReportPopUp={setReportPopUp} planId={planId}></ReportPopUp>
+
         </Grid >
         {/* <div>
           <Button onClick={prevPage} disabled={currentPage === 1}>

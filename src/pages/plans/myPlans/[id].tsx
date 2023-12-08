@@ -272,6 +272,7 @@ const MyRequests = () => {
                                 <Icon icon='mdi:eye' />
                               </Button>
                             </Box>
+
                             {new Date(OPlan.expirationDate) <= new Date() ? (
                               <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                                 <Button
@@ -279,7 +280,8 @@ const MyRequests = () => {
                                   color='primary'
                                   title='Reporte final'
 
-                                  onClick={() => handleReport(OPlan._id)}
+                                  onClick={() => handleReport(OPlan._id)
+                                  }
                                 >
                                   <Icon icon='bxs:report' />
                                 </Button>
@@ -302,7 +304,7 @@ const MyRequests = () => {
           {/* </Card> */}
           <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'} >
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
-          </Box>
+          </Box >
           <ReportPopUp reportPopUp={reportPopUp} handleReportPopUp={setReportPopUp} planId={planId}></ReportPopUp>
         </Grid >
         {/* <div>
