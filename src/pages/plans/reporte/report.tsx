@@ -283,7 +283,7 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
             name='disease'
             value={observations || ''}
             onChange={(e) => setObservations(e.target.value)}
-            disabled={messageSent}
+            disabled={messageSent || !esAlumno}
 
           />
 
@@ -311,7 +311,7 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
                 sx={{ mr: 4 }}
                 onChange={(event, newValues) => setvalueProgress(newValues)}
                 onChangeActive={(event, newHovers) => sethoverProgress(newHovers)}
-                disabled={messageSent}
+                disabled={messageSent || !esAlumno}
 
               />
               {valueProgress !== null && <Typography>{labelsProgress[hoverProgress !== -1 ? hoverProgress : valueProgress]}</Typography>}
@@ -341,7 +341,7 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
                 sx={{ mr: 4 }}
                 onChange={(event, newValues) => setvalueTrainerSupport(newValues)}
                 onChangeActive={(event, newHovers) => sethoverTrainerSupport(newHovers)}
-                disabled={messageSent}
+                disabled={messageSent || !esAlumno}
               />
               {valueTrainerSupport !== null && <Typography>{labelsTrainerSupport[hoverTrainerSupport !== -1 ? hoverTrainerSupport : valueTrainerSupport]}</Typography>}
             </Box>
@@ -371,7 +371,7 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
                 sx={{ mr: 4 }}
                 onChange={(event, newValues) => setvalueRecommend(newValues)}
                 onChangeActive={(event, newHovers) => sethoverRecommend(newHovers)}
-                disabled={messageSent}
+                disabled={messageSent || !esAlumno}
               />
               {valueRecommend !== null && <Typography>{labelsRecommend[hoverRecommend !== -1 ? hoverRecommend : valueRecommend]}</Typography>}
             </Box>
