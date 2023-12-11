@@ -145,7 +145,7 @@ const StudentInsight = () => {
   const hadleCloseDeleteRegistroPopUp = () => {
     setOpenDeleteRegistro(false)
   }
-  console.log(dataPeso)
+
   useEffect(() => {
     const fetchMyTracking = async () => {
       const id = route.query.id;
@@ -186,17 +186,7 @@ const StudentInsight = () => {
     const { date, weight } = data;
     let requestBody;
 
-    const isDuplicate = dataPeso?.data.some((item: any) => {
-      return formatDate(new Date(item.date)) === formatDate(date);
-    });
 
-    if (isDuplicate) {
-      setIsDuplicateDate(true);
-
-      return;
-    } else {
-      setIsDuplicateDate(false);
-    }
     if (openDeleteRegistro) {
       requestBody = {
         id: studentId,
@@ -208,6 +198,17 @@ const StudentInsight = () => {
         },
       };
     } else {
+      const isDuplicate = dataPeso?.data.some((item: any) => {
+        return formatDate(new Date(item.date)) === formatDate(date);
+      });
+
+      if (isDuplicate) {
+        setIsDuplicateDate(true);
+
+        return;
+      } else {
+        setIsDuplicateDate(false);
+      }
       requestBody = {
         id: studentId,
         data: {
