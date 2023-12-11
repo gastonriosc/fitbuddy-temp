@@ -67,10 +67,7 @@ const MyRequests = () => {
   const [reportPopUp, setReportPopUp] = useState<boolean>(false)
   const itemsPerPage = 4; // Cantidad de elementos por página
 
-  const handleReport = (planId: string) => {
-    setPlanId(planId)
-    setReportPopUp(true)
-  }
+
 
   console.log(plan)
   useEffect(() => {
@@ -107,8 +104,16 @@ const MyRequests = () => {
     };
 
     fetchMyRequests();
+
+    return () => {
+      setCurrentPage(1); // Reset current page when component unmounts
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleReport = (planId: string) => {
+    setPlanId(planId)
+    setReportPopUp(true)
+  }
 
   const totalPages = Math.ceil(plan.length / itemsPerPage);
 
@@ -123,25 +128,7 @@ const MyRequests = () => {
             />
             <CardContent>
               <Grid container spacing={6}>
-                {/* <Grid item sm={4} xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='search-input-plan'>Plan</InputLabel>
-                    <Select
-                      label='Plan'
-                      fullWidth
-                      value={filterPlan}
-                      id='search-input-plan'
-                      onChange={(e) => setFilterPlan(e.target.value)}
-                    >
-                      <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs: any, index) => (
-                        <MenuItem key={index} value={subs.name}>
-                          {subs.name.toUpperCase()}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid> */}
+
                 <Grid item sm={6} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Fecha</InputLabel>
@@ -155,13 +142,7 @@ const MyRequests = () => {
                       <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
                       <MenuItem value='desc'>MAS RECIENTES</MenuItem>
                     </Select>
-                    {/* <Input
-                      fullWidth
-                      value={filterDate}
-                      id='search-input'
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
-                    /> */}
+
                   </FormControl>
                 </Grid>
                 <Grid item sm={6} xs={12}>
@@ -200,7 +181,7 @@ const MyRequests = () => {
                   }
                 })
                 .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .map((OPlan: planType, sub: any, index) => (
+                .map((OPlan: planType, index) => (
 
 
                   <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
@@ -302,9 +283,11 @@ const MyRequests = () => {
             )}
           </Grid >
           {/* </Card> */}
-          <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'} >
-            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
-          </Box >
+          {plan.length > 0 && (
+            <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
+              <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+            </Box>
+          )}
           <ReportPopUp reportPopUp={reportPopUp} handleReportPopUp={setReportPopUp} planId={planId}></ReportPopUp>
         </Grid >
         {/* <div>
