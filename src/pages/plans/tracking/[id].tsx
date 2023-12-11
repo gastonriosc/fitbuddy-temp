@@ -583,7 +583,8 @@ const Tracking = () => {
               px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ alignItems: 'center', mb: -6 }}>
+
               <Rating
                 value={value}
                 precision={1}
@@ -593,7 +594,11 @@ const Tracking = () => {
                 onChange={(event, newValue) => setValue(newValue)}
                 onChangeActive={(event, newHover) => setHover(newHover)}
               />
-              {value !== null && <Typography>{labels[hover !== -1 ? hover : value]}</Typography>}
+              <Box>
+
+                {value !== null && <Typography>{labels[hover !== -1 ? hover : value]}</Typography>}
+              </Box>
+
             </Box>
           </Box>
         </Box>
@@ -611,7 +616,7 @@ const Tracking = () => {
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ mb: -6, alignItems: 'center' }}>
 
             <Rating
               value={valueDifficult}
@@ -639,7 +644,7 @@ const Tracking = () => {
             px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ mb: -3, alignItems: 'center' }}>
 
             <Rating
               value={valueFatigue}
