@@ -38,6 +38,7 @@ const ChartNuevosUsuarios = ({ insights }: Props) => {
 
     for (let i = 0; i < numberOfMondays; i++) {
       const nextMonday = getNextMonday(addWeeks(currentDate, -i));
+      nextMonday.setHours(0, 0, 0, 0);
       mondaysArray.unshift(format(nextMonday, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
     }
 
@@ -45,7 +46,7 @@ const ChartNuevosUsuarios = ({ insights }: Props) => {
   }
 
 
-
+  console.log(lunesSemanales)
   const contarFechasPorSemana = (fechasBaseDatos: string[], fechasSemanas: string[]): number[] => {
     const contadorSemanas: number[] = Array(fechasSemanas.length).fill(0);
 
