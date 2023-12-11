@@ -548,7 +548,7 @@ const Tracking = () => {
                         />
                       }
                       minDate={tracking?.date}
-                      maxDate={tracking?.expirationDate}
+                      maxDate={new Date()}
                       includeDates={getIncludedDates(tracking)}
                     />
                   </DatePickerWrapper>
