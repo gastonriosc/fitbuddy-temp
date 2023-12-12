@@ -234,7 +234,7 @@ const MyProfile = () => {
     };
 
     fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
-  }, []);
+  }, [route.query.id]);
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
     const subsId = editSubs?._id || deletedSubs?._id
