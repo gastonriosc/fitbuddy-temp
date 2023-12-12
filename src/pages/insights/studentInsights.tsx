@@ -25,7 +25,7 @@ import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableR
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
-import { format, addDays } from 'date-fns';
+import { format, addDays, addYears } from 'date-fns';
 import TrackingPopUp from '../plans/tracking/trackingPopUp'
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -104,13 +104,33 @@ const StudentInsight = () => {
   const [registroABorrar, setRegistroABorrar] = useState<StudentInsightItem>()
   const itemsPerPage = 5;
   const totalPages = Math.ceil(dataPeso?.data.length / itemsPerPage);
-  const transformarDatosAFormatoSeries = (datos: StudentInsight) => {
+  const currentEndDate = new Date();
+  currentEndDate.setHours(0, 0, 0, 0);
+  const currentDate = new Date();
+  currentDate.setHours(23, 59, 59, 0);
+  const [startDate, setStartDate] = useState<DateType>(addDays(currentEndDate, -30))
+  const [endDate, setEndDate] = useState<DateType>(currentDate)
+
+
+  const handleOnChangeDates = (dates: any) => {
+    const [start, end] = dates
+    setStartDate(start);
+    setEndDate(end);
+    console.log('modificado:', startDate, endDate)
+
+  };
+
+
+
+  console.log('fechas: ', startDate, endDate)
+  const transformarDatosAFormatoSeries = (datos: StudentInsight, startDate: DateType, endDate: DateType) => {
     const seriesTransformadas = {
       data: datos?.data
         .map(item => ({
           weight: item.weight,
           date: new Date(item.date), // Mantener la fecha como objeto
         }))
+        .filter(item => item.date >= startDate && item.date <= endDate?.setHours(23, 59, 59, 0))
         .sort((a, b) => a.date.getTime() - b.date.getTime()) // Ordenar directamente por fecha
         .map(item => ({
           weight: item.weight,
@@ -124,12 +144,12 @@ const StudentInsight = () => {
   const formatDate = (date: Date): string => {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString();
+    const year = date.getFullYear().toString().slice(-2);
 
     return `${day}/${month}/${year}`;
   };
 
-  const series = transformarDatosAFormatoSeries(dataPeso);
+  const series = transformarDatosAFormatoSeries(dataPeso, startDate, endDate);
 
   const route = useRouter()
 
@@ -281,7 +301,7 @@ const StudentInsight = () => {
         <Box sx={{}}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'column', lg: 'row' } }}>
             <Box sx={{ width: { xs: '100%', md: '100%', lg: '75%' }, padding: 1, mt: 4 }}>
-              <ChartRegistroPesos direction='ltr' data={series.data} dataPeso={userPeso}></ChartRegistroPesos>
+              <ChartRegistroPesos direction='ltr' data={series.data} dataPeso={userPeso} startDate={startDate} endDate={endDate} handleOnChangeDates={handleOnChangeDates}></ChartRegistroPesos>
             </Box>
             <Box sx={{ width: { xs: '100%', md: '100%', lg: '25%' }, padding: 1, mt: 4, height: '463px' }}>
               <Card sx={{ height: '463px' }}>
@@ -350,7 +370,7 @@ const StudentInsight = () => {
           onClose={handlePopUpNuevoRegistro}
           aria-labelledby='user-view-plans'
           aria-describedby='user-view-plans-description'
-          sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '520px' } }}
+          sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 660, height: '560px' } }}
 
         >
           <DialogTitle

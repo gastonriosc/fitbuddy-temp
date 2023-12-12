@@ -4,9 +4,11 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-
-// ** Third Party Imports
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
+import DatePicker from 'react-datepicker'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import CustomInput from '../../../views/forms/form-elements/pickers/PickersCustomInput'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { DateType } from 'src/types/forms/reactDatepickerTypes'
 
 interface DataItem {
   weight: number
@@ -16,59 +18,65 @@ interface Props {
   direction: 'ltr' | 'rtl'
   data: DataItem[];
   dataPeso: number
+  startDate: DateType
+  endDate: DateType
+  handleOnChangeDates: (dates: any) => void;
 }
 
-const CustomTooltip = (props: TooltipProps<any, any>) => {
+const CustomTooltip = (props) => {
   // ** Props
-  const { active, payload } = props
+  const { active, payload, label } = props;
 
   if (active && payload) {
     return (
-      <div className='recharts-custom-tooltip'>
-        <Typography sx={{ fontSize: '0.875rem' }}>{`${payload[0].value}`}</Typography>
+      <div >
+        <Typography sx={{ fontSize: '0.875rem' }}>{`Fecha: ${label}`}</Typography>
+        <Typography sx={{ fontSize: '0.875rem' }}>{`Peso: ${payload[0].value}kg`}</Typography>
       </div>
-    )
+    );
   }
 
-  return null
-}
+  return null;
+};
 
-const ChartRegistroPesos = ({ direction, data, dataPeso }: Props) => {
-  const totalTicks = 8;
+const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, handleOnChangeDates }: Props) => {
 
-  // Asegurarte de tener al menos dos fechas para mostrar (la primera y la última)
-  const availableDates = data.length >= 2 ? data : [{ date: new Date() }, { date: new Date() }];
+  // const encontrarPesoMasBajo = (data: DataItem[]): number | undefined => {
 
-  const ticks = Array.from({ length: totalTicks }, (_, index) => {
-    if (index === 0) {
-      return availableDates[0].date; // El primer tick corresponde a la primera fecha
-    } else if (index === totalTicks - 1) {
-      return availableDates[availableDates.length - 1].date; // El último tick corresponde a la última fecha
-    } else {
-      const interval = Math.floor((availableDates.length - 1) / (totalTicks - 1));
-      const tickIndex = index * interval;
-
-      return availableDates[tickIndex].date;
-    }
-  });
-  console.log(ticks)
-  console.log(data)
-  const encontrarPesoMasBajo = (data: DataItem[]): number | undefined => {
-
-    let pesoMasBajo = data[0].weight;
+  //   let pesoMasBajo = data[0].weight;
 
 
-    for (let i = 1; i < data.length; i++) {
-      const pesoActual = data[i].weight;
-      if (pesoActual < pesoMasBajo) {
-        pesoMasBajo = pesoActual;
-      }
-    }
+  //   for (let i = 1; i < data.length; i++) {
+  //     const pesoActual = data[i].weight;
+  //     if (pesoActual < pesoMasBajo) {
+  //       pesoMasBajo = pesoActual;
+  //     }
+  //   }
 
-    return pesoMasBajo;
-  };
+  //   return pesoMasBajo;
+  // };
 
-  const pesoMasBajo = encontrarPesoMasBajo(data);
+  // const pesoMasBajo = encontrarPesoMasBajo(data);
+
+  // const encontrarPesoMasAlto = (data: DataItem[]): number | undefined => {
+
+  //   let pesoMasAlto = data[0].weight;
+
+
+  //   for (let i = 1; i < data.length; i++) {
+  //     const pesoActual = data[i].weight;
+  //     if (pesoActual > pesoMasAlto) {
+  //       pesoMasAlto = pesoActual;
+  //     }
+  //   }
+
+  //   return pesoMasAlto;
+  // };
+
+  // const pesoMasAlto = encontrarPesoMasAlto(data);
+
+
+
 
   return (
     <Card>
@@ -82,6 +90,29 @@ const ChartRegistroPesos = ({ direction, data, dataPeso }: Props) => {
           '& .MuiCardHeader-action': { mb: 0 },
           '& .MuiCardHeader-content': { mb: [2, 0] }
         }}
+        action={
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+              <DatePicker
+                selectsRange
+                maxDate={new Date()}
+                endDate={endDate}
+                dateFormat='dd/MM/yyyy'
+                selected={startDate}
+
+                startDate={startDate}
+                id='date-range-picker'
+                onChange={(dates: any) => handleOnChangeDates(dates)}
+                shouldCloseOnSelect={false}
+
+                customInput={
+                  <CustomInput label='Seleccione rango' />
+                }
+              />
+            </DatePickerWrapper>
+          </Box>
+
+        }
       />
       <CardContent>
         <Box sx={{ height: 350 }}>
@@ -98,7 +129,12 @@ const ChartRegistroPesos = ({ direction, data, dataPeso }: Props) => {
                 reversed={direction === 'rtl'}
 
               />
-              <YAxis orientation={direction === 'rtl' ? 'right' : 'left'} domain={[pesoMasBajo]} />
+              <YAxis
+                orientation={direction === 'rtl' ? 'right' : 'left'}
+
+              // domain={[pesoMasBajo, pesoMasAlto]}
+
+              />
               <Tooltip content={CustomTooltip} />
               <Line dataKey='weight' stroke='#ff9f43' strokeWidth={3} />
             </LineChart>
