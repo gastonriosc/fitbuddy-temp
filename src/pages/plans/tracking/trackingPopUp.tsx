@@ -28,7 +28,6 @@ const TrackingPopUp = (props: Props) => {
   const handleCloseTrackingPopUp = () => {
     setTrackingPopUp(false);
 
-    window.location.reload();
   };
 
   return (

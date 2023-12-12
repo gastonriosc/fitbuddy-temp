@@ -14,6 +14,7 @@ import ChartIngresosAnualesEntrenador from './charts/chartIngresosAnuales'
 import ChartIngresosMensualesEntrenador from './charts/chartIngresosMensuales'
 import CircularProgress from '@mui/material/CircularProgress';
 import ChartSubsMasSolicitadas from './charts/chartSubsMasSolicitadas';
+import ChartSubsUltimoAño from './charts/chartSubsUltimoAño';
 
 interface amount {
   amount: number;
@@ -30,7 +31,10 @@ const TrainerInsights = () => {
   const [isLoading, setIsLoading] = useState(true);
   const route = useRouter();
   const [year, setYear] = useState<DateType>(new Date());
-  const [yearSubs, setYearSubs] = useState<DateType>(new Date());
+  const thisYear = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1)
+  const [yearSubs, setYearSubs] = useState<DateType>(lastYear);
 
   const updateYear = (newYear: DateType) => {
     setYear(newYear);
@@ -83,8 +87,44 @@ const TrainerInsights = () => {
   const dataAnual = obtenerDatosAnuales(montosAnuales, year?.getFullYear());
   const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === year?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
 
-  //!SUBS MAS SOLICITADAS
+
   const [subsMasSolicitadas, setSubsMasSolicitadas] = useState<PopularSubs[]>()
+
+  //!SUBS MAS SOLICITADAS ESTE AÑO
+
+  const obtenerSubsMasSolicitadasAnual = (subsMasSolicitadas: PopularSubs[] | undefined, year: number | undefined) => {
+    const monthlyStats: Record<string, number[]> = {};
+
+    subsMasSolicitadas?.forEach((sub: PopularSubs) => {
+      const date = new Date(sub.date);
+      const subMonth = date.getMonth() + 1;
+      const subYear = date.getFullYear();
+
+      if (subYear === year && subMonth <= new Date().getMonth() + 1) {
+        const subsId = sub.subscriptionId;
+
+        if (!monthlyStats[subsId]) {
+          monthlyStats[subsId] = Array(12).fill(0);
+        }
+
+        monthlyStats[subsId][subMonth - 1]++;
+      }
+    });
+
+    const series = Object.keys(monthlyStats).map(subsId => ({
+      name: subsMasSolicitadas?.find(sub => sub.subscriptionId === subsId)?.subsName || 'Sin Nombre',
+      data: monthlyStats[subsId],
+    }));
+
+    return series;
+  };
+
+  const seriesSubsMasSolicitadasAnual = obtenerSubsMasSolicitadasAnual(subsMasSolicitadas, thisYear.getFullYear())
+  const totalSubsAnual = seriesSubsMasSolicitadasAnual.reduce((total, serie) => total.map((value, i) => value + (serie.data[i] || 0)), Array(12).fill(0));
+  const totalGeneralAnual = totalSubsAnual.reduce((acc, count) => acc + count, 0);
+
+  //!SUBS MAS SOLICITADAS AÑO VARIABLE
+
 
   const obtenerSubsMasSolicitadas = (subsMasSolicitadas: PopularSubs[] | undefined, year: number | undefined) => {
     const monthlyStats: Record<string, number[]> = {};
@@ -114,7 +154,6 @@ const TrainerInsights = () => {
   };
 
   const seriesSubsMasSolicitadas = obtenerSubsMasSolicitadas(subsMasSolicitadas, yearSubs?.getFullYear())
-  console.log(seriesSubsMasSolicitadas)
   const totalSubs = seriesSubsMasSolicitadas.reduce((total, serie) => total.map((value, i) => value + (serie.data[i] || 0)), Array(12).fill(0));
   const totalGeneral = totalSubs.reduce((acc, count) => acc + count, 0);
 
@@ -160,6 +199,9 @@ const TrainerInsights = () => {
       <Grid>
         <Box sx={{ mb: 5 }}>
           <ChartIngresosMensualesEntrenador direction='ltr' data={dataMensual} total={totalMensual}></ChartIngresosMensualesEntrenador>
+        </Box>
+        <Box sx={{ mb: 5 }}>
+          <ChartSubsUltimoAño series={seriesSubsMasSolicitadasAnual} year={thisYear} total={totalGeneralAnual}></ChartSubsUltimoAño>
         </Box>
         <Box sx={{ mb: 5 }}>
           <ChartSubsMasSolicitadas series={seriesSubsMasSolicitadas} year={yearSubs} total={totalGeneral} updateYear={updateYearSubs}></ChartSubsMasSolicitadas>

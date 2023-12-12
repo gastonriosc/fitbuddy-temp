@@ -15,6 +15,7 @@ import { DateType } from 'src/types/forms/reactDatepickerTypes';
 import ChartIngresosMensualesEntrenador from '../insights/charts/chartIngresosMensuales'
 import ChartIngresosAnualesEntrenador from '../insights/charts/chartIngresosAnuales'
 import ChartNuevosUsuarios from './chartNuevosUsuarios'
+import ChartNuevosUsuariosAnual from './chatNuevosUsuariosAnual'
 
 interface User {
   role: string,
@@ -36,7 +37,10 @@ const AdminInsights = () => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const [yearIngresos, setYearIngresos] = useState<DateType>(new Date());
-  const [yearUsuarios, setYearUsuarios] = useState<DateType>(new Date());
+  const thisYear = new Date();
+  const lastYear = new Date();
+  lastYear.setFullYear(lastYear.getFullYear() - 1)
+  const [yearUsuarios, setYearUsuarios] = useState<DateType>(lastYear);
 
   const updateYearIngresos = (newYear: DateType) => {
     setYearIngresos(newYear);
@@ -88,8 +92,51 @@ const AdminInsights = () => {
   const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === yearIngresos?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
   console.log(montosAnuales)
 
-  //! USUARIOS ANUALES
-  console.log(newUsers)
+  //! USUARIOS ESTE AÑO
+
+  const monthlyStatsAnual = {
+    Entrenadores: Array(12).fill(0),
+    Alumnos: Array(12).fill(0),
+  };
+
+  const obtenerNuevosUsuariosAnual = (users: User[] | undefined, year: DateType | undefined) => {
+    users?.forEach((user: User) => {
+      const registrationDate = new Date(user.registrationDate);
+
+      const userMonth = registrationDate.getMonth() + 1;
+      const userYear = registrationDate.getFullYear();
+
+      if (userYear === year?.getFullYear() && userMonth <= currentMonth) {
+        if (user.role === 'Entrenador') {
+          monthlyStatsAnual.Entrenadores[userMonth - 1]++;
+        } else if (user.role === 'Alumno') {
+          monthlyStatsAnual.Alumnos[userMonth - 1]++;
+        }
+      }
+    });
+
+    const series = [
+      {
+        name: 'Entrenadores',
+        data: monthlyStatsAnual.Entrenadores,
+      },
+      {
+        name: 'Alumnos',
+        data: monthlyStatsAnual.Alumnos,
+      },
+    ];
+
+    return series
+  }
+
+  const seriesUsuariosAnual = obtenerNuevosUsuariosAnual(newUsers, thisYear)
+  const totalEntrenadoresAnual = monthlyStatsAnual.Entrenadores.reduce((acc, count) => acc + count, 0);
+  const totalAlumnosAnual = monthlyStatsAnual.Alumnos.reduce((acc, count) => acc + count, 0);
+  const totalUsuariosAnual = totalEntrenadoresAnual + totalAlumnosAnual;
+
+
+  //! USUARIOS ANUALES SELECCIONABLE
+
   const monthlyStats = {
     Entrenadores: Array(12).fill(0),
     Alumnos: Array(12).fill(0),
@@ -129,6 +176,7 @@ const AdminInsights = () => {
   const totalEntrenadores = monthlyStats.Entrenadores.reduce((acc, count) => acc + count, 0);
   const totalAlumnos = monthlyStats.Alumnos.reduce((acc, count) => acc + count, 0);
   const totalUsuarios = totalEntrenadores + totalAlumnos;
+
 
   useEffect(() => {
     const fetchMyRequests = async () => {
@@ -170,6 +218,9 @@ const AdminInsights = () => {
       <Grid >
         <Box>
           <ChartIngresosMensualesEntrenador direction='ltr' data={dataMensual} total={totalMensual}></ChartIngresosMensualesEntrenador>
+        </Box>
+        <Box sx={{ mt: 5 }}>
+          <ChartNuevosUsuariosAnual series={seriesUsuariosAnual} total={totalUsuariosAnual} year={thisYear} ></ChartNuevosUsuariosAnual>
         </Box>
         <Box sx={{ mt: 5 }}>
           <ChartNuevosUsuarios series={seriesUsuarios} total={totalUsuarios} year={yearUsuarios} updateYear={updateYearUsuarios}></ChartNuevosUsuarios>
