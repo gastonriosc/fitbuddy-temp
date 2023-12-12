@@ -108,7 +108,7 @@ const StudentInsight = () => {
   currentEndDate.setHours(0, 0, 0, 0);
   const currentDate = new Date();
   currentDate.setHours(23, 59, 59, 0);
-  const [startDate, setStartDate] = useState<DateType>(addDays(currentEndDate, -30))
+  const [startDate, setStartDate] = useState<DateType>(addDays(currentEndDate, -183))
   const [endDate, setEndDate] = useState<DateType>(currentDate)
 
 

@@ -130,7 +130,7 @@ const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, han
 
               />
               <YAxis
-                orientation={direction === 'rtl' ? 'right' : 'left'}
+                orientation={direction === 'rtl' ? 'right' : 'left'} domain={[50, 62]}
 
               // domain={[pesoMasBajo, pesoMasAlto]}
 
