@@ -553,8 +553,7 @@ const MyPlans = () => {
                                 <TableCell>Repeticiones</TableCell>
                                 <TableCell>Peso</TableCell>
                                 <TableCell align='left'>Link</TableCell>
-                                {esEntrenador && (
-
+                                {esEntrenador && new Date(plan.expirationDate) > new Date() && (
                                   <TableCell>Acciones</TableCell>
                                 )}
                               </TableRow>
@@ -690,7 +689,7 @@ const MyPlans = () => {
                                   </TableCell>
 
                                   <TableCell>
-                                    {esEntrenador && (
+                                    {esEntrenador && new Date(plan.expirationDate) > new Date() && (
                                       <div style={{ display: 'flex', alignItems: 'center' }}>
                                         {editingExerciseIndices[dayIndex] === exerciseIndex ? (
                                           <>

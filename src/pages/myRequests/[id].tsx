@@ -52,7 +52,7 @@ interface subsRequest {
   subscriptionIntensity: string
   trainerName: string
   trainerAvatar: string
-
+  expirationDate: string
 }
 
 const MyRequests = () => {
@@ -67,12 +67,13 @@ const MyRequests = () => {
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [filterOption, setFilterOption] = useState('asc');
+  const [filterOption, setFilterOption] = useState('desc');
+  const [filterState, setFilterState] = useState<string>('vigentes');
   const [nameSubs, setNameSubs] = useState([])
 
   const session = useSession();
 
-  const itemsPerPage = 2; // Cantidad de elementos por página
+  const itemsPerPage = 3;
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');
@@ -113,6 +114,7 @@ const MyRequests = () => {
 
           if (res1.status === 200) {
             const data1 = await res1.json();
+            console.log('data1:', data1)
             setSubsRequest(data1.subsRequest);
             setNameSubs(data1.nameSubs);
             setIsLoading(true);
@@ -132,6 +134,7 @@ const MyRequests = () => {
 
           if (res2.status === 200) {
             const data2 = await res2.json();
+            console.log('data2:', data2)
             setSubsRequest(data2.subsRequest);
             setNameSubs(data2.nameSubs);
             setIsLoading(true);
@@ -163,7 +166,7 @@ const MyRequests = () => {
             />
             <CardContent>
               <Grid container spacing={6}>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input-plan'>Plan</InputLabel>
                     <Select
@@ -174,15 +177,16 @@ const MyRequests = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {subsRequest.map((subs: subsRequest, index) => (
-                        <MenuItem key={index} value={subs.subscriptionName}>
-                          {subs.subscriptionName.toUpperCase()}
+                      {Array.from(new Set(subsRequest.map((subs: subsRequest) => subs.subscriptionName))).map((uniqueSubscriptionName, index) => (
+                        <MenuItem key={index} value={uniqueSubscriptionName}>
+                          {uniqueSubscriptionName.toUpperCase()}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
+
                 </Grid>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Fecha</InputLabel>
                     <Select
@@ -195,16 +199,26 @@ const MyRequests = () => {
                       <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
                       <MenuItem value='desc'>MAS RECIENTES</MenuItem>
                     </Select>
-                    {/* <Input
-                      fullWidth
-                      value={filterDate}
-                      id='search-input'
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
-                    /> */}
+
                   </FormControl>
                 </Grid>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Estado</InputLabel>
+                    <Select
+                      label='Estado'
+                      fullWidth
+                      value={filterState}
+                      id='search-input'
+                      onChange={(e) => setFilterState(e.target.value)}
+                    >
+                      <MenuItem value='vigentes'>VIGENTES</MenuItem>
+                      <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
+                    </Select>
+
+                  </FormControl>
+                </Grid>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Nombre</InputLabel>
                     <Input
@@ -235,6 +249,13 @@ const MyRequests = () => {
                     sub.subscriptionName.toLowerCase().includes(lowercaseFilterPlan);
                 }
               })
+              .filter((sub: subsRequest) => {
+                if (filterState === 'vigentes') {
+                  return new Date(sub.expirationDate) > new Date();
+                } else {
+                  return new Date(sub.expirationDate) <= new Date();
+                }
+              })
               .sort((a: any, b: any) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
@@ -247,7 +268,7 @@ const MyRequests = () => {
               })
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((sub: subsRequest, index) => (
-                <Card key={index} sx={{ marginBottom: 2, marginTop: 2 }}>
+                <Card key={index} sx={{ marginBottom: 2, marginTop: 2, opacity: new Date(sub.expirationDate) <= new Date() ? 0.7 : 1 }}  >
                   <Grid container spacing={0}>
                     <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center', pt: 3, pl: 2 }}>
                       <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -266,11 +287,7 @@ const MyRequests = () => {
                               </Typography>
 
                             </Box>
-                            {/* <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
-                              </Typography>
-                            </Box> */}
+
                             <Box>
 
                               <Typography variant='h5' sx={{ mb: 2 }}>
@@ -334,7 +351,7 @@ const MyRequests = () => {
                         </CardContent>
                         <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            {esEntrenador && (
+                            {esEntrenador && new Date(sub.expirationDate) > new Date() && (
                               <Button
                                 variant='contained'
                                 color='success'
@@ -347,7 +364,7 @@ const MyRequests = () => {
 
                           </Box>
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            {esEntrenador && (<Button
+                            {esEntrenador && new Date(sub.expirationDate) > new Date() && (<Button
                               variant='contained'
                               color='error'
                               title='Rechazar'
@@ -356,14 +373,15 @@ const MyRequests = () => {
                               <Icon icon='line-md:cancel' />
                             </Button>)}
 
-                            {!esEntrenador && (<Button
-                              variant='contained'
-                              color='error'
-                              title='Cancelar'
-                              onClick={() => cancelarSubsRequest(sub)}
-                            >
-                              Cancelar mi solicitud
-                            </Button>)}
+                            {esEntrenador || new Date(sub.expirationDate) > new Date() && (
+                              <Button
+                                variant='contained'
+                                color='error'
+                                title='Cancelar'
+                                onClick={() => cancelarSubsRequest(sub)}
+                              >
+                                Cancelar mi solicitud
+                              </Button>)}
                           </Box>
 
                           <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -393,14 +411,6 @@ const MyRequests = () => {
             <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
           </Box>
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-          </Button>
-          <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-          </Button>
-        </div> */}
         < RequestPopUp
           requestPopUp={requestPopUp}
           setRequestPopUp={setRequestPopUp}

@@ -207,9 +207,8 @@ const MyProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const id = route.query.id       //Funcion asincrona que hace la llamada a la API de students.
+      const id = route.query.id
       try {
-        // ** Login API Call to match the user credentials and receive user data in response along with his role
         const res = await fetch('/api/myProfile/?id=' + id, {
           method: 'GET',
           headers: {
@@ -233,7 +232,7 @@ const MyProfile = () => {
       }
     };
 
-    fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
+    fetchProfile();
   }, [route.query.id]);
 
   const updateSubscription: SubmitHandler<FieldValues> = async (data) => {
@@ -303,6 +302,21 @@ const MyProfile = () => {
     }
   }
 
+  const [followingMessage, setFollowingMessage] = useState<string>('');
+
+  const handleFollowingChange = (selectedValue: string) => {
+    if (selectedValue === 'alto') {
+      setFollowingMessage('Seguimiento alto equivale entre 6-8 hs por semana.');
+    } else if (selectedValue === 'intermedio') {
+      setFollowingMessage('Seguimiento intermedio equivale entre 4-6 horas por semana.');
+    } else if (selectedValue === 'bajo') {
+      setFollowingMessage('Seguimiento bajo equivale entre 2-4 horas por semana.');
+    }
+    else {
+      setFollowingMessage('');
+    }
+  };
+
   const sendSubscriptionRequest: SubmitHandler<FieldValues> = async (data) => {
     const { description } = data;
     console.log(description)
@@ -312,17 +326,23 @@ const MyProfile = () => {
     const subscriptionId = sendSubsRequest?._id
     const { disease } = data
     console.log(disease)
+
     const amount = sendSubsRequest?.amount
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours())
     const formattedDate = currentDate.toISOString();
+
+    const expirationDate = new Date(currentDate);
+    expirationDate.setDate(expirationDate.getDate() + 7);
+    const formattedExpirationDate = expirationDate.toISOString();
+
     try {
       const res = await fetch('/api/subsRequests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, disease, date: formattedDate })
+        body: JSON.stringify({ description, status, trainerId, studentId, subscriptionId, amount, disease, date: formattedDate, expirationDate: formattedExpirationDate })
       })
       if (res.status == 200) {
         hanldeSubscriptionRequest()
@@ -461,7 +481,22 @@ const MyProfile = () => {
                           <li>Intensidad: <b> {sub?.intensity?.toUpperCase()} </b> </li>
                         </ul>
                         <ul>
-                          <li>Seguimiento: <b> {sub?.following?.toUpperCase()} </b> </li>
+                          <li>
+                            <div>
+                              Seguimiento: <b>{sub?.following?.toUpperCase()}</b>
+                            </div>
+                            {sub?.following?.toUpperCase() === 'ALTO' && (
+                              <div style={{ fontSize: 'small' }}> (Más de 6hs por semana)</div>
+                            )}
+                            {sub?.following?.toUpperCase() === 'INTERMEDIO' && (
+                              <div style={{ fontSize: 'small' }}> (Entre 4 y 6 hs por semana)</div>
+                            )}
+                            {sub?.following?.toUpperCase() === 'BAJO' && (
+                              <div style={{ fontSize: 'small' }}> (Entre 2 y 4 hs por semana)</div>
+                            )}
+                          </li>
+
+
                         </ul>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 2, color: 'text.secondary' } }}>
@@ -661,8 +696,11 @@ const MyProfile = () => {
                                   type='string'
                                   value={value}
                                   onBlur={onBlur}
-                                  onChange={onChange}
-                                  error={Boolean(updateErrors.following)}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    handleFollowingChange(e.target.value);
+                                  }}
+                                  error={Boolean(errors.following)}
                                 >
                                   {/* Opciones de MenuItem */}
                                   <MenuItem value='bajo'>Bajo</MenuItem>
@@ -678,6 +716,15 @@ const MyProfile = () => {
                             </FormHelperText>
                           )}
                         </FormControl>
+
+                        <div style={{ fontSize: 'small', marginTop: '-5px', marginBottom: '15px' }}>
+                          {followingMessage && (
+                            <>
+                              <Icon icon='mdi:info' style={{ fontSize: '16px', marginRight: '4px' }}></Icon>
+                              {followingMessage}
+                            </>
+                          )}
+                        </div>
 
 
                         <FormControl fullWidth sx={{ mb: 4 }}>

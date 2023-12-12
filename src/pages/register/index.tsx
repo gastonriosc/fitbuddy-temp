@@ -24,7 +24,7 @@ import Icon from 'src/@core/components/icon'
 
 // ** Third Party Imports
 import * as yup from 'yup'
-import { useForm, Controller, SubmitHandler, clearErrors } from 'react-hook-form'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // ** Configs
@@ -34,7 +34,7 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { Checkbox, Dialog, DialogActions, DialogContent, Divider, FormControlLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/dist/client/router'
 import DatePicker from 'react-datepicker'
@@ -42,6 +42,7 @@ import DatePicker from 'react-datepicker'
 // ** Icon Imports
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { format } from 'date-fns'
+import TerminosCondiciones from './termsAndConditions'
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -63,7 +64,6 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
 }))
 
 
-
 type CountryTypes = 'Argentina'
 type GenderTypes = 'Masculino' | 'Femenino' | 'Otro'
 type RoleTypes = 'Alumno' | 'Entrenador'
@@ -83,6 +83,7 @@ interface FormData {
   weight: string
   age: string
   birthdate: Date
+  termsAndConditions: boolean
 }
 
 const defaultValues = {
@@ -97,7 +98,8 @@ const defaultValues = {
   passwordC: '',
   height: undefined,
   weight: undefined,
-  age: ''
+  age: '',
+  termAndConditions: false,
 }
 
 interface CustomInputProps {
@@ -122,6 +124,8 @@ const schema = yup.object().shape({
   country: yup.string().required("Seleccione un pais"),
   gender: yup.string().required("Seleccione un genero"),
   role: yup.string().required("Seleccione un rol"),
+  termsAndConditions: yup.bool().oneOf([true], 'Debe aceptar los términos y condiciones'),
+
 
   // https://github.com/jquense/yup#schemawhenkeys-string--string-builder-object--values-any-schema--schema-schema
   // discipline: yup.string().when('role', {
@@ -141,7 +145,18 @@ const Register = () => {
   const [selectedRole, setSelectedRole] = useState('')
   const [selectedCountry, setSelectedCountry] = useState('')
   const [startDateRange, setStartDateRange] = useState<Date | null>(null);
-  const [age, setAge] = useState<string>('');
+
+  const [popUp, setPopUp] = useState<boolean>(false)
+  const [titlePopUp, setTitlePopUp] = useState<string>()
+
+
+  const openPopUp = () => {
+    setTitlePopUp("Términos y Condiciones de FitBuddy");
+    setPopUp(true);
+  };
+
+  const closePopUp = () => setPopUp(false)
+
 
 
   // ** Default Values
@@ -695,22 +710,27 @@ const Register = () => {
                   )}
                 </FormControl>
               </Box>
+              <FormControl>
+                <Box display="flex" alignItems="center">
+                  <Checkbox {...register('termsAndConditions')} />
+                  <Typography variant='body2' component='span'>
+                    Estoy de acuerdo con los{' '}
+                    <a onClick={openPopUp} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}>
+                      términos y condiciones
+                    </a>
 
-              {/* <FormControlLabel
-                    control={<Checkbox />}
-                    sx={{ mb: 4, mt: 1.5, '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
-                    label={
-                      <>
-                        <Typography variant='body2' component='span'>
-                          Estoy de acuerdo con los{' '}
-                        </Typography>
-                        <LinkStyled href='/' onClick={e => e.preventDefault()}>
-                          términos y condiciones
-                        </LinkStyled>
-                      </>
-                    }
-                  /> */}
-              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 7, mb: 7 }}>
+                  </Typography>
+                </Box>
+
+                {errors.termsAndConditions && (
+                  <Typography color="error" variant="caption" >
+                    {errors.termsAndConditions.message}
+                  </Typography>
+                )}
+              </FormControl>
+
+
+              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 3, mb: 5 }}>
                 Registrarme
               </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -723,7 +743,47 @@ const Register = () => {
           </BoxWrapper>
         </CardContent>
       </Card>
+      {/* PopUp Terminos y Condiciones */}
+      <Dialog fullWidth open={popUp} onClose={closePopUp} sx={{ '& .MuiPaper-root': { width: '100%', maxWidth: 712 } }}>
+        <DialogContent
+          sx={{
+            pb: theme => `${theme.spacing(6)} !important`,
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              '& svg': { mb: 6, color: 'error.main' }
+            }}
+          >
+            <Typography variant='h4' sx={{ mb: 5 }}>{titlePopUp}</Typography>
+            <Divider sx={{ color: 'white', borderColor: 'white', borderWidth: 'px', width: '110%' }} />
+
+            {/* {Terminos y condiciones} */}
+            <TerminosCondiciones />
+
+          </Box>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: 'center',
+            px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+            pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+          }}
+        >
+          <Button variant='outlined' color='success' onClick={closePopUp}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box >
+
   )
 }
 

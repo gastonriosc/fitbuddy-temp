@@ -25,6 +25,10 @@ const subsRequestSchema = new mongoose.Schema({
     type: Date,
     require: true
   },
+  expirationDate: {
+    type: Date,
+    require: true
+  },
   amount: {
     type: Number,
     require: true

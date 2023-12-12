@@ -82,6 +82,21 @@ const NewSubsPopUp = (props: Props) => {
   const handleAddSubscriptionClose = () => setAddSubscription(false)
   const closePopUp = () => setPopUp(false)
 
+  const [followingMessage, setFollowingMessage] = useState<string>('');
+
+  const handleFollowingChange = (selectedValue: string) => {
+    if (selectedValue === 'alto') {
+      setFollowingMessage('Seguimiento alto equivale entre 6-8 hs por semana.');
+    } else if (selectedValue === 'intermedio') {
+      setFollowingMessage('Seguimiento intermedio equivale entre 4-6 horas por semana.');
+    } else if (selectedValue === 'bajo') {
+      setFollowingMessage('Seguimiento bajo equivale entre 2-4 horas por semana.');
+    }
+    else {
+      setFollowingMessage('');
+    }
+  };
+
   const createSubscription: SubmitHandler<FieldValues> = async (data) => {
     const trainerId = route.query.id
     const deleted = false;
@@ -264,15 +279,17 @@ const NewSubsPopUp = (props: Props) => {
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <>
-                    <InputLabel>Seguimiento </InputLabel>
-
+                    <InputLabel>Seguimiento</InputLabel>
                     <Select
                       label='Seguimiento'
                       name='following'
                       type='string'
                       value={value}
                       onBlur={onBlur}
-                      onChange={onChange}
+                      onChange={(e) => {
+                        onChange(e);
+                        handleFollowingChange(e.target.value);
+                      }}
                       error={Boolean(errors.following)}
                     >
                       {/* Opciones de MenuItem */}
@@ -289,6 +306,18 @@ const NewSubsPopUp = (props: Props) => {
                 </FormHelperText>
               )}
             </FormControl>
+
+            <div style={{ fontSize: 'small', marginTop: '-5px', marginBottom: '15px' }}>
+              {followingMessage && (
+                <>
+                  <Icon icon='mdi:info' style={{ fontSize: '16px', marginRight: '4px' }}></Icon>
+                  {followingMessage}
+                </>
+              )}
+            </div>
+
+
+
             <FormControl fullWidth sx={{ mb: 4 }}>
               <Controller
                 name='description'

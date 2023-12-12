@@ -11,7 +11,6 @@ import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import Grid, { GridProps } from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
 import CustomChip from 'src/@core/components/mui/chip'
 import Icon from 'src/@core/components/icon';
 import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
@@ -56,7 +55,7 @@ const MyStudents = () => {
   const [title, setTitle] = useState<string>('');
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
-  const [filterOption, setFilterOption] = useState('asc');
+  const [filterOption, setFilterOption] = useState('desc');
   const [nameSubs, setNameSubs] = useState([])
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 3; // Cantidad de elementos por página
@@ -85,12 +84,12 @@ const MyStudents = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data);
           setSubsRequest(data.subsRequest);
           setNameSubs(data.nameSubs);
           setIsLoading(true);
         }
 
-        // ...
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -124,13 +123,15 @@ const MyStudents = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs: any, index) => (
-                        <MenuItem key={index} value={subs.name}>
-                          {subs.name.toUpperCase()}
-                        </MenuItem>
-                      ))}
+                      {Array.from(new Set(subsRequest.map((subs: subsRequest) => subs.subscriptionName)))
+                        .map((uniqueSubscriptionName, index) => (
+                          <MenuItem key={index} value={uniqueSubscriptionName}>
+                            {uniqueSubscriptionName ? uniqueSubscriptionName.toUpperCase() : ''}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
+
                 </Grid>
                 <Grid item sm={4} xs={12}>
                   <FormControl fullWidth>

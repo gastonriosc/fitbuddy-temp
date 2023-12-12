@@ -61,7 +61,8 @@ const MyRequests = () => {
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [filterOption, setFilterOption] = useState('asc');
+  const [filterOption, setFilterOption] = useState('desc');
+  const [filterState, setFilterState] = useState('vigentes');
   const [nameSubs, setNameSubs] = useState([])
   const [planId, setPlanId] = useState<string>(null)
   const [reportPopUp, setReportPopUp] = useState<boolean>(false)
@@ -106,7 +107,7 @@ const MyRequests = () => {
     fetchMyRequests();
 
     return () => {
-      setCurrentPage(1); // Reset current page when component unmounts
+      setCurrentPage(1);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -128,8 +129,28 @@ const MyRequests = () => {
             />
             <CardContent>
               <Grid container spacing={6}>
+                <Grid item sm={3} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input-plan'>Plan</InputLabel>
+                    <Select
+                      label='Plan'
+                      fullWidth
+                      value={filterPlan}
+                      id='search-input-plan'
+                      onChange={(e) => setFilterPlan(e.target.value)}
+                    >
+                      <MenuItem value=''>SIN FILTRO</MenuItem>
+                      {Array.from(new Set(plan.map((OPlan: planType) => OPlan.subscriptionName))).map((uniqueSubscriptionName, index) => (
+                        <MenuItem key={index} value={uniqueSubscriptionName}>
+                          {uniqueSubscriptionName.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-                <Grid item sm={6} xs={12}>
+                </Grid>
+
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Fecha</InputLabel>
                     <Select
@@ -145,7 +166,23 @@ const MyRequests = () => {
 
                   </FormControl>
                 </Grid>
-                <Grid item sm={6} xs={12}>
+                <Grid item sm={3} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Estado</InputLabel>
+                    <Select
+                      label='Estado'
+                      fullWidth
+                      value={filterState}
+                      id='search-input'
+                      onChange={(e) => setFilterState(e.target.value)}
+                    >
+                      <MenuItem value='vigentes'>VIGENTES</MenuItem>
+                      <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
+                    </Select>
+
+                  </FormControl>
+                </Grid>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Nombre</InputLabel>
                     <Input
@@ -170,6 +207,13 @@ const MyRequests = () => {
                   OPlan.trainerName.toLowerCase().includes(filterName.toLowerCase()) &&
                   OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
                 )
+                .filter((OPlan: planType) => {
+                  if (filterState === 'vigentes') {
+                    return new Date(OPlan.expirationDate) > new Date();
+                  } else {
+                    return new Date(OPlan.expirationDate) <= new Date();
+                  }
+                })
                 .sort((a: any, b: any) => {
                   const dateA = new Date(a.date);
                   const dateB = new Date(b.date);
@@ -290,22 +334,7 @@ const MyRequests = () => {
           )}
           <ReportPopUp reportPopUp={reportPopUp} handleReportPopUp={setReportPopUp} planId={planId}></ReportPopUp>
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-            </Button>
-            <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-            </Button>
-        </div> */}
-        {/* < RequestPopUp
-          requestPopUp={requestPopUp}
-          setRequestPopUp={setRequestPopUp}
-          type={typeAction}
-          title={title}
-          requestId={subsRequestId}
-          setSubsRequest={setSubsRequest}
-        /> */}
+
       </>
     );
   } else {

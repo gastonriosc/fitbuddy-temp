@@ -60,9 +60,10 @@ const MyRequests = () => {
   const [filterName, setFilterName] = useState<string>('');
   const [filterPlan, setFilterPlan] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [filterOption, setFilterOption] = useState('asc');
+  const [filterOption, setFilterOption] = useState('desc');
+  const [filterState, setFilterState] = useState<string>('vigentes');
   const [nameSubs, setNameSubs] = useState([])
-  const itemsPerPage = 4; // Cantidad de elementos por página
+  const itemsPerPage = 4;
 
   const [planId, setPlanId] = useState<string>(null as any)
   const [reportPopUp, setReportPopUp] = useState<boolean>(false)
@@ -73,7 +74,6 @@ const MyRequests = () => {
       const id = route.query.id;
 
       try {
-        // ** Llamada a la API para obtener datos paginados
         const res = await fetch(
           `/api/trainerPlans/?id=${id}`,
           {
@@ -85,6 +85,7 @@ const MyRequests = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
+          console.log(data)
           setPlan(data.plan);
           setNameSubs(data.nameSubs);
           setIsLoading(true);
@@ -101,7 +102,7 @@ const MyRequests = () => {
     };
 
     fetchMyRequests();
-  }, []); // Actualizar cuando cambie la página actual
+  }, []);
 
 
   const handleReport = (planId: string) => {
@@ -123,7 +124,7 @@ const MyRequests = () => {
             />
             <CardContent>
               <Grid container spacing={6}>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input-plan'>Plan</InputLabel>
                     <Select
@@ -134,15 +135,17 @@ const MyRequests = () => {
                       onChange={(e) => setFilterPlan(e.target.value)}
                     >
                       <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {nameSubs.map((subs: any, index) => (
-                        <MenuItem key={index} value={subs.name}>
-                          {subs.name.toUpperCase()}
-                        </MenuItem>
-                      ))}
+                      {[...new Set(plan.map((subs: planType) => subs.subscriptionName))]
+                        .map((uniqueSubscriptionName, index) => (
+                          <MenuItem key={index} value={uniqueSubscriptionName}>
+                            {uniqueSubscriptionName.toUpperCase()}
+                          </MenuItem>
+                        ))}
                     </Select>
+
                   </FormControl>
                 </Grid>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Fecha</InputLabel>
                     <Select
@@ -152,19 +155,32 @@ const MyRequests = () => {
                       id='search-input'
                       onChange={(e) => setFilterOption(e.target.value)}
                     >
-                      <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
                       <MenuItem value='desc'>MAS RECIENTES</MenuItem>
+                      <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
+
+
                     </Select>
-                    {/* <Input
-                      fullWidth
-                      value={filterDate}
-                      id='search-input'
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      placeholder='Ingrese una fecha para buscar (DD/M/YYYY)'
-                    /> */}
+
                   </FormControl>
                 </Grid>
-                <Grid item sm={4} xs={12}>
+                <Grid item sm={3} xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='search-input'>Estado</InputLabel>
+                    <Select
+                      label='Estado'
+                      fullWidth
+                      value={filterState}
+                      id='search-input'
+                      onChange={(e) => setFilterState(e.target.value)}
+                    >
+
+                      <MenuItem value='vigentes'>VIGENTES</MenuItem>
+                      <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
+
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item sm={3} xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id='search-input'>Nombre</InputLabel>
                     <Input
@@ -181,15 +197,20 @@ const MyRequests = () => {
           </Card>
           <Divider sx={{ mt: 2 }} />
 
-          {/* <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}> */}
           <Grid item container spacing={2}>
             {plan.length > 0 ? (
-
               plan
                 .filter((OPlan: planType) =>
                   OPlan.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
                   OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
                 )
+                .filter((OPlan: planType) => {
+                  if (filterState === 'vigentes') {
+                    return new Date(OPlan.expirationDate) >= new Date()
+                  } else {
+                    return new Date(OPlan.expirationDate) < new Date()
+                  }
+                })
                 .sort((a: any, b: any) => {
                   const dateA = new Date(a.date);
                   const dateB = new Date(b.date);
@@ -202,8 +223,6 @@ const MyRequests = () => {
                 })
                 .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                 .map((OPlan: planType, index) => (
-
-                  //<Grid item lg={6} xs={12} md={4} key={index} padding={2}  >
 
                   <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
                     <Card sx={{ opacity: new Date(OPlan.expirationDate) <= new Date() ? 0.7 : 1 }} >
@@ -247,9 +266,7 @@ const MyRequests = () => {
                                 </Typography>
                               </Box>
                             </Box>
-                            {/* <Typography variant='body1' sx={{ mb: 2 }}>
-                            {plan.description}
-                          </Typography> */}
+
                           </CardContent>
                           <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -304,22 +321,7 @@ const MyRequests = () => {
           <ReportPopUp reportPopUp={reportPopUp} handleReportPopUp={setReportPopUp} planId={planId}></ReportPopUp>
 
         </Grid >
-        {/* <div>
-          <Button onClick={prevPage} disabled={currentPage === 1}>
-            Página Anterior
-            </Button>
-            <Button onClick={nextPage} disabled={currentPage === totalPages}>
-            Página Siguiente
-            </Button>
-        </div> */}
-        {/* < RequestPopUp
-          requestPopUp={requestPopUp}
-          setRequestPopUp={setRequestPopUp}
-          type={typeAction}
-          title={title}
-          requestId={subsRequestId}
-          setSubsRequest={setSubsRequest}
-        /> */}
+
       </>
     );
   } else {

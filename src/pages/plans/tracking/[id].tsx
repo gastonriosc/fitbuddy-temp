@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Rating from '@mui/material/Rating'
-import { DialogActions, DialogContent, Divider, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { DialogActions, DialogContent, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import Pagination from '@mui/material/Pagination'
 import DatePicker from 'react-datepicker'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
@@ -378,9 +378,16 @@ const Tracking = () => {
                               </Box>
                             </TableCell>
                             {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
-                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
+                              <Icon
+                                icon='mdi:delete'
+                                style={{ color: new Date() > new Date(tracking.expirationDate) ? 'grey' : 'red' }}
+                                onClick={() => {
+                                  if (new Date() <= new Date(tracking.expirationDate)) {
+                                    handleDeleteRecord(trackingItem);
+                                  }
+                                }}
+                              />
                             </TableCell>}
-
                           </TableRow>
                         ))}
                     </TableBody>
@@ -429,7 +436,15 @@ const Tracking = () => {
                               </Box>
                             </TableCell>
                             {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
-                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
+                              <Icon
+                                icon='mdi:delete'
+                                style={{ color: new Date() > new Date(tracking.expirationDate) ? 'grey' : 'red' }}
+                                onClick={() => {
+                                  if (new Date() <= new Date(tracking.expirationDate)) {
+                                    handleDeleteRecord(trackingItem);
+                                  }
+                                }}
+                              />
                             </TableCell>}
                           </TableRow>
                         ))}
@@ -479,7 +494,15 @@ const Tracking = () => {
                               </Box>
                             </TableCell>
                             {!isTrainer && <TableCell style={{ justifyContent: 'center', textAlign: 'center' }}>
-                              <Icon icon='mdi:delete' onClick={() => handleDeleteRecord(trackingItem)} />
+                              <Icon
+                                icon='mdi:delete'
+                                style={{ color: new Date() > new Date(tracking.expirationDate) ? 'grey' : 'red' }}
+                                onClick={() => {
+                                  if (new Date() <= new Date(tracking.expirationDate)) {
+                                    handleDeleteRecord(trackingItem);
+                                  }
+                                }}
+                              />
                             </TableCell>}
                           </TableRow>
                         ))}
