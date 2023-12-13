@@ -34,10 +34,11 @@ import themeConfig from 'src/configs/themeConfig'
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
-import { Checkbox, Dialog, DialogActions, DialogContent, Divider, FormControlLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
+import { Checkbox, Dialog, DialogActions, DialogContent, Divider, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/dist/client/router'
 import DatePicker from 'react-datepicker'
+import es from 'date-fns/locale/es';
 
 // ** Icon Imports
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
@@ -275,6 +276,9 @@ const Register = () => {
     }
   };
 
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() - 6574);
+
 
   return (
     <Box className='content-center'>
@@ -330,7 +334,7 @@ const Register = () => {
                   name='birthdate'
                   control={control}
                   render={({ field }) => (
-                    <DatePickerWrapper sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
+                    <DatePickerWrapper lang='es' sx={{ '& .react-datepicker-wrapper': { width: '100%' } }}>
                       <DatePicker
                         name='birthdate'
                         selected={startDateRange}
@@ -349,10 +353,11 @@ const Register = () => {
                         showYearDropdown
                         dateFormatCalendar="MMMM"
 
-                        maxDate={new Date()}
+                        maxDate={maxDate}
                         yearDropdownItemNumber={100}
                         scrollableYearDropdown
                         showMonthDropdown
+                        locale={es}
                       />
                     </DatePickerWrapper>
                   )}
@@ -711,24 +716,17 @@ const Register = () => {
                 </FormControl>
               </Box>
               <FormControl>
-                <Box display="flex" alignItems="center">
+                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'left', pt: 1 }}>
                   <Checkbox {...register('termsAndConditions')} />
-                  <Typography variant='body2' component='span'>
-                    Estoy de acuerdo con los{' '}
-                    <a onClick={openPopUp} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}>
-                      términos y condiciones
-                    </a>
-
-                  </Typography>
+                  <Typography variant='body2' component='span' sx={{ mr: 1, color: 'text.secondary' }}> Estoy de acuerdo con los</Typography>
+                  <Typography variant='body2' component='span' onClick={openPopUp} sx={{ color: 'primary.main', textDecoration: 'none' }}>términos y condiciones</Typography>
+                  {errors.termsAndConditions && (
+                    <Typography color="error" variant="caption" >
+                      {errors.termsAndConditions.message}
+                    </Typography>
+                  )}
                 </Box>
-
-                {errors.termsAndConditions && (
-                  <Typography color="error" variant="caption" >
-                    {errors.termsAndConditions.message}
-                  </Typography>
-                )}
               </FormControl>
-
 
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mt: 3, mb: 5 }}>
                 Registrarme
