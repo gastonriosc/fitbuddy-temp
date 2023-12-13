@@ -51,6 +51,10 @@ const RequestPopUp = (props: Props) => {
     else if (type === 'cancelar') {
       status = 'cancelada';
     }
+    else if (type === 'borrar') {
+      status = 'borrada';
+    }
+
     try {
       const res = await fetch('/api/subsRequests', {
         method: 'PUT',

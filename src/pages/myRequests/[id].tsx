@@ -91,6 +91,13 @@ const MyRequests = () => {
     setTitle('rechazada');
   };
 
+  const borrarSubsRequest = (sub: subsRequest) => {
+    setRequestPopUp(true);
+    setTypeAction('borrar');
+    setSubsRequestId(sub._id);
+    setTitle('borrar');
+  };
+
   const cancelarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('cancelar');
@@ -371,6 +378,15 @@ const MyRequests = () => {
                               onClick={() => rechazarSubsRequest(sub)}
                             >
                               <Icon icon='line-md:cancel' />
+                            </Button>)}
+
+                            {esEntrenador && new Date(sub.expirationDate) <= new Date() && (<Button
+                              variant='contained'
+                              color='error'
+                              title='Borrar'
+                              onClick={() => borrarSubsRequest(sub)}
+                            >
+                              <Icon icon='mdi:trash' />
                             </Button>)}
 
                             {esEntrenador || new Date(sub.expirationDate) > new Date() && (
