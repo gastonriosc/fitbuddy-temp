@@ -6,7 +6,6 @@ import React, { useState, ReactNode, useEffect } from 'react'
 import Link from 'next/link'
 
 // ** MUI Components
-import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
@@ -36,7 +35,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 // ** Hooks
 import { useRouter } from 'next/router'
 import { signIn } from 'next-auth/react'
-import useBgColor from 'src/@core/hooks/useBgColor'
 import { useSettings } from 'src/@core/hooks/useSettings'
 
 // ** Configs
@@ -152,7 +150,6 @@ const LoginPage = () => {
   // ** Hooks
   const router = useRouter()
   const theme = useTheme()
-  const bgColors = useBgColor()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
 
@@ -295,29 +292,6 @@ const LoginPage = () => {
               <TypographyStyled variant='h5'>{`Bienvenido a ${themeConfig.templateName}! 👋🏻`}</TypographyStyled>
               <Typography variant='body2'>Iniciá sesión para comenzar</Typography>
             </Box>
-            <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Administrador: <strong>facutissera@gmail.com</strong> / Pass: <strong>admin</strong>
-              </Typography>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>
-                Entrenador: <strong>juantargon@gmail.com</strong> / Pass: <strong>entrenador</strong>
-              </Typography>
-              <Typography variant='caption' sx={{ display: 'block', color: 'primary.main' }}>
-                Alumno: <strong>gastonriosc@gmail.com</strong> / Pass: <strong>alumno</strong>
-              </Typography>
-            </Alert>
-            <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.warningLight, '& .MuiAlert-message': { p: 0 } }}>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}><strong>No usar</strong></Typography>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}>
-                Entrenador: <strong>franciscoaquino@gmail.com</strong>
-              </Typography>
-              <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'warning' }}>
-                Entrenador: <strong>juantargon@gmail.com</strong>
-              </Typography>
-              <Typography variant='caption' sx={{ display: 'block', color: 'warning' }}>
-                Alumno: <strong>gastonriosc@gmail.com</strong>
-              </Typography>
-            </Alert>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
               <FormControl fullWidth sx={{ mb: 4 }}>
                 <Controller
