@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, esES } from '@mui/x-data-grid'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 
 
@@ -227,7 +227,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, follo
           <CircularProgress size={60} thickness={4} color="secondary" />
         </Box>
       ) : (
-        <DataGrid rows={filteredUsers} columns={columns} getRowId={getRowId} />
+        <DataGrid localeText={esES.components.MuiDataGrid.defaultProps.localeText} rows={filteredUsers} columns={columns} getRowId={getRowId} />
       )}
     </div>
   );

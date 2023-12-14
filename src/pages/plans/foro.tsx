@@ -209,9 +209,9 @@ const Foro = (props: Props) => {
                   marginTop: '8px'
                 }}
               >
-                {(index === 0 || new Date(message.date).toLocaleDateString() !== new Date(foro?.messages[index - 1].date).toLocaleDateString()) && (
+                {(index === 0 || new Date(message.date).toLocaleDateString('es-ES') !== new Date(foro?.messages[index - 1].date).toLocaleDateString('es-ES')) && (
 
-                  <p>{new Date(message.date).toLocaleDateString()}</p>
+                  <p>{new Date(message.date).toLocaleDateString('es-ES')}</p>
                 )}
 
                 <Box mb={5}>
