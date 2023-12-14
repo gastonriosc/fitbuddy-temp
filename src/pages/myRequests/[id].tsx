@@ -373,7 +373,7 @@ const MyRequests = () => {
                           >
                             <Icon icon='line-md:cancel' />
                           </Button>)}
-                          {esEntrenador && new Date(sub.expirationDate) <= new Date() && (<Button
+                          {new Date(sub.expirationDate) <= new Date() && (<Button
                             variant='contained'
                             color='error'
                             title='Borrar'
@@ -397,6 +397,16 @@ const MyRequests = () => {
                             color='primary'
                             title='Perfil'
                             href={'/myProfile/myStudentProfile/' + sub.studentId}
+                          >
+                            <Icon icon='mdi:eye' />
+                          </Button>)}
+                        </Box>
+                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                          {!esEntrenador && new Date(sub.expirationDate) <= new Date() && (<Button
+                            variant='contained'
+                            color='primary'
+                            title='Perfil'
+                            href={'/myProfile/' + sub.trainerId}
                           >
                             <Icon icon='mdi:eye' />
                           </Button>)}
