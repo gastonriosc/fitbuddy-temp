@@ -66,8 +66,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     ])
     if (trainers && trainers.length > 0) {
-      console.log(trainers)
-
+      // console.log(trainers)
       return res.status(200).json(trainers)
     } else {
       return res.status(404).json({ message: 'No se encontraron usuarios' })
