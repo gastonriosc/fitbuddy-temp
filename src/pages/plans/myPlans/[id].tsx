@@ -116,7 +116,32 @@ const MyRequests = () => {
     setReportPopUp(true)
   }
 
-  const totalPages = Math.ceil(plan.length / itemsPerPage);
+  const filteredPlans = plan
+    .filter((OPlan: planType) =>
+      OPlan.trainerName.toLowerCase().includes(filterName.toLowerCase()) &&
+      OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+    )
+    .filter((OPlan: planType) => {
+      if (filterState === 'vigentes') {
+        return new Date(OPlan.expirationDate) > new Date();
+      } else {
+        return new Date(OPlan.expirationDate) <= new Date();
+      }
+    })
+    .sort((a: any, b: any) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+
+      if (filterOption === 'asc') {
+        return dateA.getTime() - dateB.getTime();
+      } else {
+        return dateB.getTime() - dateA.getTime();
+      }
+    })
+
+  const totalPages = Math.max(1, Math.ceil(filteredPlans.length / itemsPerPage));
+
+  const paginatedSubs = filteredPlans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   if (isLoading) {
     return (
@@ -202,123 +227,101 @@ const MyRequests = () => {
           {/* <Card sx={{ mt: 2, bgcolor: '#142751', display: 'flex' }}> */}
           <Grid item container spacing={2}>
             {plan.length > 0 ? (
-              plan
-                .filter((OPlan: planType) =>
-                  OPlan.trainerName.toLowerCase().includes(filterName.toLowerCase()) &&
-                  OPlan.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
-                )
-                .filter((OPlan: planType) => {
-                  if (filterState === 'vigentes') {
-                    return new Date(OPlan.expirationDate) > new Date();
-                  } else {
-                    return new Date(OPlan.expirationDate) <= new Date();
-                  }
-                })
-                .sort((a: any, b: any) => {
-                  const dateA = new Date(a.date);
-                  const dateB = new Date(b.date);
 
-                  if (filterOption === 'asc') {
-                    return dateA.getTime() - dateB.getTime();
-                  } else {
-                    return dateB.getTime() - dateA.getTime();
-                  }
-                })
-                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                .map((OPlan: planType, index) => (
+              paginatedSubs.map((OPlan: planType, index) => (
 
 
-                  <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
-                    <Card sx={{ opacity: new Date(OPlan.expirationDate) <= new Date() ? 0.7 : 1 }}>
-                      <StyledGrid2 >
-                        <Box display={'flex'} justifyContent={'center'}>
-                          <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
-                            <Img alt='Avatar' src={OPlan.avatar} sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
-                          </CardContent>
-                        </Box>
-                      </StyledGrid2>
-                      <StyledGrid1  >
-                        <Box >
-                          <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                            <Box textAlign={'center'}>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                {OPlan.trainerName}
+                <Grid item xs={12} sm={6} md={4} lg={4} xl={3} key={index} my={2}  >
+                  <Card sx={{ opacity: new Date(OPlan.expirationDate) <= new Date() ? 0.7 : 1 }}>
+                    <StyledGrid2 >
+                      <Box display={'flex'} justifyContent={'center'}>
+                        <CardContent sx={{ flexWrap: 'wrap', pb: '0 !important', justifyContent: 'center', }}>
+                          <Img alt='Avatar' src={OPlan.avatar} sx={{ width: '130px', height: '130px', justifySelf: 'center' }} />
+                        </CardContent>
+                      </Box>
+                    </StyledGrid2>
+                    <StyledGrid1  >
+                      <Box >
+                        <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                          <Box textAlign={'center'}>
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+                              {OPlan.trainerName}
+                            </Typography>
+                          </Box>
+                          <Box display={'flex'} justifyContent={'center'} mb={2}>
+                            <Box>
+                              <Typography variant='h5' >
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
                               </Typography>
                             </Box>
-                            <Box display={'flex'} justifyContent={'center'} mb={2}>
-                              <Box>
-                                <Typography variant='h5' >
-                                  <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.nombrePlan} />
-                                </Typography>
-                              </Box>
-                              <Box >
-                                <Typography variant='h5' >
-                                  <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
-                                </Typography>
-                              </Box>
+                            <Box >
+                              <Typography variant='h5' >
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={OPlan.subscriptionName.toUpperCase()} />
+                              </Typography>
+                            </Box>
 
+                          </Box>
+                          <Box display={'flex'} justifyContent={'center'}>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString('es')} />
+                              </Typography>
                             </Box>
-                            <Box display={'flex'} justifyContent={'center'}>
-                              <Box>
-                                <Typography variant='h5' sx={{ mb: 2 }}>
-                                  <CustomChip sx={{ mx: 2 }} color='success' skin='light' label={new Date(OPlan.date).toLocaleDateString('es')} />
-                                </Typography>
-                              </Box>
-                              <Box>
-                                <Typography variant='h5' sx={{ mb: 2 }}>
-                                  <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString('es')} />
-                                </Typography>
-                              </Box>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <CustomChip sx={{ mx: 2 }} color='error' skin='light' variant='outlined' label={new Date(OPlan.expirationDate).toLocaleDateString('es')} />
+                              </Typography>
                             </Box>
-                            {/* <Typography variant='body1' sx={{ mb: 2 }}>
+                          </Box>
+                          {/* <Typography variant='body1' sx={{ mb: 2 }}>
                             {plan.description}
                           </Typography> */}
-                          </CardContent>
-                          <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        </CardContent>
+                        <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            <Button
+                              variant='contained'
+                              color='primary'
+                              title='Plan'
+
+                              // href={'/plans/' + OPlan._id + '&subsReq=' + OPlan.subsRequestId}
+                              href={'/plans/' + OPlan._id}
+                            >
+                              <Icon icon='mdi:file-eye-outline' />
+                            </Button>
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            <Button
+                              variant='contained'
+                              color='primary'
+                              title='Perfil'
+                              href={'/myProfile/' + OPlan.trainerId}
+                            >
+                              <Icon icon='mdi:eye' />
+                            </Button>
+                          </Box>
+
+                          {new Date(OPlan.expirationDate) <= new Date() ? (
                             <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                               <Button
                                 variant='contained'
                                 color='primary'
-                                title='Plan'
+                                title='Reporte final'
 
-                                // href={'/plans/' + OPlan._id + '&subsReq=' + OPlan.subsRequestId}
-                                href={'/plans/' + OPlan._id}
+                                onClick={() => handleReport(OPlan._id)
+                                }
                               >
-                                <Icon icon='mdi:file-eye-outline' />
+                                <Icon icon='bxs:report' />
                               </Button>
                             </Box>
-                            <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                              <Button
-                                variant='contained'
-                                color='primary'
-                                title='Perfil'
-                                href={'/myProfile/' + OPlan.trainerId}
-                              >
-                                <Icon icon='mdi:eye' />
-                              </Button>
-                            </Box>
+                          ) : null}
+                        </CardContent>
+                      </Box>
 
-                            {new Date(OPlan.expirationDate) <= new Date() ? (
-                              <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                                <Button
-                                  variant='contained'
-                                  color='primary'
-                                  title='Reporte final'
-
-                                  onClick={() => handleReport(OPlan._id)
-                                  }
-                                >
-                                  <Icon icon='bxs:report' />
-                                </Button>
-                              </Box>
-                            ) : null}
-                          </CardContent>
-                        </Box>
-
-                      </StyledGrid1>
-                    </Card >
-                  </Grid>
-                ))
+                    </StyledGrid1>
+                  </Card >
+                </Grid>
+              ))
 
             ) : (
               <Card sx={{ mt: 4, justifyContent: 'center', alignContent: 'center', minWidth: '100%' }}>

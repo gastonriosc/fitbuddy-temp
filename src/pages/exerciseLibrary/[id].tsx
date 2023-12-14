@@ -309,7 +309,6 @@ const MyLibrary = () => {
   );
 
 
-  //Filtros de los ejercicios por grupo muscular y por nombre.
   const filteredPlan = plan.filter((exercise) => {
     const matchesGroupMuscular =
       filterOption === 'all' || exercise.muscleGroup.toLowerCase() === filterOption.toLowerCase();
@@ -318,11 +317,12 @@ const MyLibrary = () => {
     return matchesGroupMuscular && matchesName;
   });
 
-  //Paginador
-  const totalPages = Math.ceil(plan.length / itemsPerPage);
+  // Paginador
+  const totalPages = Math.ceil(filteredPlan.length / itemsPerPage);
   const indexOfLastExercise = currentPage * itemsPerPage;
   const indexOfFirstExercise = indexOfLastExercise - itemsPerPage;
   const currentExercises = filteredPlan.slice(indexOfFirstExercise, indexOfLastExercise);
+
 
   if (isLoading) {
     return (

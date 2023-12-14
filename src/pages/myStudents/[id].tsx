@@ -98,8 +98,26 @@ const MyStudents = () => {
     fetchMyRequests();
   }, []); // Actualizar cuando cambie la página actual
 
+  const filteredStudents = subsRequest.filter((sub: subsRequest) =>
+    sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
+    sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
+  )
+    .sort((a: any, b: any) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
 
-  const totalPages = Math.ceil(subsRequest.length / itemsPerPage);
+      if (filterOption === 'asc') {
+        return dateA.getTime() - dateB.getTime();
+      } else {
+        return dateB.getTime() - dateA.getTime();
+      }
+    })
+
+
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage));
+
+  const paginatedSubs = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
 
   if (isLoading) {
     return (
@@ -166,117 +184,102 @@ const MyStudents = () => {
           </Card>
 
           {subsRequest.length > 0 ? (
-            subsRequest
-              .filter((sub: subsRequest) =>
-                sub.studentName.toLowerCase().includes(filterName.toLowerCase()) &&
-                sub.subscriptionName.toLowerCase().includes(filterPlan.toLowerCase())
-              )
-              .sort((a: any, b: any) => {
-                const dateA = new Date(a.date);
-                const dateB = new Date(b.date);
 
-                if (filterOption === 'asc') {
-                  return dateA.getTime() - dateB.getTime();
-                } else {
-                  return dateB.getTime() - dateA.getTime();
-                }
-              })
-              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((sub: subsRequest, index) => (
-                <Card key={index} sx={{ my: 3 }}>
-                  <Grid container spacing={6}>
-                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />
+            paginatedSubs.map((sub: subsRequest, index) => (
+              <Card key={index} sx={{ my: 3 }}>
+                <Grid container spacing={6}>
+                  <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Img alt='Avatar' src={sub.avatar} sx={{ width: '130px', height: '130px' }} />
+                    </CardContent>
+                  </StyledGrid2>
+                  <StyledGrid1 item xs={12} md={10}>
+                    <Box sx={{ display: { md: 'flex' } }} >
+                      <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                        <Box sx={{ display: 'flex' }}>
+                          <Box>
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+                              {sub.studentName}
+                            </Typography>
+                          </Box>
+                          <Box>
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+                              <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
+                            </Typography>
+                          </Box>
+                          <Box>
+
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+                              <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
+                            </Typography>
+                          </Box>
+                          <Box>
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+
+                              <CustomChip sx={{ mx: 2 }} skin='light' color='success'
+                                label={
+                                  <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                    <Icon icon='mdi:arrow-up' fontSize='1rem' />
+                                    <span>${sub.amount}</span>
+                                  </Box>
+                                }
+                              />
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Typography variant='body1' sx={{ mb: 2 }}>
+                          {sub.description}
+                        </Typography>
+                        <Typography sx={{ mb: 2, fontSize: '13px' }}>
+                          <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
+                            label={
+                              <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                <Icon icon='mdi:pencil' fontSize='1rem' />
+                                <span><b>Observaciones:</b>  </span>
+                              </Box>
+                            }
+                          />
+                          {sub.disease ? sub.disease : "No presenta"}
+                        </Typography>
                       </CardContent>
-                    </StyledGrid2>
-                    <StyledGrid1 item xs={12} md={10}>
-                      <Box sx={{ display: { md: 'flex' } }} >
-                        <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                          <Box sx={{ display: 'flex' }}>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                {sub.studentName}
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={sub.subscriptionName.toUpperCase()} />
-                              </Typography>
-                            </Box>
-                            <Box>
+                      <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
+                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                          <Button
+                            variant='contained'
+                            color='secondary'
+                            title='Crear plan'
+                            href={'/plans/newPlan/?id=' + sub.studentId + '&subsReq=' + sub._id}
+                          >
+                            <Icon icon='line-md:plus' />
+                          </Button>
+                        </Box>
+                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                          <Button
+                            variant='contained'
+                            color='error'
+                            title='Rechazar'
+                            onClick={() => rechazarSubsRequest(sub)}
+                          >
+                            <Icon icon='line-md:cancel' />
+                          </Button>
+                        </Box>
+                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                          <Button
+                            variant='contained'
+                            color='primary'
+                            title='Perfil'
+                            href={'/myProfile/myStudentProfile/' + sub.studentId}
+                          >
+                            <Icon icon='mdi:eye' />
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Box>
 
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant='h5' sx={{ mb: 2 }}>
-
-                                <CustomChip sx={{ mx: 2 }} skin='light' color='success'
-                                  label={
-                                    <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
-                                      <Icon icon='mdi:arrow-up' fontSize='1rem' />
-                                      <span>${sub.amount}</span>
-                                    </Box>
-                                  }
-                                />
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Typography variant='body1' sx={{ mb: 2 }}>
-                            {sub.description}
-                          </Typography>
-                          <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
-                              label={
-                                <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
-                                  <Icon icon='mdi:pencil' fontSize='1rem' />
-                                  <span><b>Observaciones:</b>  </span>
-                                </Box>
-                              }
-                            />
-                            {sub.disease ? sub.disease : "No presenta"}
-                          </Typography>
-                        </CardContent>
-                        <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='secondary'
-                              title='Crear plan'
-                              href={'/plans/newPlan/?id=' + sub.studentId + '&subsReq=' + sub._id}
-                            >
-                              <Icon icon='line-md:plus' />
-                            </Button>
-                          </Box>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='error'
-                              title='Rechazar'
-                              onClick={() => rechazarSubsRequest(sub)}
-                            >
-                              <Icon icon='line-md:cancel' />
-                            </Button>
-                          </Box>
-                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                            <Button
-                              variant='contained'
-                              color='primary'
-                              title='Perfil'
-                              href={'/myProfile/myStudentProfile/' + sub.studentId}
-                            >
-                              <Icon icon='mdi:eye' />
-                            </Button>
-                          </Box>
-                        </CardContent>
-                      </Box>
-
-                    </StyledGrid1>
-                  </Grid>
-                </Card >
-              ))
+                  </StyledGrid1>
+                </Grid>
+              </Card >
+            ))
           ) : (
             <Box sx={{ mt: '50px', mb: '20px' }}>
               <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés alumnos con la solicitud de creación de plan aceptada.</Typography>
