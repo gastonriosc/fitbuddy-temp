@@ -172,7 +172,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, follo
       flex: 0.2,
       minWidth: 200,
       field: 'observe',
-      headerName: 'Actions',
+      headerName: 'Acciones',
       renderCell: ({ row }: CellType) => {
         return (
           <Typography noWrap variant='body2'>
@@ -214,7 +214,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, follo
   );
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 500, width: '100%' }}>
       {isLoading ? (
         <Box
           sx={{
