@@ -73,16 +73,15 @@ const MyRequests = () => {
 
   const session = useSession();
 
+  const esEntrenador = session && session.data && session.data.user && session.data.user.role === 'Entrenador';
+
   const itemsPerPage = 2;
   const aceptarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
     setTypeAction('aceptar');
     setSubsRequestId(sub._id);
     setTitle('aceptada');
-
   };
-
-  const esEntrenador = session && session.data && session.data.user && session.data.user.role === 'Entrenador';
 
   const rechazarSubsRequest = (sub: subsRequest) => {
     setRequestPopUp(true);
@@ -95,7 +94,7 @@ const MyRequests = () => {
     setRequestPopUp(true);
     setTypeAction('borrar');
     setSubsRequestId(sub._id);
-    setTitle('borrar');
+    setTitle('borrada');
   };
 
   const cancelarSubsRequest = (sub: subsRequest) => {
