@@ -153,13 +153,18 @@ const MyPlans = () => {
     const fechaFormateadaVencimiento = `${diaVencimiento}/${mesVencimiento}/${añoVencimiento}`;
 
     doc.setFont('helvetica', 'bold');
-    doc.text('PLAN DE ENTRENAMIENTO PARA', 70, 40);
-    if (esEntrenador) {
-      doc.text(`${plan.studentName.toUpperCase()}`, 85, 50);
-    }
-    if (!esEntrenador) {
-      doc.text(`${session.data?.user.name.toUpperCase()}`, 85, 50);
-    }
+    doc.text('PLAN DE ENTRENAMIENTO PARA', 67, 40);
+    const textToCenter = esEntrenador ? plan.studentName.toUpperCase() : session.data?.user.name.toUpperCase();
+
+    // Obtén la longitud del texto
+    const textWidth = doc.getStringUnitWidth(textToCenter) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+
+    // Calcula la posición x para centrar el texto
+    const centerX = (PAGE_WIDTH - textWidth) / 2;
+
+    // Muestra el texto centrado
+    doc.text(textToCenter, centerX, 50);
+
     doc.setFont('helvetica', 'normal');
 
     doc.setFontSize(12);
@@ -195,16 +200,15 @@ const MyPlans = () => {
 
           //@ts-ignore
           doc.autoTable({
-            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
+            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso']],
             body: tableData,
 
             startY: 47,
             columnStyles: {
-              0: { cellWidth: 60 },
-              1: { cellWidth: 20 },
-              2: { cellWidth: 26 },
-              3: { cellWidth: 20 },
-              4: { cellWidth: 65 },
+              0: { cellWidth: 70 },
+              1: { cellWidth: 30 },
+              2: { cellWidth: 36 },
+              3: { cellWidth: 30 },
             },
           });
         } else {
@@ -217,16 +221,16 @@ const MyPlans = () => {
 
           //@ts-ignore
           doc.autoTable({
-            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso', 'Link']],
+            head: [['Ejercicio', 'Series', 'Repeticiones', 'Peso']],
             body: tableData,
 
             startY: 128,
             columnStyles: {
-              0: { cellWidth: 60 },
-              1: { cellWidth: 20 },
-              2: { cellWidth: 26 },
-              3: { cellWidth: 20 },
-              4: { cellWidth: 65 },
+              0: { cellWidth: 70 },
+              1: { cellWidth: 30 },
+              2: { cellWidth: 36 },
+              3: { cellWidth: 30 },
+
             },
           });
         }
@@ -235,7 +239,6 @@ const MyPlans = () => {
 
     doc.save('PlanDeEntrenamiento.pdf');
   };
-
 
   const setEditingExerciseIndexs = (dayIndex: number, exerciseIndex: number | null) => {
     setEditingExerciseIndices((prevIndices) => ({
