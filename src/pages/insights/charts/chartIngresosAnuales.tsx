@@ -94,7 +94,7 @@ const ChartIngresosAnualesEntrenador = ({ direction, data, total, year, updateYe
       <CardContent>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <LineChart height={350} data={data} style={{ direction }} margin={{ left: -0 }}>
+            <LineChart height={350} data={data} style={{ direction }} margin={{ left: 9 }}>
               <CartesianGrid
                 stroke="#6D6D6D"
                 strokeDasharray="5"
