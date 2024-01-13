@@ -36,6 +36,10 @@ const subsRequestSchema = new mongoose.Schema({
   disease: {
     type: String,
     require: true
+  },
+  rejectionReason: {
+    type: String,
+    require: true
   }
 })
 

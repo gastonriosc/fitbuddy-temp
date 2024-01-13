@@ -16,6 +16,8 @@ import DialogActions from '@mui/material/DialogActions'
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
 
+import { TextareaAutosize } from '@mui/material'
+
 type Props = {
   requestPopUp: boolean
   setRequestPopUp: (val: boolean) => void
@@ -32,21 +34,32 @@ const RequestPopUp = (props: Props) => {
 
   //*state
   const [popUp, setPopUp] = useState<boolean>(false)
+
   const closePopUp = () => setPopUp(false)
   const handleCloseRequestPopUp = () => setRequestPopUp(false)
 
   const route = useRouter();
   const session = useSession();
 
+  const [rejectionReasons, setRejectionReason] = useState('');
+
+
+  const handleRejectionReasonChange = (event: any) => {
+    setRejectionReason(event.target.value);
+  };
 
   const updateSubscriptionRequest = async () => {
     let status;
+    let rejectionReason;
+
 
     if (type === 'aceptar') {
       status = 'aceptada';
     }
     else if (type === 'rechazar') {
       status = 'rechazada';
+      rejectionReason = rejectionReasons;
+
     }
     else if (type === 'cancelar') {
       status = 'cancelada';
@@ -61,7 +74,7 @@ const RequestPopUp = (props: Props) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ requestId, status })
+        body: JSON.stringify({ requestId, status, rejectionReason })
       })
       if (res.status == 200) {
         if (type === 'aceptar') {
@@ -71,6 +84,7 @@ const RequestPopUp = (props: Props) => {
           setRequestPopUp(false)
           setPopUp(true)
           setSubsRequest((prevSubs: any) => prevSubs.filter((subsRequest: any) => subsRequest._id !== requestId));
+          setRejectionReason('');
         }
       }
       else {
@@ -108,7 +122,28 @@ const RequestPopUp = (props: Props) => {
           >
             <Icon icon='line-md:alert' fontSize='5.5rem' />
             <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas {type} la solicitud de suscripción?</Typography>
-            {/* <Typography>Una vez borrada, no podrás recuperar la suscripción.</Typography> */}
+            {type === 'rechazar' && (
+              <div>
+
+                <TextareaAutosize
+                  aria-label="Razón de rechazo"
+                  minRows={5}
+                  cols={50}
+                  placeholder='Por favor, proporciona una razón para el rechazo:'
+                  style={{
+                    width: '100%',
+                    marginBottom: 2,
+                    backgroundColor: 'transparent',
+                    color: 'white',
+                    border: 'none',
+                    outline: 'none',
+                  }}
+                  value={rejectionReasons}
+                  onChange={handleRejectionReasonChange}
+                />
+              </div>
+            )}
+
           </Box>
         </DialogContent>
         <DialogActions
@@ -118,10 +153,15 @@ const RequestPopUp = (props: Props) => {
             pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
           }}
         >
-          <Button variant='contained' sx={{ mr: 2 }} onClick={() => updateSubscriptionRequest()}>
+          <Button
+            variant='contained'
+            sx={{ mr: 2 }}
+            onClick={() => updateSubscriptionRequest()}
+            disabled={type === 'rechazar' && rejectionReasons.trim() === ''}
+          >
             Confirmar
           </Button>
-          <Button variant='outlined' color='secondary' onClick={handleCloseRequestPopUp} >
+          <Button variant='outlined' color='error' onClick={handleCloseRequestPopUp} >
             Cancelar
           </Button>
         </DialogActions>

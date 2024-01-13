@@ -101,6 +101,14 @@ const MyStudentProfile = () => {
     fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
   }, []);
 
+  const pesoEnKilogramos = parseFloat(users.weight);
+  const alturaEnMetros = parseFloat(users.height);
+
+
+  const imc = pesoEnKilogramos / (alturaEnMetros * alturaEnMetros);
+
+
+
   if (data && isLoading) {
     return (
       <Grid container spacing={6}>
@@ -195,6 +203,11 @@ const MyStudentProfile = () => {
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Edad:</Typography>
                   <Typography variant='body2'>{edad}</Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Índice de Masa Corporal (IMC):</Typography>
+                  <Typography variant='body2'>{imc.toFixed(2)}</Typography>
                 </Box>
               </Box>
             </CardContent>

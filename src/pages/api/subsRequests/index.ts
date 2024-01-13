@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next/types'
 import SubsRequest from 'src/models/subsRequestSchema'
 import mongoose from 'mongoose'
 import Subscription from 'src/models/subscriptionSchema'
+import { request } from 'http'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
@@ -16,8 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
     if (req.method === 'PUT') {
-      const { requestId, status } = req.body
-      const subsRequest = await SubsRequest.findByIdAndUpdate(requestId, { status }, { new: true })
+      const { requestId, status, rejectionReason } = req.body
+      const subsRequest = await SubsRequest.findByIdAndUpdate(
+        requestId,
+        { status: status, rejectionReason: rejectionReason },
+        { new: true }
+      )
       if (subsRequest) {
         return res.status(200).json(subsRequest)
       } else {
