@@ -1,23 +1,8 @@
 import mongoose from 'mongoose'
 
-const dataInsightSchema = new mongoose.Schema({
-  date: {
-    type: Date,
-    required: true
-  },
-  weight: {
-    type: Number,
-    required: true
-  },
-  deleted: {
-    type: Boolean,
-    required: true
-  }
-})
-
 const studentInsightsSchema = new mongoose.Schema({
   studentId: mongoose.Schema.ObjectId,
-  data: [dataInsightSchema]
+  data: [mongoose.Schema.ObjectId]
 })
 
 const StudentInsights = mongoose.models.StudentInsights || mongoose.model('StudentInsights', studentInsightsSchema)

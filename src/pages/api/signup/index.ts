@@ -2,6 +2,7 @@ import connect from 'src/lib/mongodb'
 import { NextApiRequest, NextApiResponse } from 'next/types'
 import User from 'src/models/userSchema'
 import StudentInsights from 'src/models/studentInsights'
+import Insights from 'src/models/insight'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -14,7 +15,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     const user = await User.create(req.body)
     if (user.role == 'Alumno') {
-      await StudentInsights.create({ studentId: user._id })
+      const currentDate = new Date()
+      const insight = await Insights.create({
+        name: 'Peso',
+        dataOfItem: {
+          date: currentDate,
+          weight: user.weight,
+          deleted: false
+        }
+      })
+      console.log(insight)
+      await StudentInsights.create({
+        studentId: user._id,
+        data: [insight._id]
+      })
     }
     if (user) {
       return res.status(200).json(user)

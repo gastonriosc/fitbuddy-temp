@@ -9,21 +9,36 @@ import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import CustomInput from '../../../views/forms/form-elements/pickers/PickersCustomInput'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { DateType } from 'src/types/forms/reactDatepickerTypes'
+import Button from '@mui/material/Button'
+import Icon from 'src/@core/components/icon'
+import { useState } from 'react'
+import NewInsightItem from '../newInsightItem'
+import { addDays } from 'date-fns';
+import DeleteInsight from '../deleteInsight'
 
-interface DataItem {
-  weight: number
-  date: Date
+interface StudentInsightDataOfItem {
+  _id: string;
+  date: Date;
+  weight: number;
+  deleted: boolean;
 }
+
+interface StudentInsightItem {
+  _id: string;
+  name: string;
+  dataOfItem: StudentInsightDataOfItem[]
+}
+
 interface Props {
   direction: 'ltr' | 'rtl'
-  data: DataItem[];
-  dataPeso: number
-  startDate: DateType
-  endDate: DateType
-  handleOnChangeDates: (dates: any) => void;
+  data: StudentInsightItem;
+
+  // startDate: DateType
+  // endDate: DateType
+  // handleOnChangeDates: (dates: any) => void;
 }
 
-const CustomTooltip = (props) => {
+const CustomTooltip = (props: any) => {
   // ** Props
   const { active, payload, label } = props;
 
@@ -39,50 +54,63 @@ const CustomTooltip = (props) => {
   return null;
 };
 
-const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, handleOnChangeDates }: Props) => {
+const ChartRegistroPesos = ({ direction, data }: Props) => {
+  const [dataChart, setDataChart] = useState<StudentInsightItem>(data)
+  const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false)
+  const [borrarRegistro, setBorrarRegistro] = useState<boolean>(false)
+  const currentEndDate = new Date();
+  currentEndDate.setHours(0, 0, 0, 0);
+  const currentDate = new Date();
+  currentDate.setHours(23, 59, 59, 0);
+  const [startDate, setStartDate] = useState<DateType>(addDays(currentEndDate, -183))
+  const [endDate, setEndDate] = useState<DateType>(currentDate)
 
-  // const encontrarPesoMasBajo = (data: DataItem[]): number | undefined => {
+  const handleOnChangeDates = (dates: any) => {
+    const [start, end] = dates
+    setStartDate(start);
+    setEndDate(end);
 
-  //   let pesoMasBajo = data[0].weight;
+  };
 
+  const transformarDatosAFormatoSeries = (datos: StudentInsightItem, startDate: DateType, endDate: DateType) => {
+    const seriesTransformadas = {
+      data: datos?.dataOfItem
+        .map(item => ({
+          weight: item.weight,
+          date: new Date(item.date), // Mantener la fecha como objeto
+        }))
+        .filter(item => item.date >= startDate && item.date <= endDate?.setHours(23, 59, 59, 0))
+        .sort((a, b) => a.date.getTime() - b.date.getTime()) // Ordenar directamente por fecha
+        .map(item => ({
+          weight: item.weight,
+          date: formatDate(item.date),
+        })),
+    };
 
-  //   for (let i = 1; i < data.length; i++) {
-  //     const pesoActual = data[i].weight;
-  //     if (pesoActual < pesoMasBajo) {
-  //       pesoMasBajo = pesoActual;
-  //     }
-  //   }
+    return seriesTransformadas;
+  };
 
-  //   return pesoMasBajo;
-  // };
+  const formatDate = (date: Date): string => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
 
-  // const pesoMasBajo = encontrarPesoMasBajo(data);
+    return `${day}/${month}/${year}`;
+  };
 
-  // const encontrarPesoMasAlto = (data: DataItem[]): number | undefined => {
+  const series = transformarDatosAFormatoSeries(dataChart, startDate, endDate);
 
-  //   let pesoMasAlto = data[0].weight;
-
-
-  //   for (let i = 1; i < data.length; i++) {
-  //     const pesoActual = data[i].weight;
-  //     if (pesoActual > pesoMasAlto) {
-  //       pesoMasAlto = pesoActual;
-  //     }
-  //   }
-
-  //   return pesoMasAlto;
-  // };
-
-  // const pesoMasAlto = encontrarPesoMasAlto(data);
-
-
-
+  // const first = dataChart.dataOfItem.map(item => ({
+  //   weight: item.weight,
+  //   date: new Date(item.date), // Mantener la fecha como objeto
+  // })).sort((a, b) => a.date.getTime() - b.date.getTime())
 
   return (
     <Card>
       <CardHeader
-        title={`Registro de pesos`}
-        subheader={`El primer registro de peso en FitBuddy fue de ${dataPeso} kg.`}
+        title={`${dataChart.name.toUpperCase()}`}
+
+        // subheader={`El primer registro en FitBuddy fue de ${first[0].weight} kg.`}
         subheaderTypographyProps={{ sx: { color: theme => `${theme.palette.text.disabled} !important` } }}
         sx={{
           flexDirection: ['column', 'row'],
@@ -110,14 +138,23 @@ const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, han
                 }
               />
             </DatePickerWrapper>
+            <Box sx={{ mx: 4, my: 2, display: 'flex' }}>
+              <Button sx={{ mr: 2 }} variant='contained' onClick={() => setNuevoRegistro(true)}>
+                <Icon icon='mdi:plus' />
+              </Button>
+              <Button variant='contained' color='error' onClick={() => setBorrarRegistro(true)}>
+                <Icon icon='mdi:trash' />
+              </Button>
+            </Box>
           </Box>
 
         }
+
       />
       <CardContent>
         <Box sx={{ height: 350 }}>
           <ResponsiveContainer>
-            <LineChart height={350} data={data} style={{ direction }} margin={{ left: -0, right: 30 }} >
+            <LineChart height={350} data={series.data} style={{ direction }} margin={{ left: -0, right: 30 }} >
               <CartesianGrid
                 stroke="#6D6D6D"
                 strokeDasharray="5"
@@ -131,9 +168,6 @@ const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, han
               />
               <YAxis
                 orientation={direction === 'rtl' ? 'right' : 'left'} domain={[50, 62]}
-
-              // domain={[pesoMasBajo, pesoMasAlto]}
-
               />
               <Tooltip content={CustomTooltip} />
               <Line dataKey='weight' stroke='#ff9f43' strokeWidth={3} />
@@ -141,6 +175,8 @@ const ChartRegistroPesos = ({ direction, data, dataPeso, startDate, endDate, han
           </ResponsiveContainer>
         </Box>
       </CardContent>
+      <NewInsightItem setNuevoRegistro={setNuevoRegistro} nuevoRegistro={nuevoRegistro} dataPeso={dataChart.dataOfItem} setDataPeso={setDataChart} dataId={data._id} name={data.name.toLocaleLowerCase()} />
+      <DeleteInsight setBorrarRegistro={setBorrarRegistro} borrarRegistro={borrarRegistro} dataId={data._id} setDataPeso={setDataChart} />
     </Card>
   )
 }

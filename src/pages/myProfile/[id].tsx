@@ -134,7 +134,7 @@ const MyProfile = () => {
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-
+  console.log(subs)
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
 
