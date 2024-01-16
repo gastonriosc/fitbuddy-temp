@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (user.role == 'Alumno') {
       const currentDate = new Date()
       const insight = await Insights.create({
-        name: 'Peso',
+        name: 'Peso Corporal',
         dataOfItem: {
           date: currentDate,
           weight: user.weight,

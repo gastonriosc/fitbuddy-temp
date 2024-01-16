@@ -112,7 +112,7 @@ const DeleteInsight = (props: Props) => {
                         }}
                     >
                         <Icon icon='line-md:alert' fontSize='5.5rem' />
-                        <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas borrar el registro?</Typography>
+                        <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas borrar el gráfico?</Typography>
                     </Box>
                 </DialogContent>
                 <DialogActions

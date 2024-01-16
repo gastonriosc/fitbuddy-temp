@@ -141,9 +141,11 @@ const ChartRegistroPesos = ({ direction, data }: Props) => {
               <Button sx={{ mr: 2 }} variant='contained' onClick={() => setNuevoRegistro(true)}>
                 <Icon icon='mdi:plus' />
               </Button>
-              <Button variant='contained' color='error' onClick={() => setBorrarRegistro(true)}>
-                <Icon icon='mdi:trash' />
-              </Button>
+              {dataChart.name.toLowerCase() !== "peso corporal" && (
+                <Button variant='contained' color='error' onClick={() => setBorrarRegistro(true)}>
+                  <Icon icon='mdi:trash' />
+                </Button>
+              )}
             </Box>
           </Box>
 
@@ -175,7 +177,14 @@ const ChartRegistroPesos = ({ direction, data }: Props) => {
         </Box>
       </CardContent>
       <NewInsightItem setNuevoRegistro={setNuevoRegistro} nuevoRegistro={nuevoRegistro} dataPeso={dataChart.dataOfItem} setDataPeso={setDataChart} dataId={data._id} name={data.name.toLocaleLowerCase()} />
-      <DeleteInsight setBorrarRegistro={setBorrarRegistro} borrarRegistro={borrarRegistro} dataPeso={dataChart.dataOfItem} setDataPeso={setDataChart} dataId={data._id} />
+      <DeleteInsight
+        setBorrarRegistro={setBorrarRegistro}
+        borrarRegistro={borrarRegistro}
+        dataPeso={dataChart.dataOfItem}
+        setDataPeso={setDataChart}
+        dataId={data._id}
+      />
+
     </Card>
   )
 }
