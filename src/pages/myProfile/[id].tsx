@@ -134,7 +134,6 @@ const MyProfile = () => {
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  console.log(subs)
   const route = useRouter();
   const closePopUp = () => setPopUp(false)
 
@@ -319,13 +318,13 @@ const MyProfile = () => {
 
   const sendSubscriptionRequest: SubmitHandler<FieldValues> = async (data) => {
     const { description } = data;
-    console.log(description)
+
     const status = "pendiente"
     const trainerId = route.query.id
     const studentId = session?.user._id
     const subscriptionId = sendSubsRequest?._id
     const { disease } = data
-    console.log(disease)
+
 
     const amount = sendSubsRequest?.amount
     const currentDate = new Date();

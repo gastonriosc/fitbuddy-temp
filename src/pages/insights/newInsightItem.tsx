@@ -121,7 +121,6 @@ const NewInsightItem = (props: Props) => {
             if (res.status == 200) {
                 const data = await res.json();
                 const registroR = data;
-                console.log('registro', registroR);
                 handlePopUpNuevoRegistro()
                 setTitlePopUp('Registrado con éxito!');
                 setDataPeso(registroR)

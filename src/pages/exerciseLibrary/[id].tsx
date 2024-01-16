@@ -121,7 +121,6 @@ const MyLibrary = () => {
 
         if (res.status == 200) {
           const data = await res.json();
-          console.log(data.exercisesData);
           setPlan(data.exercisesData);
           setIsLoading(true);
 
@@ -202,7 +201,7 @@ const MyLibrary = () => {
 
       if (res.status == 200) {
         const data = await res.json()
-        console.log(data)
+
         addExerciseToPlan(data)
         setTitlePopUp('Ejercicio agregado con éxito!');
         setPopUp(true);

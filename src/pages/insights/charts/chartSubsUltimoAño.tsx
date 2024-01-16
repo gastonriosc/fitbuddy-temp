@@ -26,7 +26,6 @@ interface Props {
 const ChartSubsUltimoAño = ({ series, total, year }: Props) => {
   // ** Hook
   const titleYear = year?.getFullYear()
-  console.log(series)
   const theme = useTheme()
 
   const options: ApexOptions = {

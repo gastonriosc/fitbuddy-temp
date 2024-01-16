@@ -108,7 +108,7 @@ const Foro = (props: Props) => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          console.log(data)
+
           setForo(data.foro)
           setInfoPlan(data.infoPlan)
         }

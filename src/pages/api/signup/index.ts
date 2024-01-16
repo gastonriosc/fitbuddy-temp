@@ -24,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           deleted: false
         }
       })
-      console.log(insight)
       await StudentInsights.create({
         studentId: user._id,
         data: [insight._id]

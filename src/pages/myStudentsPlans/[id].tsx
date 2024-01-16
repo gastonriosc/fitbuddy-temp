@@ -85,7 +85,7 @@ const MyRequests = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          console.log(data)
+
           setPlan(data.plan);
           setNameSubs(data.nameSubs);
           setIsLoading(true);

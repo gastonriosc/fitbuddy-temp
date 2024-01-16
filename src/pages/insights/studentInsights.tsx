@@ -40,6 +40,8 @@ const StudentInsight = () => {
   const [dataPeso, setDataPeso] = useState<StudentInsightItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const route = useRouter()
+
+
   useEffect(() => {
     const fetchMyTracking = async () => {
       const id = route.query.id;
@@ -71,7 +73,7 @@ const StudentInsight = () => {
     };
 
     fetchMyTracking();
-  }, [route, dataPeso]);
+  }, [dataPeso]);
 
 
   if (isLoading) {
@@ -99,10 +101,10 @@ const StudentInsight = () => {
               dataPeso.map((item: StudentInsightItem) => (
                 <Box key={item._id} sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'column', lg: 'row' } }}>
                   <Box sx={{ width: { xs: '100%', md: '100%', lg: '75%' }, padding: 1, mt: 4 }}>
-                    <ChartRegistroPesos direction='ltr' data={item}></ChartRegistroPesos>
+                    <ChartRegistroPesos direction='ltr' data={item} ></ChartRegistroPesos>
                   </Box>
 
-                  <DataTable data={dataPeso} />
+                  <DataTable data={item} />
 
                 </Box>
               ))

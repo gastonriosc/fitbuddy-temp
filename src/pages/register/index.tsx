@@ -206,7 +206,7 @@ const Register = () => {
     currentDate.setHours(currentDate.getHours())
     const registrationDate = currentDate.toISOString();
     const { email, password, phone, country, gender, role, name, discipline, height, weight, birthdate } = data
-    console.log('data', data)
+
     let avatar = '';
     if (gender === 'Masculino') {
       avatar = '/images/animals/4.png'

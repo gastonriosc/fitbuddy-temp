@@ -51,7 +51,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           }
         })
       }
-
       if (dataTracking && documentosAsociados.length > 0) {
         const combinedDates = dataTracking.reduce((acc, curr) => acc.concat(curr.dataTracking), [])
         const responseData = {

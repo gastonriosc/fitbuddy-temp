@@ -97,7 +97,7 @@ const NewPlan = () => {
   const [manualInput, setManualInput] = React.useState(false);
   const [cantidadDeDias, setCantidadDeDias] = useState<number>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  console.log(plan)
+
 
   const { data: session } = useSession();
   const closePopUp = () => setPopUp(false)
@@ -168,8 +168,8 @@ const NewPlan = () => {
 
       if (res.status == 200) {
         const data = await res.json();
-        console.log(data)
-        console.log(data.daysPerWeek[0].daysPerWeek)
+
+
 
         return data.daysPerWeek[0].daysPerWeek
       }
@@ -348,7 +348,7 @@ const NewPlan = () => {
       });
 
       if (res.status === 200) {
-        console.log('Plan de entrenamiento creado con éxito');
+
         setTitlePopUp('Plan creado con éxito!')
         setPopUp(true)
       } else {
@@ -451,7 +451,7 @@ const NewPlan = () => {
                                         value={nombre}
                                         onChange={(e) => {
                                           const selectedExerciseName = e.target.value;
-                                          console.log(selectedExerciseName);
+
 
                                           // Solo actualiza el nombre si no estás en modo manualInput
                                           if (!manualInput) {
@@ -463,7 +463,7 @@ const NewPlan = () => {
                                           );
                                           if (selectedExercise) {
                                             setLink(selectedExercise.exerciseLink);
-                                            console.log('Selected Exercise Link:', selectedExercise.exerciseLink);
+
                                             setSelectedExerciseLink(selectedExercise.exerciseLink);
                                           } else {
                                             setLink('');

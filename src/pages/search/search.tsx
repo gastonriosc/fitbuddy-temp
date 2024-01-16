@@ -90,7 +90,7 @@ const Search = ({ genderFilter, disciplineFilter, searchTerm, daysPerWeek, follo
       try {
         const response = await fetch('/api/trainerSearch');
         const data = await response.json();
-        console.log(data)
+
         setUsers(data);          //Cargamos users con la data que viene de la solicitud a la API.
         setIsLoading(false)
       } catch (error) {

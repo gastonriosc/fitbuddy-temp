@@ -31,7 +31,6 @@ interface Props {
 const ChartSubsMasSolicitadas = ({ series, total, year, updateYear }: Props) => {
   // ** Hook
   const titleYear = year?.getFullYear()
-  console.log(series)
   const theme = useTheme()
 
   const options: ApexOptions = {

@@ -16,19 +16,18 @@ import NewInsightItem from '../newInsightItem'
 import { addDays } from 'date-fns';
 import DeleteInsight from '../deleteInsight'
 
+interface StudentInsightItem {
+  _id: string;
+  name: string;
+  dataOfItem: StudentInsightDataOfItem[];
+}
+
 interface StudentInsightDataOfItem {
   _id: string;
   date: Date;
   weight: number;
   deleted: boolean;
 }
-
-interface StudentInsightItem {
-  _id: string;
-  name: string;
-  dataOfItem: StudentInsightDataOfItem[]
-}
-
 interface Props {
   direction: 'ltr' | 'rtl'
   data: StudentInsightItem;
@@ -176,7 +175,7 @@ const ChartRegistroPesos = ({ direction, data }: Props) => {
         </Box>
       </CardContent>
       <NewInsightItem setNuevoRegistro={setNuevoRegistro} nuevoRegistro={nuevoRegistro} dataPeso={dataChart.dataOfItem} setDataPeso={setDataChart} dataId={data._id} name={data.name.toLocaleLowerCase()} />
-      <DeleteInsight setBorrarRegistro={setBorrarRegistro} borrarRegistro={borrarRegistro} dataId={data._id} setDataPeso={setDataChart} />
+      <DeleteInsight setBorrarRegistro={setBorrarRegistro} borrarRegistro={borrarRegistro} dataPeso={dataChart.dataOfItem} setDataPeso={setDataChart} dataId={data._id} />
     </Card>
   )
 }

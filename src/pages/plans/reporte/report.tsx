@@ -109,7 +109,7 @@ const ReportPopUp = ({ planId, reportPopUp, handleReportPopUp }: Props) => {
   //   count = trackingInfo?.data.length;
 
   //   averageNumber = trackingInfo?.data.reduce((sum, item) => sum + item.number, 0) / count;
-  //   console.log(averageNumber)
+
   //   averageDifficult = trackingInfo?.data.reduce((sum, item) => sum + item.difficult, 0) / count;
   //   averageFatigue = trackingInfo?.data.reduce((sum, item) => sum + item.fatigue, 0) / count;
   // }

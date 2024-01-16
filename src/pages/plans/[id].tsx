@@ -328,7 +328,7 @@ const MyPlans = () => {
           setPlan(fetchedPlanData);
           setTrackingId(data.trackingId);
           setIsLoading(true);
-          console.log(fetchedPlanData.daysPerWeek);
+
 
         } else if (res.status === 404) {
           route.replace('/404');
@@ -582,7 +582,7 @@ const MyPlans = () => {
                                               if (selectedExercise) {
                                                 handleExerciseDataChange(dayIndex, exerciseIndex, 'link', selectedExercise.exerciseLink);
                                                 setSelectedExerciseLink(selectedExercise.exerciseLink);
-                                                console.log(selectedExercise.exerciseLink);
+
                                               }
                                             }}
                                           >

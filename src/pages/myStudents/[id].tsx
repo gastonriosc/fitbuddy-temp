@@ -84,7 +84,7 @@ const MyStudents = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          console.log(data);
+
           setSubsRequest(data.subsRequest);
           setNameSubs(data.nameSubs);
           setIsLoading(true);

@@ -90,7 +90,6 @@ const AdminInsights = () => {
   };
   const dataAnual = obtenerDatosAnuales(montosAnuales, yearIngresos?.getFullYear());
   const totalAnual = (montosAnuales ?? []).filter((item) => new Date(item.date).getFullYear() === yearIngresos?.getFullYear()).reduce((acc, item) => acc + item.amount, 0);
-  console.log(montosAnuales)
 
   //! USUARIOS ESTE AÑO
 

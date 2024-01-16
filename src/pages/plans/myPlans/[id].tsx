@@ -70,7 +70,7 @@ const MyRequests = () => {
 
 
 
-  console.log(plan)
+
   useEffect(() => {
     const fetchMyRequests = async () => {
       const id = route.query.id;
@@ -89,7 +89,7 @@ const MyRequests = () => {
         if (res.status == 200) {
           const data = await res.json();
           setPlan(data.plan);
-          console.log(data.plan)
+
           setNameSubs(data.nameSubs);
           setIsLoading(true);
         }

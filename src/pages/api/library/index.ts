@@ -33,8 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         newExercise = existingLibrary.exercise
       }
       if (newExercise) {
-        console.log(newExercise)
-
         return res.status(200).json(newExercise)
       } else {
         return res.status(404).json('No se pudo agregar el ejercicio')

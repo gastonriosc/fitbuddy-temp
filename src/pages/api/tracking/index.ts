@@ -61,7 +61,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     } else if (req.method === 'DELETE') {
       const { id, data } = req.body
-      console.log(id)
       try {
         const updatedTracking = await TrackingSchema.findByIdAndUpdate(id, { $pull: { data: data } }, { new: true })
 

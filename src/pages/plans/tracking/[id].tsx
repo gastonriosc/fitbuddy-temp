@@ -117,7 +117,7 @@ const Tracking = () => {
   }
 
 
-  console.log('trackingInfo:', tracking)
+
   const handlePopUpNuevoRegistro = () => {
     setNuevoRegistro(false)
   }
@@ -142,7 +142,7 @@ const Tracking = () => {
         );
         if (res.status == 200) {
           const data = await res.json();
-          console.log('data:', data.expirationDate)
+
           setTracking(data)
         }
         if (res.status == 404) {

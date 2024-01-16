@@ -12,10 +12,24 @@ import DialogActions from '@mui/material/DialogActions'
 import Dialog from '@mui/material/Dialog'
 import Typography from '@mui/material/Typography'
 
+interface StudentInsightItem {
+    _id: string;
+    name: string;
+    dataOfItem: StudentInsightDataOfItem[];
+}
+
+interface StudentInsightDataOfItem {
+    _id: string;
+    date: Date;
+    weight: number;
+    deleted: boolean;
+}
 
 type Props = {
     borrarRegistro: boolean
     setBorrarRegistro: (val: boolean) => void
+    dataPeso: StudentInsightItem[]
+    setDataPeso: (val: any) => void
 
     // setDataPeso: (val: any) => void
     dataId: string
@@ -23,7 +37,7 @@ type Props = {
 
 const DeleteInsight = (props: Props) => {
 
-    const { borrarRegistro, setBorrarRegistro, dataId } = props
+    const { borrarRegistro, setBorrarRegistro, dataId, setDataPeso } = props
     const [trackingPopUp, setTrackingPopUp] = useState<boolean>(false)
     const [titlePopUp, setTitlePopUp] = useState<string>('')
     const currentEndDate = new Date();
@@ -55,8 +69,11 @@ const DeleteInsight = (props: Props) => {
                 body: JSON.stringify(requestBody)
             })
             if (res.status == 200) {
+                const data = await res.json();
+                const registroR = data;
                 handlePopUpBorrarRegistro()
                 setTitlePopUp('Borrado con éxito!');
+                setDataPeso(registroR)
                 setTrackingPopUp(true)
 
             }

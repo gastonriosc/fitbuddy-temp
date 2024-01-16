@@ -120,7 +120,7 @@ const MyRequests = () => {
 
           if (res1.status === 200) {
             const data1 = await res1.json();
-            console.log('data1:', data1)
+
             setSubsRequest(data1.subsRequest);
             setNameSubs(data1.nameSubs);
             setIsLoading(true);
@@ -140,7 +140,7 @@ const MyRequests = () => {
 
           if (res2.status === 200) {
             const data2 = await res2.json();
-            console.log('data2:', data2)
+
             setSubsRequest(data2.subsRequest);
             setNameSubs(data2.nameSubs);
             setIsLoading(true);

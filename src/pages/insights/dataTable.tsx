@@ -28,17 +28,15 @@ interface StudentInsightDataOfItem {
 }
 
 interface Props {
-  data: StudentInsightItem
-
-  // setDataPeso: (val: any) => void
+  data: StudentInsightItem;
+  updateDataPeso: (newDataPeso: StudentInsightItem[]) => void;
 
   // dataId: string
 }
 
 const DataTable = (props: Props) => {
 
-  const { data } = props;
-  console.log(data)
+  const { data, updateDataPeso } = props;
 
   // const [dataPeso, setDataPeso] = useState<StudentInsightItem | any>()
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -46,7 +44,7 @@ const DataTable = (props: Props) => {
   const [registroABorrar, setRegistroABorrar] = useState<StudentInsightDataOfItem>()
   const [popUp, setPopUp] = useState<boolean>(false)
   const [titlePopUp, setTitlePopUp] = useState<string>('')
-  const itemsPerPage = 6;
+  const itemsPerPage = 5;
   const totalPages = Math.ceil(data.dataOfItem.length / itemsPerPage);
   const currentEndDate = new Date();
   currentEndDate.setHours(0, 0, 0, 0);
@@ -67,10 +65,12 @@ const DataTable = (props: Props) => {
 
   const createRegistro: SubmitHandler<FieldValues> = async () => {
     const dataId = id
+    const studentId = route.query.id
 
     const requestBody = {
       isDelete: true,
       id: dataId,
+      studentId: studentId,
       dataOfItem: {
         _id: registroABorrar?._id,
         date: registroABorrar?.date,
@@ -80,7 +80,6 @@ const DataTable = (props: Props) => {
       }
     };
 
-    console.log(requestBody)
     try {
       const res = await fetch('/api/studentInsights', {
         method: 'PUT',
@@ -91,13 +90,11 @@ const DataTable = (props: Props) => {
       })
       if (res.status == 200) {
         const data = await res.json();
-        const registroR = data;
-        console.log('registro', registroR);
+
         setTitlePopUp('Peso borrado con éxito!');
         hadleCloseDeleteRegistroPopUp()
         setPopUp(true)
-
-        // setDataPeso(registroR)
+        updateDataPeso(data)
 
 
       }
