@@ -734,7 +734,7 @@ const MyPlans = () => {
                               ))}
                             </TableBody>
                           </Table>
-                          {esEntrenador && (
+                          {esEntrenador && new Date(plan.expirationDate) > new Date() && (
                             <ButtonStyled variant='contained' onClick={() => handleAddRow(dayIndex)} sx={{ marginTop: '15px' }}>
                               Agregar Ejercicio
                             </ButtonStyled>
@@ -755,12 +755,12 @@ const MyPlans = () => {
         </Grid>
         <Grid container justifyContent='space-between' mt={2}>
           <Grid item md={6} xs={12} >
-            {esEntrenador && (
+            {esEntrenador && new Date(plan.expirationDate) > new Date() && (
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleAddDay}>
                 Agregar Día
               </Button>
             )}
-            {esEntrenador && (
+            {esEntrenador && new Date(plan.expirationDate) > new Date() && (
 
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleDeleteLastDay}>
                 Eliminar Día
@@ -772,7 +772,7 @@ const MyPlans = () => {
           </Grid>
 
           <Grid item md={1.4} xs={12} >
-            {esEntrenador && (
+            {esEntrenador && new Date(plan.expirationDate) > new Date() && (
 
               <Button sx={{ marginLeft: '2%' }} variant='outlined' onClick={handleExerciseChange}>
                 Actualizar plan
