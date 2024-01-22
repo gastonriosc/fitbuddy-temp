@@ -124,12 +124,11 @@ const RequestPopUp = (props: Props) => {
             <Typography variant='h5' sx={{ mb: 5 }}>¿Seguro que deseas {type} la solicitud de suscripción?</Typography>
             {type === 'rechazar' && (
               <div>
-
                 <TextareaAutosize
                   aria-label="Razón de rechazo"
-                  minRows={5}
+                  minRows={2}
                   cols={50}
-                  placeholder='Por favor, proporciona una razón para el rechazo:'
+                  placeholder='Por favor, proporcione una razón para el rechazo:'
                   style={{
                     width: '100%',
                     marginBottom: 2,
