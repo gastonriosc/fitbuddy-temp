@@ -820,8 +820,9 @@ const MyProfile = () => {
                         id='description-select'
                         label='Objetivos'
                         name='description'
-                        value={value}
+                        value={value || 'Hipertrofia'}
                         onBlur={onBlur}
+                        placeholder='hola'
                         onChange={onChange}
                         error={Boolean(errors.description)}
                       >
