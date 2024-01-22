@@ -91,7 +91,7 @@ const Tracking = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
   const [endDateRange] = useState<DateType>(null)
-  const [startDateRange, setStartDateRange] = useState<DateType>(null)
+  const [startDateRange, setStartDateRange] = useState<DateType>(new Date())
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
   const [invalidDateError, setInvalidDateError] = useState(false);
@@ -190,6 +190,8 @@ const Tracking = () => {
         setTitlePopUp('Seguimiento registrado con éxito!')
         setTrackingPopUp(true)
 
+
+
       } else {
         setNuevoRegistro(false)
         setTitlePopUp('Error al guardar el seguimiento')
@@ -216,7 +218,7 @@ const Tracking = () => {
   });
 
 
-  const handleOnChangeRangeForDialog = (date: Date) => {
+  const handleOnChangeRangeForDialog = (date: Date | any) => {
     setStartDateRange(date);
     setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
     const isDuplicate = isDateAlreadyRecorded(date);
@@ -288,6 +290,11 @@ const Tracking = () => {
     setTitlePopUpDelete('¿Está seguro que desea eliminar este registro?');
     setPopUpDelete(true);
   };
+
+
+  useEffect(() => {
+    handleOnChangeRangeForDialog(startDateRange);
+  }, []);
 
   const handleConfirmedDelete = async () => {
     try {
@@ -571,7 +578,7 @@ const Tracking = () => {
                         />
                       }
                       minDate={tracking?.date}
-                      maxDate={new Date()}
+                      maxDate={tracking?.expirationDate}
                       includeDates={getIncludedDates(tracking)}
                     />
                   </DatePickerWrapper>

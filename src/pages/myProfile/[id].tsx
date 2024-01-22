@@ -816,18 +816,24 @@ const MyProfile = () => {
                     control={control}
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
-                      <TextField
-                        rows={4}
-                        multiline
-                        id='textarea-outlined-static'
+                      <Select
+                        id='description-select'
                         label='Objetivos'
-                        placeholder='¿Qué objetivos buscás alcanzar?'
                         name='description'
                         value={value}
                         onBlur={onBlur}
                         onChange={onChange}
                         error={Boolean(errors.description)}
-                      />
+                      >
+                        <MenuItem value='Hipertrofia'>Hipertrofia</MenuItem>
+                        <MenuItem value='Fuerza'>Fuerza</MenuItem>
+                        <MenuItem value='Resistencia'>Resistencia</MenuItem>
+                        <MenuItem value='Potencia'>Potencia</MenuItem>
+                        <MenuItem value='Definición'>Definición</MenuItem>
+                        <MenuItem value='Equilibrio'>Equilibrio</MenuItem>
+                        <MenuItem value='Flexibilidad'>Flexibilidad</MenuItem>
+                        <MenuItem value='Rehabilitación'>Rehabilitación</MenuItem>
+                      </Select>
                     )}
                   />
                   {errors.description && (

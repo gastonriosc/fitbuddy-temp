@@ -53,6 +53,7 @@ interface subsRequest {
   trainerName: string
   trainerAvatar: string
   expirationDate: string
+  rejectionReason: any
 }
 
 const MyRequests = () => {
@@ -129,6 +130,7 @@ const MyRequests = () => {
           } else if (res1.status === 500) {
             route.replace('/500');
           }
+
         } else if (session?.data?.user.role === 'Alumno') {
           // Llamada a la API específica para Alumno
           const res2 = await fetch(`/api/subsRequestsStudent/?id=${id}`, {
@@ -149,6 +151,25 @@ const MyRequests = () => {
           } else if (res2.status === 500) {
             route.replace('/500');
           }
+        } if (filterState === 'rechazada') {
+          const res3 = await fetch(`/api/refusedSubsRequestsStudents/?id=${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (res3.status === 200) {
+            const data3 = await res3.json();
+            console.log('data3:', data3)
+            setSubsRequest(data3.subsRequest);
+            setNameSubs(data3.nameSubs);
+            setIsLoading(true);
+          } else if (res3.status === 404) {
+            route.replace('/404');
+          } else if (res3.status === 500) {
+            route.replace('/500');
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -156,7 +177,7 @@ const MyRequests = () => {
     };
 
     fetchData();
-  }, [session, route.query.id]); // Dependencias para ejecutar cuando cambie la sesión o la ID de la ruta
+  }, [session, route.query.id, filterState]);
 
 
   const filteredSubs = subsRequest
@@ -177,9 +198,11 @@ const MyRequests = () => {
       }
     })
     .filter((sub: subsRequest) => {
-      if (filterState === 'vigentes') {
+      if (filterState === 'rechazada') {
+        return sub.status === 'rechazada';
+      } else if (filterState === 'vigentes') {
         return new Date(sub.expirationDate) > new Date();
-      } else {
+      } else if (filterState === 'novigentes') {
         return new Date(sub.expirationDate) <= new Date();
       }
     })
@@ -257,6 +280,8 @@ const MyRequests = () => {
                     >
                       <MenuItem value='vigentes'>VIGENTES</MenuItem>
                       <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
+                      {!esEntrenador && <MenuItem value='rechazada'>RECHAZADAS</MenuItem>}
+
                     </Select>
                   </FormControl>
                 </Grid>
@@ -353,6 +378,19 @@ const MyRequests = () => {
                           />
                           {sub.disease ? sub.disease : "No presenta"}
                         </Typography>
+                        {sub.status === 'rechazada' && (
+                          <Typography sx={{ mb: 2, fontSize: '13px' }}>
+                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='warning'
+                              label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                  <Icon icon='mdi:alert' fontSize='1rem' />
+                                  <span><b>Motivo de rechazo:</b></span>
+                                </Box>
+                              }
+                            />
+                            {sub.rejectionReason ? sub.rejectionReason : "No presenta"}
+                          </Typography>
+                        )}
                       </CardContent>
                       <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
@@ -384,7 +422,7 @@ const MyRequests = () => {
                           >
                             <Icon icon='mdi:trash' />
                           </Button>)}
-                          {esEntrenador || new Date(sub.expirationDate) > new Date() && (
+                          {(!esEntrenador && new Date(sub.expirationDate) > new Date() && sub.status !== 'rechazada') && (
                             <Button
                               variant='contained'
                               color='error'
@@ -392,7 +430,8 @@ const MyRequests = () => {
                               onClick={() => cancelarSubsRequest(sub)}
                             >
                               Cancelar mi solicitud
-                            </Button>)}
+                            </Button>
+                          )}
                         </Box>
                         <Box sx={{ marginTop: 1, marginLeft: 1 }}>
                           {esEntrenador && (<Button
