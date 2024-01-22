@@ -811,21 +811,27 @@ const MyProfile = () => {
             >
               <form noValidate autoComplete='off' onSubmit={sendSubsRequestHandleSubmit(sendSubscriptionRequest)}>
                 <FormControl fullWidth sx={{ mb: 4 }}>
+                  <InputLabel>Objetivo</InputLabel>
+
                   <Controller
                     name='description'
                     control={control}
                     rules={{ required: true }}
                     render={({ field: { onChange, onBlur, value } }) => (
+
                       <Select
                         id='description-select'
                         label='Objetivos'
                         name='description'
-                        value={value || 'Hipertrofia'}
+                        value={value}
                         onBlur={onBlur}
                         placeholder='hola'
                         onChange={onChange}
                         error={Boolean(errors.description)}
+                        inputProps={{ placeholder: 'Seleccione un objetivo' }}
+                        displayEmpty
                       >
+
                         <MenuItem value='Hipertrofia'>Hipertrofia</MenuItem>
                         <MenuItem value='Fuerza'>Fuerza</MenuItem>
                         <MenuItem value='Resistencia'>Resistencia</MenuItem>
@@ -836,6 +842,7 @@ const MyProfile = () => {
                         <MenuItem value='Rehabilitación'>Rehabilitación</MenuItem>
                       </Select>
                     )}
+
                   />
                   {errors.description && (
                     <FormHelperText sx={{ color: 'error.main' }}>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // ** React Imports
 import { forwardRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -189,6 +190,7 @@ const Tracking = () => {
         setTracking(data)
         setTitlePopUp('Seguimiento registrado con éxito!')
         setTrackingPopUp(true)
+        window.location.reload();
 
 
 
@@ -293,8 +295,11 @@ const Tracking = () => {
 
 
   useEffect(() => {
-    handleOnChangeRangeForDialog(startDateRange);
-  }, []);
+    if (tracking) {
+      const currentDate = new Date();
+      handleOnChangeRangeForDialog(currentDate);
+    }
+  }, [tracking]);
 
   const handleConfirmedDelete = async () => {
     try {
@@ -578,7 +583,7 @@ const Tracking = () => {
                         />
                       }
                       minDate={tracking?.date}
-                      maxDate={tracking?.expirationDate}
+                      maxDate={new Date()}
                       includeDates={getIncludedDates(tracking)}
                     />
                   </DatePickerWrapper>
