@@ -152,6 +152,7 @@ const MyRequests = () => {
             route.replace('/500');
           }
         } if (filterState === 'rechazada') {
+          setIsLoading(false)
           const res3 = await fetch(`/api/refusedSubsRequestsStudents/?id=${id}`, {
             method: 'GET',
             headers: {
@@ -223,268 +224,268 @@ const MyRequests = () => {
 
 
 
-  if (isLoading) {
-    return (
-      <>
-        <Grid spacing={2}>
-          <Card>
-            <CardHeader
-              title='Filtros'
-              sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
-            />
-            <CardContent>
-              <Grid container spacing={6}>
-                <Grid item sm={3} xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='search-input-plan'>Plan</InputLabel>
-                    <Select
-                      label='Plan'
-                      fullWidth
-                      value={filterPlan}
-                      id='search-input-plan'
-                      onChange={(e) => setFilterPlan(e.target.value)}
-                    >
-                      <MenuItem value=''>SIN FILTRO</MenuItem>
-                      {Array.from(new Set(subsRequest.map((subs: subsRequest) => subs.subscriptionName))).map((uniqueSubscriptionName, index) => (
-                        <MenuItem key={index} value={uniqueSubscriptionName}>
-                          {uniqueSubscriptionName.toUpperCase()}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item sm={3} xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='search-input'>Fecha</InputLabel>
-                    <Select
-                      label='Fecha'
-                      fullWidth
-                      value={filterOption}
-                      id='search-input'
-                      onChange={(e) => setFilterOption(e.target.value)}
-                    >
-                      <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
-                      <MenuItem value='desc'>MAS RECIENTES</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item sm={3} xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='search-input'>Estado</InputLabel>
-                    <Select
-                      label='Estado'
-                      fullWidth
-                      value={filterState}
-                      id='search-input'
-                      onChange={(e) => setFilterState(e.target.value)}
-                    >
-                      <MenuItem value='vigentes'>VIGENTES</MenuItem>
-                      <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
-                      {!esEntrenador && <MenuItem value='rechazada'>RECHAZADAS</MenuItem>}
 
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item sm={3} xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='search-input'>Nombre</InputLabel>
-                    <Input
-                      fullWidth
-                      value={filterName}
-                      id='search-input'
-                      onChange={(e) => setFilterName(e.target.value)}
-                      placeholder='Ingrese un nombre para buscar'
-                    />
-                  </FormControl>
-                </Grid>
+  return (
+    <>
+      <Grid spacing={2}>
+        <Card>
+          <CardHeader
+            title='Filtros'
+            sx={{ pb: 4, '& .MuiCardHeader-title': { letterSpacing: '.15px' } }}
+          />
+          <CardContent>
+            <Grid container spacing={6}>
+              <Grid item sm={3} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='search-input-plan'>Plan</InputLabel>
+                  <Select
+                    label='Plan'
+                    fullWidth
+                    value={filterPlan}
+                    id='search-input-plan'
+                    onChange={(e) => setFilterPlan(e.target.value)}
+                  >
+                    <MenuItem value=''>SIN FILTRO</MenuItem>
+                    {Array.from(new Set(subsRequest.map((subs: subsRequest) => subs.subscriptionName))).map((uniqueSubscriptionName, index) => (
+                      <MenuItem key={index} value={uniqueSubscriptionName}>
+                        {uniqueSubscriptionName.toUpperCase()}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-            </CardContent>
-          </Card>
+              <Grid item sm={3} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='search-input'>Fecha</InputLabel>
+                  <Select
+                    label='Fecha'
+                    fullWidth
+                    value={filterOption}
+                    id='search-input'
+                    onChange={(e) => setFilterOption(e.target.value)}
+                  >
+                    <MenuItem value='asc'>MAS ANTIGUOS</MenuItem>
+                    <MenuItem value='desc'>MAS RECIENTES</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={3} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='search-input'>Estado</InputLabel>
+                  <Select
+                    label='Estado'
+                    fullWidth
+                    value={filterState}
+                    id='search-input'
+                    onChange={(e) => setFilterState(e.target.value)}
+                  >
+                    <MenuItem value='vigentes'>VIGENTES</MenuItem>
+                    <MenuItem value='novigentes'>NO VIGENTES</MenuItem>
+                    {!esEntrenador && <MenuItem value='rechazada'>RECHAZADAS</MenuItem>}
 
-          {subsRequest.length > 0 ? (
-            paginatedSubs.map((sub: subsRequest, index) => (
-              <Card key={index} sx={{ marginBottom: 2, marginTop: 2, opacity: new Date(sub.expirationDate) <= new Date() ? 0.7 : 1 }}>
-                <Grid container spacing={0}>
-                  <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center', pt: 3, pl: 2 }}>
-                    <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {esEntrenador && (<Img alt='Avatar' src={sub.avatar} sx={{ width: '170px', height: '170px' }} />)}
-                      {!esEntrenador && (<Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '170px', height: '170px' }} />)}
-                    </CardContent>
-                  </StyledGrid2>
-                  <StyledGrid1 item xs={12} md={10}>
-                    <Box sx={{ display: { md: 'flex' } }} >
-                      <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
-                        <Box sx={{ display: 'flex' }}>
-                          <Box>
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              {esEntrenador && sub.studentName}
-                              {!esEntrenador && sub.trainerName}
-                            </Typography>
-                          </Box>
-                          <Box>
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
-                            </Typography>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item sm={3} xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id='search-input'>Nombre</InputLabel>
+                  <Input
+                    fullWidth
+                    value={filterName}
+                    id='search-input'
+                    onChange={(e) => setFilterName(e.target.value)}
+                    placeholder='Ingrese un nombre para buscar'
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
 
+        {
+          isLoading ? (
+            subsRequest.length > 0 ? (
+              paginatedSubs.map((sub: subsRequest, index) => (
+                <Card key={index} sx={{ marginBottom: 2, marginTop: 2, opacity: new Date(sub.expirationDate) <= new Date() ? 0.7 : 1 }}>
+                  <Grid container spacing={0}>
+                    <StyledGrid2 item xs={12} md={2} sx={{ alignItems: 'center', justifyContent: 'center', pt: 3, pl: 2 }}>
+                      <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {esEntrenador && (<Img alt='Avatar' src={sub.avatar} sx={{ width: '170px', height: '170px' }} />)}
+                        {!esEntrenador && (<Img alt='Avatar' src={sub.trainerAvatar} sx={{ width: '170px', height: '170px' }} />)}
+                      </CardContent>
+                    </StyledGrid2>
+                    <StyledGrid1 item xs={12} md={10}>
+                      <Box sx={{ display: { md: 'flex' } }} >
+                        <CardContent sx={{ p: (theme) => `${theme.spacing(6)} !important`, flexGrow: 1 }}>
+                          <Box sx={{ display: 'flex' }}>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                {esEntrenador && sub.studentName}
+                                {!esEntrenador && sub.trainerName}
+                              </Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
+                              </Typography>
+
+                            </Box>
+                            <Typography variant='h5' sx={{ mb: 2 }}>
+                              <CustomChip sx={{ mx: 2 }} skin='light' color='error' label={new Date(sub.expirationDate).toLocaleDateString('es-ES')} />
+                            </Typography>
+                            <Box>
+                              <Typography variant='h5' sx={{ mb: 2 }}>
+                                <CustomChip sx={{ mx: 2 }} skin='light' color='success'
+                                  label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                      <Icon icon='mdi:arrow-up' fontSize='1rem' />
+                                      <span>${sub.amount}</span>
+                                    </Box>
+                                  }
+                                />
+                              </Typography>
+                            </Box>
                           </Box>
-                          <Typography variant='h5' sx={{ mb: 2 }}>
-                            <CustomChip sx={{ mx: 2 }} skin='light' color='error' label={new Date(sub.expirationDate).toLocaleDateString('es-ES')} />
+                          <Typography variant='body1' sx={{ mb: 2 }}>
+                            <ul>
+                              <li>
+                                <b>Descripción de la solicitud:</b> {sub.description}
+                              </li>
+                              <li>
+                                Características del plan solicitado:
+                                <ul>
+                                  <li>
+                                    <b>Nombre:</b> {sub.subscriptionName}
+                                  </li>
+                                  <li>
+                                    <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
+                                  </li>
+                                  <li>
+                                    <b>Seguimiento:</b> {sub.subscriptionFollowing}
+                                  </li>
+                                  <li>
+                                    <b>Intensidad:</b> {sub.subscriptionIntensity}
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
                           </Typography>
-                          <Box>
-                            <Typography variant='h5' sx={{ mb: 2 }}>
-                              <CustomChip sx={{ mx: 2 }} skin='light' color='success'
-                                label={
-                                  <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
-                                    <Icon icon='mdi:arrow-up' fontSize='1rem' />
-                                    <span>${sub.amount}</span>
-                                  </Box>
-                                }
-                              />
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <Typography variant='body1' sx={{ mb: 2 }}>
-                          <ul>
-                            <li>
-                              <b>Descripción de la solicitud:</b> {sub.description}
-                            </li>
-                            <li>
-                              Características del plan solicitado:
-                              <ul>
-                                <li>
-                                  <b>Nombre:</b> {sub.subscriptionName}
-                                </li>
-                                <li>
-                                  <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
-                                </li>
-                                <li>
-                                  <b>Seguimiento:</b> {sub.subscriptionFollowing}
-                                </li>
-                                <li>
-                                  <b>Intensidad:</b> {sub.subscriptionIntensity}
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </Typography>
-                        <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                          <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
-                            label={
-                              <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
-                                <Icon icon='mdi:pencil' fontSize='1rem' />
-                                <span><b>Observaciones:</b>  </span>
-                              </Box>
-                            }
-                          />
-                          {sub.disease ? sub.disease : "No presenta"}
-                        </Typography>
-                        {sub.status === 'rechazada' && (
                           <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='warning'
+                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
                               label={
                                 <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
-                                  <Icon icon='mdi:alert' fontSize='1rem' />
-                                  <span><b>Motivo de rechazo:</b></span>
+                                  <Icon icon='mdi:pencil' fontSize='1rem' />
+                                  <span><b>Observaciones:</b>  </span>
                                 </Box>
                               }
                             />
-                            {sub.rejectionReason ? sub.rejectionReason : "No presenta"}
+                            {sub.disease ? sub.disease : "No presenta"}
                           </Typography>
-                        )}
-                      </CardContent>
-                      <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          {esEntrenador && new Date(sub.expirationDate) > new Date() && (
-                            <Button
-                              variant='contained'
-                              color='success'
-                              title='Aceptar'
-                              onClick={() => aceptarSubsRequest(sub)}
-                            >
-                              <Icon icon='line-md:confirm' />
-                            </Button>
+                          {sub.status === 'rechazada' && (
+                            <Typography sx={{ mb: 2, fontSize: '13px' }}>
+                              <CustomChip sx={{ mx: 2 }} skin='light' rounded color='warning'
+                                label={
+                                  <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                                    <Icon icon='mdi:alert' fontSize='1rem' />
+                                    <span><b>Motivo de rechazo:</b></span>
+                                  </Box>
+                                }
+                              />
+                              {sub.rejectionReason ? sub.rejectionReason : "No presenta"}
+                            </Typography>
                           )}
-                        </Box>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          {esEntrenador && new Date(sub.expirationDate) > new Date() && (<Button
-                            variant='contained'
-                            color='error'
-                            title='Rechazar'
-                            onClick={() => rechazarSubsRequest(sub)}
-                          >
-                            <Icon icon='line-md:cancel' />
-                          </Button>)}
-                          {new Date(sub.expirationDate) <= new Date() && (<Button
-                            variant='contained'
-                            color='error'
-                            title='Borrar'
-                            onClick={() => borrarSubsRequest(sub)}
-                          >
-                            <Icon icon='mdi:trash' />
-                          </Button>)}
-                          {(!esEntrenador && new Date(sub.expirationDate) > new Date() && sub.status !== 'rechazada') && (
-                            <Button
+                        </CardContent>
+                        <CardContent sx={{ display: 'flex', flexDirection: { xs: 'row', md: 'column' }, alignItems: 'center', justifyContent: 'center', mt: { md: 5 }, mr: { md: 3 } }}>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            {esEntrenador && new Date(sub.expirationDate) > new Date() && (
+                              <Button
+                                variant='contained'
+                                color='success'
+                                title='Aceptar'
+                                onClick={() => aceptarSubsRequest(sub)}
+                              >
+                                <Icon icon='line-md:confirm' />
+                              </Button>
+                            )}
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            {esEntrenador && new Date(sub.expirationDate) > new Date() && (<Button
                               variant='contained'
                               color='error'
-                              title='Cancelar'
-                              onClick={() => cancelarSubsRequest(sub)}
+                              title='Rechazar'
+                              onClick={() => rechazarSubsRequest(sub)}
                             >
-                              Cancelar mi solicitud
-                            </Button>
-                          )}
-                        </Box>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          {esEntrenador && (<Button
-                            variant='contained'
-                            color='primary'
-                            title='Perfil'
-                            href={'/myProfile/myStudentProfile/' + sub.studentId}
-                          >
-                            <Icon icon='mdi:eye' />
-                          </Button>)}
-                        </Box>
-                        <Box sx={{ marginTop: 1, marginLeft: 1 }}>
-                          {!esEntrenador && new Date(sub.expirationDate) <= new Date() && (<Button
-                            variant='contained'
-                            color='primary'
-                            title='Perfil'
-                            href={'/myProfile/' + sub.trainerId}
-                          >
-                            <Icon icon='mdi:eye' />
-                          </Button>)}
-                        </Box>
-                      </CardContent>
-                    </Box>
-                  </StyledGrid1>
-                </Grid>
-              </Card>
-            ))
+                              <Icon icon='line-md:cancel' />
+                            </Button>)}
+                            {new Date(sub.expirationDate) <= new Date() && (<Button
+                              variant='contained'
+                              color='error'
+                              title='Borrar'
+                              onClick={() => borrarSubsRequest(sub)}
+                            >
+                              <Icon icon='mdi:trash' />
+                            </Button>)}
+                            {(!esEntrenador && new Date(sub.expirationDate) > new Date() && sub.status !== 'rechazada') && (
+                              <Button
+                                variant='contained'
+                                color='error'
+                                title='Cancelar'
+                                onClick={() => cancelarSubsRequest(sub)}
+                              >
+                                Cancelar mi solicitud
+                              </Button>
+                            )}
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            {esEntrenador && (<Button
+                              variant='contained'
+                              color='primary'
+                              title='Perfil'
+                              href={'/myProfile/myStudentProfile/' + sub.studentId}
+                            >
+                              <Icon icon='mdi:eye' />
+                            </Button>)}
+                          </Box>
+                          <Box sx={{ marginTop: 1, marginLeft: 1 }}>
+                            {!esEntrenador && new Date(sub.expirationDate) <= new Date() && (<Button
+                              variant='contained'
+                              color='primary'
+                              title='Perfil'
+                              href={'/myProfile/' + sub.trainerId}
+                            >
+                              <Icon icon='mdi:eye' />
+                            </Button>)}
+                          </Box>
+                        </CardContent>
+                      </Box>
+                    </StyledGrid1>
+                  </Grid>
+                </Card>
+              ))
+            ) : (
+              <Box sx={{ mt: '50px', mb: '20px' }}>
+                <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
+              </Box>
+            )
           ) : (
-            <Box sx={{ mt: '50px', mb: '20px' }}>
-              <Typography variant='h6' sx={{ textAlign: 'center' }}>No tenés solicitudes de suscripciones por el momento.</Typography>
+            <Box sx={{ my: 5, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+              <CircularProgress size={50} thickness={3} color='primary' />
             </Box>
           )}
-          <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
-            <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
-          </Box>
-        </Grid>
-        <RequestPopUp
-          requestPopUp={requestPopUp}
-          setRequestPopUp={setRequestPopUp}
-          type={typeAction}
-          title={title}
-          requestId={subsRequestId}
-          setSubsRequest={setSubsRequest}
-        />
-      </>
-    );
-  } else {
-    return (
-      <Box sx={{ my: 1, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-        <CircularProgress size={100} thickness={6} color='primary' />
-      </Box>
-    );
-  }
+        <Box className='demo-space-y' mt={7} alignItems={'center'} justifyContent='center' display={'flex'}>
+          <Pagination count={totalPages} color='primary' page={currentPage} onChange={(event, page) => setCurrentPage(page)} />
+        </Box>
+      </Grid >
+      <RequestPopUp
+        requestPopUp={requestPopUp}
+        setRequestPopUp={setRequestPopUp}
+        type={typeAction}
+        title={title}
+        requestId={subsRequestId}
+        setSubsRequest={setSubsRequest}
+      />
+    </>
+  );
 };
 
 MyRequests.acl = {

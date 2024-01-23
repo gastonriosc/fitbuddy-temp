@@ -821,7 +821,7 @@ const MyProfile = () => {
 
                       <Select
                         id='description-select'
-                        label='Objetivos'
+                        label='Objetivo'
                         name='description'
                         value={value}
                         onBlur={onBlur}
