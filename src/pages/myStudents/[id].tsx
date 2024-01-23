@@ -42,6 +42,7 @@ interface subsRequest {
   avatar: string;
   amount: number
   disease: string
+  expirationDate: string | any
 }
 
 const MyStudents = () => {
@@ -213,6 +214,9 @@ const MyStudents = () => {
                               <CustomChip sx={{ mx: 2 }} skin='light' color='warning' label={new Date(sub.date).toLocaleDateString('es-ES')} />
                             </Typography>
                           </Box>
+                          <Typography variant='h5' sx={{ mb: 2 }}>
+                            <CustomChip sx={{ mx: 2 }} skin='light' color='error' label={new Date(sub.expirationDate).toLocaleDateString('es-ES')} />
+                          </Typography>
                           <Box>
                             <Typography variant='h5' sx={{ mb: 2 }}>
 

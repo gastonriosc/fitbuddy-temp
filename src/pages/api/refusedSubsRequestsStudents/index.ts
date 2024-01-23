@@ -3,32 +3,10 @@ import { NextApiRequest, NextApiResponse } from 'next/types'
 import SubsRequest from 'src/models/subsRequestSchema'
 import mongoose from 'mongoose'
 import Subscription from 'src/models/subscriptionSchema'
-import { request } from 'http'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connect()
   try {
-    if (req.method === 'POST') {
-      const subsRequest = await SubsRequest.create(req.body)
-      if (subsRequest) {
-        return res.status(200).json(subsRequest)
-      } else {
-        return res.status(404).json('No se puedo crear la solicitud de suscripcion')
-      }
-    }
-    if (req.method === 'PUT') {
-      const { requestId, status, rejectionReason } = req.body
-      const subsRequest = await SubsRequest.findByIdAndUpdate(
-        requestId,
-        { status: status, rejectionReason: rejectionReason },
-        { new: true }
-      )
-      if (subsRequest) {
-        return res.status(200).json(subsRequest)
-      } else {
-        return res.status(404).json('no se puedo realizar el update')
-      }
-    }
     if (req.method === 'GET') {
       try {
         const { id } = req.query
@@ -37,8 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const subsRequest = await SubsRequest.aggregate([
           {
             $match: {
-              trainerId: objectId,
-              status: 'pendiente'
+              studentId: objectId,
+              status: 'rechazada'
             }
           },
           {
@@ -51,14 +29,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           {
             $lookup: {
+              from: 'users',
+              localField: 'trainerId',
+              foreignField: '_id',
+              as: 'trainer_info'
+            }
+          },
+
+          {
+            $lookup: {
               from: 'subscriptions',
               localField: 'subscriptionId',
               foreignField: '_id',
               as: 'subscription_info'
             }
           },
+
           {
             $unwind: '$student_info'
+          },
+          {
+            $unwind: '$trainer_info'
           },
           {
             $unwind: '$subscription_info'
@@ -76,13 +67,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               amount: 1,
               disease: 1,
               studentName: '$student_info.name',
+              trainerName: '$trainer_info.name',
               subscriptionName: '$subscription_info.name',
               avatar: '$student_info.avatar',
+              trainerAvatar: '$trainer_info.avatar',
               subscriptionDaysPerWeek: '$subscription_info.daysPerWeek',
               subscriptionFollowing: '$subscription_info.following',
               subscriptionPrice: '$subscription_info.price',
               subscriptionIntensity: '$subscription_info.intensity',
-              subscriptionDescription: '$subscription_info.description'
+              subscriptionDescription: '$subscription_info.description',
+              rejectionReason: 1
             }
           }
         ])

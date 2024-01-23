@@ -13,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { differenceInYears } from 'date-fns'
 
 // ** Icon Imports
+import Icon from 'src/@core/components/icon';
 
 
 // ** Custom Components
@@ -100,6 +101,14 @@ const MyStudentProfile = () => {
 
     fetchProfile(); //Se llama a la función fetchAlumnoUsers dentro de useEffect. Esto asegura que la llamada a la API se realice solo una vez
   }, []);
+
+  const pesoEnKilogramos = parseFloat(users.weight);
+  const alturaEnMetros = parseFloat(users.height);
+
+
+  const imc = pesoEnKilogramos / (alturaEnMetros * alturaEnMetros);
+
+
 
   if (data && isLoading) {
     return (
@@ -195,6 +204,25 @@ const MyStudentProfile = () => {
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Edad:</Typography>
                   <Typography variant='body2'>{edad}</Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', mb: 2.7 }}>
+                  <Typography sx={{ mr: 2, fontWeight: 500, fontSize: '0.875rem' }}>Índice de Masa Corporal (IMC):</Typography>
+                  <Typography variant='body2' sx={{ mb: 2 }} >{imc.toFixed(2)}
+                    <CustomChip sx={{ mx: 2 }} skin='light'
+                      size='small'
+                      color={imc < 25 && imc > 18.5 ? 'success' : "warning"}
+                      label={imc < 25 && imc > 18.5 ?
+                        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                          <Icon icon='mdi:success' fontSize='rem' />
+                          <span>SALUDABLE</span>
+                        </Box> :
+                        <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
+                          <Icon icon='mdi:alert' fontSize='rem' />
+                          <span>ATENCIÓN</span>
+                        </Box>
+                      } />
+                  </Typography>
                 </Box>
               </Box>
             </CardContent>

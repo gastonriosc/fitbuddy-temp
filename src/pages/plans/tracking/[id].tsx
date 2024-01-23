@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // ** React Imports
 import { forwardRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -91,7 +92,7 @@ const Tracking = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const route = useRouter();
   const [endDateRange] = useState<DateType>(null)
-  const [startDateRange, setStartDateRange] = useState<DateType>(null)
+  const [startDateRange, setStartDateRange] = useState<DateType>(new Date())
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isDuplicateDate, setIsDuplicateDate] = useState(false);
   const [invalidDateError, setInvalidDateError] = useState(false);
@@ -189,6 +190,9 @@ const Tracking = () => {
         setTracking(data)
         setTitlePopUp('Seguimiento registrado con éxito!')
         setTrackingPopUp(true)
+        window.location.reload();
+
+
 
       } else {
         setNuevoRegistro(false)
@@ -216,7 +220,7 @@ const Tracking = () => {
   });
 
 
-  const handleOnChangeRangeForDialog = (date: Date) => {
+  const handleOnChangeRangeForDialog = (date: Date | any) => {
     setStartDateRange(date);
     setIsButtonDisabled(isDateAlreadyRecorded(date) || !date);
     const isDuplicate = isDateAlreadyRecorded(date);
@@ -288,6 +292,14 @@ const Tracking = () => {
     setTitlePopUpDelete('¿Está seguro que desea eliminar este registro?');
     setPopUpDelete(true);
   };
+
+
+  useEffect(() => {
+    if (tracking) {
+      const currentDate = new Date();
+      handleOnChangeRangeForDialog(currentDate);
+    }
+  }, [tracking]);
 
   const handleConfirmedDelete = async () => {
     try {
