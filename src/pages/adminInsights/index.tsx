@@ -105,7 +105,7 @@ const AdminInsights = () => {
       const userMonth = registrationDate.getMonth() + 1;
       const userYear = registrationDate.getFullYear();
 
-      if (userYear === year?.getFullYear() && userMonth <= currentMonth) {
+      if (userYear === year?.getFullYear()) {
         if (user.role === 'Entrenador') {
           monthlyStatsAnual.Entrenadores[userMonth - 1]++;
         } else if (user.role === 'Alumno') {
@@ -148,7 +148,7 @@ const AdminInsights = () => {
       const userMonth = registrationDate.getMonth() + 1;
       const userYear = registrationDate.getFullYear();
 
-      if (userYear === year?.getFullYear() && userMonth <= currentMonth) {
+      if (userYear === year?.getFullYear()) {
         if (user.role === 'Entrenador') {
           monthlyStats.Entrenadores[userMonth - 1]++;
         } else if (user.role === 'Alumno') {

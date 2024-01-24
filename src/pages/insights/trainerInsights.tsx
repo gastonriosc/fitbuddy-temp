@@ -100,7 +100,7 @@ const TrainerInsights = () => {
       const subMonth = date.getMonth() + 1;
       const subYear = date.getFullYear();
 
-      if (subYear === year && subMonth <= new Date().getMonth() + 1) {
+      if (subYear === year) {
         const subsId = sub.subscriptionId;
 
         if (!monthlyStats[subsId]) {
@@ -134,7 +134,7 @@ const TrainerInsights = () => {
       const subMonth = date.getMonth() + 1;
       const subYear = date.getFullYear();
 
-      if (subYear === year && subMonth <= new Date().getMonth() + 1) {
+      if (subYear === year) {
         const subsId = sub.subscriptionId;
 
         if (!monthlyStats[subsId]) {
