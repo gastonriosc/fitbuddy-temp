@@ -20,6 +20,7 @@ import RequestPopUp from './requestPopUp';
 import { CardHeader, FormControl, Input, InputLabel, Select, MenuItem } from '@mui/material';
 import CustomChip from 'src/@core/components/mui/chip'
 import { useSession } from 'next-auth/react';
+import { margin, padding } from '@mui/system';
 
 // Styled Grid component
 const StyledGrid1 = styled(Grid)<GridProps>(({ }) => ({
@@ -347,31 +348,29 @@ const MyRequests = () => {
                             </Box>
                           </Box>
                           <Typography variant='body1' sx={{ mb: 2 }}>
-                            <ul>
+                            <b>Objetivo:</b> {sub.description}
+                          </Typography>
+                          <Typography variant='body1' sx={{ my: 0 }}>
+                            Características del plan solicitado:
+                          </Typography>
+                          <Typography variant='body1' sx={{ my: 0 }}>
+                            <ul style={{ marginTop: 0 }}>
                               <li>
-                                <b>Descripción de la solicitud:</b> {sub.description}
+                                <b>Nombre:</b> {sub.subscriptionName}
                               </li>
                               <li>
-                                Características del plan solicitado:
-                                <ul>
-                                  <li>
-                                    <b>Nombre:</b> {sub.subscriptionName}
-                                  </li>
-                                  <li>
-                                    <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
-                                  </li>
-                                  <li>
-                                    <b>Seguimiento:</b> {sub.subscriptionFollowing}
-                                  </li>
-                                  <li>
-                                    <b>Intensidad:</b> {sub.subscriptionIntensity}
-                                  </li>
-                                </ul>
+                                <b>Días de entrenamiento por semana:</b> {sub.subscriptionDaysPerWeek}
+                              </li>
+                              <li>
+                                <b>Seguimiento:</b> {sub.subscriptionFollowing}
+                              </li>
+                              <li>
+                                <b>Intensidad:</b> {sub.subscriptionIntensity}
                               </li>
                             </ul>
                           </Typography>
                           <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                            <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
+                            <CustomChip sx={{ mr: 2, mb: 2 }} skin='light' rounded color='primary'
                               label={
                                 <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
                                   <Icon icon='mdi:pencil' fontSize='1rem' />
@@ -383,7 +382,7 @@ const MyRequests = () => {
                           </Typography>
                           {sub.status === 'rechazada' && (
                             <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                              <CustomChip sx={{ mx: 2 }} skin='light' rounded color='warning'
+                              <CustomChip sx={{ mr: 2 }} skin='light' rounded color='warning'
                                 label={
                                   <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
                                     <Icon icon='mdi:alert' fontSize='1rem' />

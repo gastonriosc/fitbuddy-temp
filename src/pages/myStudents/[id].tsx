@@ -232,10 +232,10 @@ const MyStudents = () => {
                           </Box>
                         </Box>
                         <Typography variant='body1' sx={{ mb: 2 }}>
-                          {sub.description}
+                          <b>Objetivo:</b> {sub.description}
                         </Typography>
                         <Typography sx={{ mb: 2, fontSize: '13px' }}>
-                          <CustomChip sx={{ mx: 2 }} skin='light' rounded color='primary'
+                          <CustomChip sx={{ mr: 2, mb: 2 }} skin='light' rounded color='primary'
                             label={
                               <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1 } }}>
                                 <Icon icon='mdi:pencil' fontSize='1rem' />
