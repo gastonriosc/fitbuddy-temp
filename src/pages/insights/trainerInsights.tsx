@@ -89,6 +89,7 @@ const TrainerInsights = () => {
 
 
   const [subsMasSolicitadas, setSubsMasSolicitadas] = useState<PopularSubs[]>()
+  console.log(subsMasSolicitadas)
 
   //!SUBS MAS SOLICITADAS ESTE AÑO
 
@@ -119,7 +120,12 @@ const TrainerInsights = () => {
     return series;
   };
 
-  const seriesSubsMasSolicitadasAnual = obtenerSubsMasSolicitadasAnual(subsMasSolicitadas, thisYear.getFullYear())
+  function sortByDate(array: PopularSubs[] | undefined): PopularSubs[] | undefined {
+    return array?.sort((a: PopularSubs, b: PopularSubs) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  const subsMasSolicitadasOrdenadasAnual = sortByDate(subsMasSolicitadas)
+  const seriesSubsMasSolicitadasAnual = obtenerSubsMasSolicitadasAnual(subsMasSolicitadasOrdenadasAnual, thisYear.getFullYear())
   const totalSubsAnual = seriesSubsMasSolicitadasAnual.reduce((total, serie) => total.map((value, i) => value + (serie.data[i] || 0)), Array(12).fill(0));
   const totalGeneralAnual = totalSubsAnual.reduce((acc, count) => acc + count, 0);
 
@@ -153,7 +159,8 @@ const TrainerInsights = () => {
     return series;
   };
 
-  const seriesSubsMasSolicitadas = obtenerSubsMasSolicitadas(subsMasSolicitadas, yearSubs?.getFullYear())
+  const subsMasSolicitadasOrdenadas = sortByDate(subsMasSolicitadas)
+  const seriesSubsMasSolicitadas = obtenerSubsMasSolicitadas(subsMasSolicitadasOrdenadas, yearSubs?.getFullYear())
   const totalSubs = seriesSubsMasSolicitadas.reduce((total, serie) => total.map((value, i) => value + (serie.data[i] || 0)), Array(12).fill(0));
   const totalGeneral = totalSubs.reduce((acc, count) => acc + count, 0);
 

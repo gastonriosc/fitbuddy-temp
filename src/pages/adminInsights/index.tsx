@@ -128,7 +128,12 @@ const AdminInsights = () => {
     return series
   }
 
-  const seriesUsuariosAnual = obtenerNuevosUsuariosAnual(newUsers, thisYear)
+  function sortByDate(array: User[] | undefined): User[] | undefined {
+    return array?.sort((a: User, b: User) => new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime());
+  }
+
+  const seriesUsuariosAnualOrdenada = sortByDate(newUsers)
+  const seriesUsuariosAnual = obtenerNuevosUsuariosAnual(seriesUsuariosAnualOrdenada, thisYear)
   const totalEntrenadoresAnual = monthlyStatsAnual.Entrenadores.reduce((acc, count) => acc + count, 0);
   const totalAlumnosAnual = monthlyStatsAnual.Alumnos.reduce((acc, count) => acc + count, 0);
   const totalUsuariosAnual = totalEntrenadoresAnual + totalAlumnosAnual;
@@ -171,7 +176,8 @@ const AdminInsights = () => {
     return series
   }
 
-  const seriesUsuarios = obtenerNuevosUsuarios(newUsers, yearUsuarios)
+  const seriesUsuariosOrdenada = sortByDate(newUsers)
+  const seriesUsuarios = obtenerNuevosUsuarios(seriesUsuariosOrdenada, yearUsuarios)
   const totalEntrenadores = monthlyStats.Entrenadores.reduce((acc, count) => acc + count, 0);
   const totalAlumnos = monthlyStats.Alumnos.reduce((acc, count) => acc + count, 0);
   const totalUsuarios = totalEntrenadores + totalAlumnos;
