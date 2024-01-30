@@ -149,14 +149,15 @@ const Foro = (props: Props) => {
         body: JSON.stringify({ planId, messages })
       })
       if (res.status == 200) {
-        setForo(prevForo => {
+        setForo((prevForo: any) => {
           if (prevForo) {
             const updatedMessages = [...prevForo.messages, newMessage];
 
             return { ...prevForo, messages: updatedMessages };
           }
 
-          return prevForo;
+
+          return { messages: [newMessage] };
         });
         setMensaje('');
       }
