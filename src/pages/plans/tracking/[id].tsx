@@ -190,7 +190,8 @@ const Tracking = () => {
         setTracking(data)
         setTitlePopUp('Seguimiento registrado con éxito!')
         setTrackingPopUp(true)
-        window.location.reload();
+
+        // window.location.reload();
 
 
 
